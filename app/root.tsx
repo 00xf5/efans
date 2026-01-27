@@ -36,7 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="premium-blur h-[100dvh] flex flex-col overflow-hidden w-full bg-white dark:bg-zinc-950">
         <Navbar />
-        <main className="flex-1 overflow-hidden relative w-full">
+        <main className="flex-1 overflow-y-auto scrollbar-hide relative w-full">
           {children}
         </main>
         <ScrollRestoration />

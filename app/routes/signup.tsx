@@ -34,7 +34,7 @@ export default function Signup() {
             </div>
 
             {/* 50% Form Side: Sharp & Premium */}
-            <div className="w-full lg:w-1/2 h-full overflow-y-auto scrollbar-hide flex items-center lg:items-start justify-center p-8 md:p-20 lg:pt-32 bg-white lg:bg-white relative">
+            <div className="w-full lg:w-1/2 h-full overflow-y-auto scrollbar-hide flex items-center lg:items-start justify-center p-8 md:p-20 lg:pt-32 bg-white relative">
                 {/* Mobile Background Overlay - Removed for better visibility */}
 
                 <div className="w-full max-w-lg space-y-12 relative z-10">
@@ -52,7 +52,7 @@ export default function Signup() {
                     </header>
 
                     {/* Premium Persona Selector */}
-                    <div className="p-1.5 bg-zinc-100 dark:bg-zinc-900/50 rounded-[2.5rem] flex relative border border-zinc-200">
+                    <div className="p-1.5 bg-zinc-100 rounded-[2.5rem] flex relative border border-zinc-200">
                         <button
                             onClick={() => setRole('creator')}
                             className={`flex-1 py-4 rounded-[2.2rem] text-[11px] font-black uppercase tracking-widest relative z-10 transition-all ${role === 'creator' ? 'text-white' : 'text-zinc-400'}`}
