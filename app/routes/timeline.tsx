@@ -763,7 +763,7 @@ export default function Timeline() {
                     {/* Column 2: Independent Center Feed */}
                     <main className="flex-grow w-full max-w-full md:max-w-2xl py-8 h-full overflow-y-auto overflow-x-hidden scrollbar-hide space-y-12 px-4 scroll-smooth pb-32 lg:pb-8">
                         {/* Mobile Reels Carousel (Replaced Trending Now) */}
-                        <div className="lg:hidden space-y-4 px-4 overflow-hidden mb-8">
+                        <div className="lg:hidden space-y-4 overflow-hidden mb-8">
                             <div className="flex items-center justify-between">
                                 <h4 className="text-[10px] font-black text-pink-300 uppercase tracking-[0.3em] italic">Glimpses</h4>
                                 <div className="flex gap-1">
@@ -790,7 +790,7 @@ export default function Timeline() {
                         </div>
 
                         {/* Sticky Feed Header */}
-                        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-3xl py-4 border-b border-pink-50 flex items-center justify-between gap-4 -mx-2 px-4 shadow-sm">
+                        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-3xl py-4 border-b border-pink-50 flex items-center justify-between gap-4 -mx-4 px-4 shadow-sm">
                             <div className="flex gap-2 p-1.5 bg-pink-50 rounded-[2.2rem] border border-pink-100 overflow-x-auto scrollbar-hide w-full sm:w-auto">
                                 {["all", "flow", "unlocked", "featured", "reels"].map((tab) => (
                                     <button
