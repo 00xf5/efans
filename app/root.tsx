@@ -27,16 +27,16 @@ import Navbar from "./components/Navbar";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark overflow-x-hidden">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
         <Meta />
         <Links />
       </head>
-      <body className="premium-blur min-h-screen">
+      <body className="premium-blur min-h-screen overflow-x-hidden w-full">
         <Navbar />
-        <main className="pt-16">
+        <main className="w-full overflow-x-hidden">
           {children}
         </main>
         <ScrollRestoration />

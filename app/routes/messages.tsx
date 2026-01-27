@@ -178,7 +178,7 @@ export default function PrivateSanctuary() {
     };
 
     return (
-        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display max-w-[100vw]">
+        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display w-full">
             {/* Ambient Background Resonance */}
             <div className="fixed inset-0 pointer-events-none opacity-40">
                 <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-pink-100/40 rounded-full blur-[160px] animate-pulse"></div>
@@ -193,7 +193,7 @@ export default function PrivateSanctuary() {
                 </div>
             )}
 
-            <div className="w-full max-w-[100vw] md:max-w-[1800px] h-full flex relative z-10 px-0 md:px-6 py-8 gap-0 md:gap-8 overflow-x-hidden">
+            <div className="w-full md:max-w-[1800px] h-full flex relative z-10 px-0 md:px-6 py-8 gap-0 md:gap-8 overflow-x-hidden">
 
                 {/* 1. The Sanctuary List (Conversations) */}
                 <aside className="w-96 flex flex-col gap-6 h-full animate-entrance">

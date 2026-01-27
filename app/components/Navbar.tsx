@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 export default function Navbar() {
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 glass h-16 flex items-center px-4 md:px-6 justify-between max-w-[100vw] overflow-hidden">
+        <nav className="fixed top-0 left-0 right-0 z-50 glass h-16 flex items-center px-4 md:px-6 justify-between overflow-hidden">
             <div className="flex items-center gap-4">
                 <Link to="/" className="flex items-center gap-2 group">
                     <div className="relative w-10 h-10 flex items-center justify-center">

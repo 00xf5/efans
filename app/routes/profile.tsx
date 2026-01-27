@@ -82,7 +82,7 @@ export default function IdentitySanctuary() {
                 <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-pink-50/50 rounded-full blur-[160px]"></div>
             </div>
 
-            <div className="w-full max-w-[100vw] md:max-w-[1400px] h-full flex flex-col relative z-10 overflow-x-hidden">
+            <div className="w-full md:max-w-[1400px] h-full flex flex-col relative z-10 overflow-x-hidden">
                 {/* Scrollable Content */}
                 <div className="flex-grow overflow-y-auto overflow-x-hidden scrollbar-hide pb-32">
 

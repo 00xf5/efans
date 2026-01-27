@@ -114,14 +114,14 @@ export default function DiscoveryAltar() {
     };
 
     return (
-        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display max-w-[100vw]">
+        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display w-full">
             {/* Ambient Background Resonance */}
             <div className="fixed inset-0 pointer-events-none opacity-40">
                 <div className="absolute top-[-20%] right-[-10%] w-[70%] h-[70%] bg-pink-100/40 rounded-full blur-[160px] animate-pulse"></div>
                 <div className="absolute bottom-[-20%] left-[-10%] w-[70%] h-[70%] bg-violet-100/30 rounded-full blur-[160px] animate-pulse"></div>
             </div>
 
-            <div className="w-full max-w-[100vw] md:max-w-[1800px] h-full flex flex-col relative z-10 px-4 md:px-6 py-10 gap-10 overflow-x-hidden">
+            <div className="w-full md:max-w-[1800px] h-full flex flex-col relative z-10 px-4 md:px-6 py-10 gap-10 overflow-x-hidden">
 
                 {/* 1. Header: The Global Altar Sequence */}
                 <header className="flex flex-col md:flex-row items-end justify-between gap-8 animate-entrance">

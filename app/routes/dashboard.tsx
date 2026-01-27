@@ -87,7 +87,7 @@ export default function ExperienceHub() {
     };
 
     return (
-        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display max-w-[100vw]">
+        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display w-full">
             {/* Resonance Feedback Altar */}
             {toast && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
@@ -102,7 +102,7 @@ export default function ExperienceHub() {
             </div>
 
             <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-x-hidden">
-                <div className="flex w-full max-w-[100vw] md:max-w-[2200px] gap-0 md:gap-12 h-full overflow-x-hidden">
+                <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12 h-full overflow-x-hidden">
 
                     {/* Left Pillar: Navigation */}
                     <aside className="hidden lg:flex flex-col w-72 py-10 h-full overflow-y-auto scrollbar-hide">
