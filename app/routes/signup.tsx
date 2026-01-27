@@ -34,28 +34,25 @@ export default function Signup() {
             </div>
 
             {/* 50% Form Side: Sharp & Premium */}
-            <div className="w-full lg:w-1/2 h-full overflow-y-auto scrollbar-hide flex items-center lg:items-start justify-center p-8 md:p-20 lg:pt-32 bg-zinc-950 lg:bg-white relative">
-                {/* Mobile Background Overlay */}
-                <div className="lg:hidden absolute inset-0 opacity-20">
-                    <img src="/signup_aesthetic_side_1769529226084.png" alt="bg" className="w-full h-full object-cover blur-3xl" />
-                </div>
+            <div className="w-full lg:w-1/2 h-full overflow-y-auto scrollbar-hide flex items-center lg:items-start justify-center p-8 md:p-20 lg:pt-32 bg-white lg:bg-white relative">
+                {/* Mobile Background Overlay - Removed for better visibility */}
 
                 <div className="w-full max-w-lg space-y-12 relative z-10">
                     <header className="space-y-4">
                         <Link to="/" className="inline-block mb-8 group">
-                            <span className="text-3xl font-black tracking-tighter text-zinc-900 lg:text-zinc-900 text-white italic">
+                            <span className="text-3xl font-black tracking-tighter text-zinc-900 italic">
                                 e<span className="text-gradient">Fans.</span>
                             </span>
                         </Link>
-                        <h1 className="text-5xl font-black text-zinc-900 lg:text-zinc-900 text-white leading-tight italic">
+                        <h1 className="text-5xl font-black text-zinc-900 leading-tight italic">
                             Create your <br />
                             <span className="text-zinc-400">Digital Hub.</span>
                         </h1>
-                        <p className="text-zinc-500 font-bold italic lg:text-zinc-500 text-zinc-400">Join the next evolution of creator independence in 30 seconds.</p>
+                        <p className="text-zinc-500 font-bold italic">Join the next evolution of creator independence in 30 seconds.</p>
                     </header>
 
                     {/* Premium Persona Selector */}
-                    <div className="p-1.5 bg-zinc-100 dark:bg-zinc-900/50 rounded-[2.5rem] flex relative border border-zinc-200 lg:border-zinc-200 border-white/5">
+                    <div className="p-1.5 bg-zinc-100 dark:bg-zinc-900/50 rounded-[2.5rem] flex relative border border-zinc-200">
                         <button
                             onClick={() => setRole('creator')}
                             className={`flex-1 py-4 rounded-[2.2rem] text-[11px] font-black uppercase tracking-widest relative z-10 transition-all ${role === 'creator' ? 'text-white' : 'text-zinc-400'}`}
@@ -77,7 +74,7 @@ export default function Signup() {
                                 <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest block ml-6 leading-none">Identity Name</label>
                                 <input
                                     placeholder="Sofia Valdéz"
-                                    className="w-full bg-zinc-50 lg:bg-zinc-50 bg-white/5 border border-zinc-100 lg:border-zinc-100 border-white/5 px-8 py-6 rounded-[2rem] font-bold lg:text-zinc-950 text-white outline-none focus:border-pink-200 transition-all text-lg shadow-inner"
+                                    className="w-full bg-zinc-50 border border-zinc-100 px-8 py-6 rounded-[2rem] font-bold text-zinc-950 outline-none focus:border-pink-200 transition-all text-lg shadow-inner"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -85,7 +82,7 @@ export default function Signup() {
                                 <input
                                     type="email"
                                     placeholder="resonance@efans.hub"
-                                    className="w-full bg-zinc-50 lg:bg-zinc-50 bg-white/5 border border-zinc-100 lg:border-zinc-100 border-white/5 px-8 py-6 rounded-[2rem] font-bold lg:text-zinc-950 text-white outline-none focus:border-pink-200 transition-all text-lg shadow-inner"
+                                    className="w-full bg-zinc-50 border border-zinc-100 px-8 py-6 rounded-[2rem] font-bold text-zinc-950 outline-none focus:border-pink-200 transition-all text-lg shadow-inner"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -93,7 +90,7 @@ export default function Signup() {
                                 <input
                                     type="password"
                                     placeholder="••••••••••••"
-                                    className="w-full bg-zinc-50 lg:bg-zinc-50 bg-white/5 border border-zinc-100 lg:border-zinc-100 border-white/5 px-8 py-6 rounded-[2rem] font-bold lg:text-zinc-950 text-white outline-none focus:border-pink-200 transition-all text-lg shadow-inner"
+                                    className="w-full bg-zinc-50 border border-zinc-100 px-8 py-6 rounded-[2rem] font-bold text-zinc-950 outline-none focus:border-pink-200 transition-all text-lg shadow-inner"
                                 />
                             </div>
                         </div>
@@ -108,11 +105,11 @@ export default function Signup() {
                         </div>
                     </form>
 
-                    <footer className="pt-10 border-t border-zinc-100 lg:border-zinc-100 border-white/5 flex items-center justify-between">
+                    <footer className="pt-10 border-t border-zinc-100 flex items-center justify-between">
                         <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest italic">Encrypted Connection</span>
                         <div className="flex gap-4">
                             {['Google', 'Twitter', 'Apple'].map(s => (
-                                <button key={s} className="w-10 h-10 rounded-xl border border-zinc-100 lg:border-zinc-100 border-white/5 flex items-center justify-center hover:bg-zinc-50 transition-all">
+                                <button key={s} className="w-10 h-10 rounded-xl border border-zinc-100 flex items-center justify-center hover:bg-zinc-50 transition-all">
                                     <span className="text-[9px] font-black text-zinc-300 uppercase">{s[0]}</span>
                                 </button>
                             ))}
