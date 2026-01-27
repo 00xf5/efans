@@ -678,7 +678,7 @@ export default function Timeline() {
     };
 
     return (
-        <div className="fixed inset-0 top-16 bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden w-full">
+        <div className="relative w-full h-full bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden">
 
             {/* Dynamic Background Light */}
             {/* Notification Altar */}

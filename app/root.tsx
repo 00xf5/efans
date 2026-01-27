@@ -34,9 +34,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="premium-blur min-h-screen overflow-x-hidden w-full">
+      <body className="premium-blur h-[100dvh] flex flex-col overflow-hidden w-full bg-white dark:bg-zinc-950">
         <Navbar />
-        <main className="w-full overflow-x-hidden">
+        <main className="flex-1 overflow-hidden relative w-full">
           {children}
         </main>
         <ScrollRestoration />

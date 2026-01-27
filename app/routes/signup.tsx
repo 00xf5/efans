@@ -5,7 +5,7 @@ export default function Signup() {
     const [role, setRole] = useState<"creator" | "fan">("creator");
 
     return (
-        <div className="fixed inset-0 top-16 flex bg-zinc-950 overflow-hidden font-display">
+        <div className="relative w-full h-full flex bg-zinc-950 overflow-hidden font-display">
             {/* 50% Aesthetic Side: Sensual & Fancy */}
             <div className="hidden lg:flex w-1/2 relative h-full overflow-hidden">
                 <img

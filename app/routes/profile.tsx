@@ -75,7 +75,7 @@ export default function IdentitySanctuary() {
     };
 
     return (
-        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="relative w-full h-full bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
             {/* Global Background Grain/Blur */}
             <div className="fixed inset-0 pointer-events-none opacity-50">
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>

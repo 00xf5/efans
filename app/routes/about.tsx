@@ -10,7 +10,7 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function About() {
     return (
-        <div className="fixed inset-0 top-16 bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden max-w-[100vw]">
+        <div className="relative w-full h-full bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden">
             {/* Premium Background Elements */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-pink-100/30 rounded-full blur-[160px] animate-pulse"></div>
