@@ -678,7 +678,8 @@ export default function Timeline() {
     };
 
     return (
-        <div className="fixed inset-0 top-16 bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden">
+        <div className="fixed inset-0 top-16 bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden max-w-[100vw]">
+
             {/* Dynamic Background Light */}
             {/* Notification Altar */}
             {toast && (
@@ -688,8 +689,8 @@ export default function Timeline() {
                 </div>
             )}
 
-            <div className="w-full max-w-[100vw] md:max-w-none flex justify-center px-4 md:px-6 relative z-10 h-full overflow-x-hidden">
-                <div className="flex w-full max-w-[100vw] md:max-w-[2200px] gap-12 h-full">
+            <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-x-hidden">
+                <div className="flex w-full max-w-[100vw] md:max-w-[2200px] gap-0 md:gap-12 h-full overflow-x-hidden">
 
                     {/* Column 1: Navigation Sidebar */}
                     <aside className="hidden lg:flex flex-col w-72 py-8 h-full overflow-y-auto scrollbar-hide">
