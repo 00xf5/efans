@@ -31,24 +31,21 @@ export default function Login() {
             </div>
 
             {/* 50% Form Side: Sharp & Premium */}
-            <div className="w-full lg:w-1/2 h-full overflow-y-auto scrollbar-hide flex items-center lg:items-start justify-center p-8 md:p-20 lg:pt-32 bg-zinc-950 lg:bg-white relative">
-                {/* Mobile Background Overlay */}
-                <div className="lg:hidden absolute inset-0 opacity-20">
-                    <img src="/login_aesthetic_side_1769529612431.png" alt="bg" className="w-full h-full object-cover blur-3xl" />
-                </div>
+            <div className="w-full lg:w-1/2 h-full overflow-y-auto scrollbar-hide flex items-center lg:items-start justify-center p-8 md:p-20 lg:pt-32 bg-white lg:bg-white relative">
+                {/* Mobile Background Overlay - Removed for better visibility */}
 
                 <div className="w-full max-w-lg space-y-12 relative z-10">
                     <header className="space-y-4 text-center lg:text-left">
                         <Link to="/" className="inline-block mb-8 group">
-                            <span className="text-3xl font-black tracking-tighter text-zinc-900 lg:text-zinc-900 text-white italic">
+                            <span className="text-3xl font-black tracking-tighter text-zinc-900 italic">
                                 e<span className="text-gradient">Fans.</span>
                             </span>
                         </Link>
-                        <h1 className="text-5xl font-black text-zinc-900 lg:text-zinc-900 text-white leading-tight italic">
+                        <h1 className="text-5xl font-black text-zinc-900 leading-tight italic">
                             Welcome <br />
                             <span className="text-zinc-400 font-black">Back.</span>
                         </h1>
-                        <p className="text-zinc-500 font-bold italic lg:text-zinc-500 text-zinc-400">Your digital hub is awaiting your return signature.</p>
+                        <p className="text-zinc-500 font-bold italic">Your digital hub is awaiting your return signature.</p>
                     </header>
 
                     <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
@@ -58,7 +55,7 @@ export default function Login() {
                                 <input
                                     type="email"
                                     placeholder="resonance@efans.hub"
-                                    className="w-full bg-zinc-50 lg:bg-zinc-50 bg-white/5 border border-zinc-100 lg:border-zinc-100 border-white/5 px-8 py-6 rounded-[2rem] font-bold lg:text-zinc-950 text-white outline-none focus:border-blue-200 transition-all text-lg shadow-inner"
+                                    className="w-full bg-zinc-50 border border-zinc-100 px-8 py-6 rounded-[2rem] font-bold text-zinc-950 outline-none focus:border-blue-200 transition-all text-lg shadow-inner"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -69,7 +66,7 @@ export default function Login() {
                                 <input
                                     type="password"
                                     placeholder="••••••••••••"
-                                    className="w-full bg-zinc-50 lg:bg-zinc-50 bg-white/5 border border-zinc-100 lg:border-zinc-100 border-white/5 px-8 py-6 rounded-[2rem] font-bold lg:text-zinc-950 text-white outline-none focus:border-blue-200 transition-all text-lg shadow-inner"
+                                    className="w-full bg-zinc-50 border border-zinc-100 px-8 py-6 rounded-[2rem] font-bold text-zinc-950 outline-none focus:border-blue-200 transition-all text-lg shadow-inner"
                                 />
                             </div>
                         </div>
@@ -84,11 +81,11 @@ export default function Login() {
                         </div>
                     </form>
 
-                    <footer className="pt-10 border-t border-zinc-100 lg:border-zinc-100 border-white/5 flex items-center justify-between">
+                    <footer className="pt-10 border-t border-zinc-100 flex items-center justify-between">
                         <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest italic">Identity Shield Active</span>
                         <div className="flex gap-4">
                             {['Google', 'Twitter', 'Apple'].map(s => (
-                                <button key={s} className="w-10 h-10 rounded-xl border border-zinc-100 lg:border-zinc-100 border-white/5 flex items-center justify-center hover:bg-zinc-50 transition-all group">
+                                <button key={s} className="w-10 h-10 rounded-xl border border-zinc-100 flex items-center justify-center hover:bg-zinc-50 transition-all group">
                                     <span className="text-[9px] font-black text-zinc-300 group-hover:text-zinc-900 transition-colors uppercase">{s[0]}</span>
                                 </button>
                             ))}

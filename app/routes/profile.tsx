@@ -87,7 +87,7 @@ export default function IdentitySanctuary() {
                 <div className="flex-grow overflow-y-auto scrollbar-hide pb-32">
 
                     {/* Header: The Altar */}
-                    <div className="relative h-96 w-full animate-entrance group/banner">
+                    <div className="relative h-48 md:h-96 w-full animate-entrance group/banner">
                         <img
                             src={identity.coverImg}
                             alt="Banner"
@@ -106,11 +106,11 @@ export default function IdentitySanctuary() {
                         </div>
 
                         {/* Identity Badge Overlap */}
-                        <div className="absolute -bottom-24 left-12 flex items-end gap-8">
+                        <div className="absolute -bottom-12 md:-bottom-24 left-4 md:left-12 flex items-end gap-4 md:gap-8">
                             <div className="relative group">
-                                <div className="absolute inset-0 bg-pink-500/20 rounded-[3rem] blur-2xl group-hover:scale-125 transition-all duration-700"></div>
-                                <div className="w-48 h-48 bg-white p-2 rounded-[3rem] shadow-2xl relative z-10">
-                                    <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 rounded-[2.5rem] flex items-center justify-center text-5xl font-black text-white italic shadow-inner overflow-hidden">
+                                <div className="absolute inset-0 bg-pink-500/20 rounded-[2rem] md:rounded-[3rem] blur-2xl group-hover:scale-125 transition-all duration-700"></div>
+                                <div className="w-24 h-24 md:w-48 md:h-48 bg-white p-1 md:p-2 rounded-[2rem] md:rounded-[3rem] shadow-2xl relative z-10">
+                                    <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-2xl md:text-5xl font-black text-white italic shadow-inner overflow-hidden">
                                         {identity.profileImg ? (
                                             <img src={identity.profileImg} className="w-full h-full object-cover" alt="Profile" />
                                         ) : identity.avatar}
@@ -118,32 +118,32 @@ export default function IdentitySanctuary() {
                                     {/* Profile Pic Tooltip */}
                                     <button
                                         onClick={() => setIsEditing(true)}
-                                        className="absolute inset-2 bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-[2.5rem] flex items-center justify-center text-[8px] font-black text-white uppercase tracking-tighter"
+                                        className="absolute inset-1 md:inset-2 bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-[8px] font-black text-white uppercase tracking-tighter"
                                     >
                                         Update Visual
                                     </button>
                                 </div>
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="absolute bottom-4 right-4 bg-white p-3 rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all z-20 border border-zinc-100"
+                                    className="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all z-20 border border-zinc-100"
                                 >
-                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                    <svg viewBox="0 0 24 24" width="16" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                                 </button>
                             </div>
 
-                            <div className="pb-8 space-y-1">
-                                <div className="flex items-center gap-4">
-                                    <h1 className="text-5xl font-black text-white italic tracking-tighter leading-none">{identity.name}</h1>
-                                    <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Sovereign Mode</span>
+                            <div className="pb-4 md:pb-8 space-y-1">
+                                <div className="flex items-center gap-2 md:gap-4">
+                                    <h1 className="text-2xl md:text-5xl font-black text-white italic tracking-tighter leading-none">{identity.name}</h1>
+                                    <span className="hidden md:inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Sovereign Mode</span>
                                 </div>
-                                <p className="text-white/60 font-bold italic tracking-wide text-lg">{identity.tag}</p>
+                                <p className="text-white/60 font-bold italic tracking-wide text-sm md:text-lg">{identity.tag}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="mt-32 px-12 grid grid-cols-12 gap-12">
+                    <div className="mt-16 md:mt-32 px-4 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
                         {/* Side: Identity Stats */}
-                        <div className="col-span-4 space-y-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards]">
+                        <div className="col-span-full md:col-span-4 space-y-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards]">
                             <div className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-sm space-y-8">
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] italic">Bio Calibration</h4>
@@ -179,9 +179,9 @@ export default function IdentitySanctuary() {
                         </div>
 
                         {/* Main: Advanced Settings */}
-                        <div className="col-span-8 space-y-8 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
-                            <div className="bg-white rounded-[4rem] border border-zinc-100 p-12 shadow-sm min-h-[500px]">
-                                <nav className="flex gap-12 border-b border-zinc-100 mb-12">
+                        <div className="col-span-full md:col-span-8 space-y-8 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
+                            <div className="bg-white rounded-[2rem] md:rounded-[4rem] border border-zinc-100 p-6 md:p-12 shadow-sm min-h-[500px]">
+                                <nav className="flex gap-4 md:gap-12 border-b border-zinc-100 mb-8 md:mb-12 overflow-x-auto scrollbar-hide">
                                     {['Privacy Control', 'Security Core', 'Experience Calibration'].map((tab) => (
                                         <button
                                             key={tab}
@@ -193,8 +193,8 @@ export default function IdentitySanctuary() {
                                     ))}
                                 </nav>
 
-                                <div className="space-y-12">
-                                    <div className="grid grid-cols-2 gap-8">
+                                <div className="space-y-8 md:space-y-12">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                                         {(activeSettingsTab === 'Privacy Control' ? [
                                             { title: "Ghost Mode", desc: "Your identity becomes invisible to algorithmic crawlers." },
                                             { title: "Cipher Chat", desc: "All incoming resonance is encrypted end-to-end." },
