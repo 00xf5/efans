@@ -67,7 +67,7 @@ export default function Bookmarks() {
     const [activeTab, setActiveTab] = useState("all");
 
     return (
-        <div className="fixed inset-0 top-16 bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden">
+        <div className="fixed inset-0 top-16 bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden max-w-[100vw]">
             {/* Background Glows */}
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-pink-100/30 rounded-full blur-[140px]"></div>

@@ -761,7 +761,7 @@ export default function Timeline() {
                     </aside>
 
                     {/* Column 2: Independent Center Feed */}
-                    <main className="flex-grow max-w-2xl py-8 h-full overflow-y-auto scrollbar-hide space-y-12 px-2 scroll-smooth pb-32 lg:pb-8">
+                    <main className="flex-grow w-full max-w-full md:max-w-2xl py-8 h-full overflow-y-auto overflow-x-hidden scrollbar-hide space-y-12 px-4 scroll-smooth pb-32 lg:pb-8">
                         {/* Mobile Reels Carousel (Replaced Trending Now) */}
                         <div className="lg:hidden space-y-4 px-4 overflow-hidden mb-8">
                             <div className="flex items-center justify-between">

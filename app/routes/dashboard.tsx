@@ -87,7 +87,7 @@ export default function ExperienceHub() {
     };
 
     return (
-        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="fixed inset-0 top-16 bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display max-w-[100vw]">
             {/* Resonance Feedback Altar */}
             {toast && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
@@ -101,8 +101,8 @@ export default function ExperienceHub() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-50/30 rounded-full blur-[160px]"></div>
             </div>
 
-            <div className="w-full flex justify-center px-4 md:px-6 relative z-10 h-full">
-                <div className="flex w-full max-w-[2200px] gap-12 h-full">
+            <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-x-hidden">
+                <div className="flex w-full max-w-[100vw] md:max-w-[2200px] gap-0 md:gap-12 h-full overflow-x-hidden">
 
                     {/* Left Pillar: Navigation */}
                     <aside className="hidden lg:flex flex-col w-72 py-10 h-full overflow-y-auto scrollbar-hide">
@@ -493,7 +493,7 @@ export default function ExperienceHub() {
                         {/* Retention & Growth Altar */}
                         <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-[4rem] p-16 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-[50%] h-full bg-white opacity-[0.03] -skew-x-12 translate-x-1/2"></div>
-                            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                            <div className="w-full max-w-[100vw] md:max-w-[1600px] h-full flex flex-col md:flex-row relative z-10 overflow-x-hidden items-center justify-between gap-12">
                                 <div className="space-y-4">
                                     <div className="inline-flex px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
                                         <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">growth protocol • 10% lifetime Referral</span>
