@@ -107,7 +107,13 @@ export default function CreatorProfile() {
     const [visions, setVisions] = useState(MOCK_MOMENTS);
     const [showSubModal, setShowSubModal] = useState(false);
     const [isUnlocking, setIsUnlocking] = useState<string | null>(null);
+    const [toast, setToast] = useState<string | null>(null);
     const creator = CREATOR_DATA.v_noir; // Defaulting to Valentina for demo
+
+    const showToast = (msg: string) => {
+        setToast(msg);
+        setTimeout(() => setToast(null), 3000);
+    };
 
     const handleUnlockVision = (id: string) => {
         setIsUnlocking(id);
@@ -119,6 +125,13 @@ export default function CreatorProfile() {
 
     return (
         <div className="relative w-full h-full bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden">
+            {/* Resonance Feedback Altar */}
+            {toast && (
+                <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    {toast}
+                </div>
+            )}
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-pink-100/30 rounded-full blur-[140px]"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-rose-50/40 rounded-full blur-[140px]"></div>
@@ -309,7 +322,10 @@ export default function CreatorProfile() {
                                                         <p className="text-[8px] font-black uppercase text-zinc-300 tracking-widest">Reserve Price</p>
                                                         <p className="text-2xl font-black text-zinc-900">{nft.price}</p>
                                                     </div>
-                                                    <button className="bg-zinc-900 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-pink-600 transition-all active:scale-95">
+                                                    <button
+                                                        onClick={() => showToast(`Artifact ${nft.name} Reserved`)}
+                                                        className="bg-zinc-900 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-pink-600 transition-all active:scale-95"
+                                                    >
                                                         Acquire
                                                     </button>
                                                 </div>
@@ -389,7 +405,13 @@ export default function CreatorProfile() {
                                             </li>
                                         ))}
                                     </ul>
-                                    <button className={`w-full py-5 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${tier.recommended ? 'bg-pink-500 text-white shadow-xl shadow-pink-200 hover:bg-pink-600' : 'bg-zinc-900 text-white hover:bg-black'}`}>
+                                    <button
+                                        onClick={() => {
+                                            setShowSubModal(false);
+                                            showToast(`Subscribed to ${tier.title} • Altar Fueled`);
+                                        }}
+                                        className={`w-full py-5 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${tier.recommended ? 'bg-pink-500 text-white shadow-xl shadow-pink-200 hover:bg-pink-600' : 'bg-zinc-900 text-white hover:bg-black'}`}
+                                    >
                                         subscribe
                                     </button>
                                 </div>
