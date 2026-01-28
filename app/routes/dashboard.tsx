@@ -87,7 +87,7 @@ export default function ExperienceHub() {
     };
 
     return (
-        <div className="relative w-full h-full bg-[var(--color-bg-app)] text-[var(--color-text-main)] flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="relative w-full h-full bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
             {/* Resonance Feedback Altar */}
             {toast && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">

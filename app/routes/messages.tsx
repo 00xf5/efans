@@ -179,7 +179,7 @@ export default function PrivateSanctuary() {
     };
 
     return (
-        <div className="relative w-full h-full bg-[var(--color-bg-app)] text-[var(--color-text-main)] flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="relative w-full h-full bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
             {/* Ambient Background Resonance */}
             <div className="fixed inset-0 pointer-events-none opacity-40">
                 <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-pink-100/40 rounded-full blur-[160px] animate-pulse"></div>
@@ -317,7 +317,7 @@ export default function PrivateSanctuary() {
                                             {!msg.unlocked && (
                                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-8 bg-pink-900/10 backdrop-blur-m">
                                                     <div className="w-12 h-12 md:w-16 md:h-16 bg-white/20 border border-white/20 rounded-full flex items-center justify-center text-white mb-2 md:mb-4 shadow-2xl animate-pulse">
-                                                        <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                                                        <svg viewBox="0 0 24 24" width="20" height="20" md:width="24" md:height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                                                     </div>
                                                     <h5 className="text-[9px] md:text-[11px] font-black text-white uppercase tracking-widest text-center mb-4 md:mb-6">{msg.description}</h5>
                                                     <button
@@ -347,7 +347,7 @@ export default function PrivateSanctuary() {
                                             </div>
                                             {msg.unlocked && (
                                                 <button className="text-zinc-300 hover:text-pink-500 transition-colors">
-                                                    <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 md:w-5 md:h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+                                                    <svg viewBox="0 0 24 24" width="18" height="18" md:width="20" md:height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
                                                 </button>
                                             )}
                                         </div>
@@ -365,7 +365,7 @@ export default function PrivateSanctuary() {
                                 <div className="absolute inset-0 bg-pink-100/20 rounded-2xl md:rounded-[2.5rem] blur-xl scale-95 opacity-0 group-focus-within/composer:opacity-100 transition-opacity"></div>
                                 <div className="relative bg-zinc-50 border border-zinc-100 rounded-2xl md:rounded-[2.5rem] p-1.5 md:p-2 flex items-end shadow-inner focus-within:border-pink-200 focus-within:bg-white transition-all">
                                     <button className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-zinc-400 hover:text-pink-500 transition-colors">
-                                        <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 md:w-5 md:h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v20M2 12h20" /></svg>
+                                        <svg viewBox="0 0 24 24" width="18" height="18" md:width="20" md:height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v20M2 12h20" /></svg>
                                     </button>
                                     <textarea
                                         rows={1}
@@ -381,7 +381,7 @@ export default function PrivateSanctuary() {
                                                 onClick={handleSupport}
                                                 className="h-8 md:h-10 px-3 md:px-4 bg-pink-50 text-pink-500 rounded-xl md:rounded-2xl text-[8px] md:text-[9px] font-black uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all flex items-center gap-1.5 md:gap-2"
                                             >
-                                                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" strokeWidth="3"><rect width="20" height="14" x="2" y="5" rx="2" /><path d="M2 10h20" /><path d="M12 14v.01" /></svg>
+                                                <svg viewBox="0 0 24 24" width="10" height="10" md:width="12" md:height="12" fill="none" stroke="currentColor" strokeWidth="3"><rect width="20" height="14" x="2" y="5" rx="2" /><path d="M2 10h20" /><path d="M12 14v.01" /></svg>
                                                 <span className="hidden sm:inline">Support</span>
                                             </button>
                                         ) : (
@@ -389,7 +389,7 @@ export default function PrivateSanctuary() {
                                                 onClick={handleSendLocked}
                                                 className="h-8 md:h-10 px-3 md:px-4 bg-blue-50 text-blue-500 rounded-xl md:rounded-2xl text-[8px] md:text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all flex items-center gap-1.5 md:gap-2"
                                             >
-                                                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M12 18v-4M12 14l-2 2M12 14l2 2" /></svg>
+                                                <svg viewBox="0 0 24 24" width="10" height="10" md:width="12" md:height="12" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M12 18v-4M12 14l-2 2M12 14l2 2" /></svg>
                                                 <span className="hidden sm:inline">Locked</span>
                                             </button>
                                         )}
@@ -397,7 +397,7 @@ export default function PrivateSanctuary() {
                                             onClick={handleSendMessage}
                                             className="w-8 h-8 md:w-10 md:h-10 bg-zinc-900 text-white rounded-xl md:rounded-2xl flex items-center justify-center hover:bg-black transition-all shadow-lg active:scale-95"
                                         >
-                                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 md:w-4.5 md:h-4.5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+                                            <svg viewBox="0 0 24 24" width="14" height="14" md:width="18" md:height="18" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
                                         </button>
                                     </div>
                                 </div>

@@ -114,7 +114,7 @@ export default function DiscoveryAltar() {
     };
 
     return (
-        <div className="relative w-full h-full bg-[var(--color-bg-app)] text-[var(--color-text-main)] flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="relative w-full h-full bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
             {/* Ambient Background Resonance */}
             <div className="fixed inset-0 pointer-events-none opacity-40">
                 <div className="absolute top-[-20%] right-[-10%] w-[70%] h-[70%] bg-pink-100/40 rounded-full blur-[160px] animate-pulse"></div>

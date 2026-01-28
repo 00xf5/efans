@@ -9,54 +9,59 @@
   --color-accent: #f472b6;
 
   --color-bg-app: #FAFAFA;
-  --color-bg-soft: #fff1f2;
-  --color-card: #ffffff;
-  --color-border-app: #ffe4e6;
+  --color-bg-app-dark: #09090B;
   --color-text-main: #18181b;
-  --color-text-dim: #71717a;
+  --color-text-main-dark: #f4f4f5;
+  --color-card-bg: #ffffff;
+  --color-card-bg-dark: #121214;
+  --color-border-subtle: #f4f4f5;
+  --color-border-subtle-dark: #27272a;
 
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
 }
 
-.dark {
-  --color-bg-app: #09090b;
-  --color-bg-soft: #18181b;
-  --color-card: #121214;
-  --color-border-app: #27272a;
-  --color-text-main: #fafafa;
-  --color-text-dim: #a1a1aa;
-}
-
 @layer base {
   html {
-    @apply transition-colors duration-500;
+    @apply transition-colors duration-300;
   }
 
   body {
-    @apply bg-[var(--color-bg-app)] text-[var(--color-text-main)] font-sans;
+    @apply bg-[var(--color-bg-app)] text-[var(--color-text-main)];
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  .dark body {
+    @apply bg-[var(--color-bg-app-dark)] text-[var(--color-text-main-dark)];
   }
 }
 
 @layer utilities {
   .glass {
-    @apply backdrop-blur-sm bg-[var(--color-card)]/80 border border-[var(--color-border-app)];
+    @apply backdrop-blur-md bg-white/80 border border-[var(--color-border-subtle)];
     will-change: backdrop-filter;
   }
 
+  .dark .glass {
+    @apply bg-black/40 border-[var(--color-border-subtle-dark)];
+  }
+
   .glass-card {
-    @apply bg-[var(--color-card)]/90 border border-[var(--color-border-app)] shadow-sm backdrop-blur-md transition-all duration-500;
-    @apply shadow-pink-100/20;
+    @apply bg-white/90 border border-[var(--color-border-subtle)] shadow-sm backdrop-blur-md transition-all duration-500;
+    @apply shadow-zinc-100/50;
     transform: translateZ(0);
   }
 
-  .glass-card:hover {
-    @apply border-pink-300/50 bg-[var(--color-card)] shadow-lg shadow-pink-200/30;
+  .dark .glass-card {
+    @apply bg-zinc-900/60 border-[var(--color-border-subtle-dark)] shadow-none;
   }
 
-  .dark .glass-card {
-    @apply shadow-none border-white/5 bg-zinc-900/50;
+  .glass-card:hover {
+    @apply border-pink-300/50 bg-white/95 shadow-lg shadow-pink-200/50;
+  }
+
+  .dark .glass-card:hover {
+    @apply bg-zinc-900/80 border-pink-500/30;
   }
 
   .text-gradient {
@@ -234,6 +239,10 @@
 
   .glass-dark {
     @apply backdrop-blur-xl bg-black/40 border border-white/10;
+  }
+
+  .dark .glass-dark {
+    @apply bg-white/5 border-white/10;
   }
 
   /* Floating Hearts / Signal Particles */
