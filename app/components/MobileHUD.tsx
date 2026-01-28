@@ -4,14 +4,17 @@ export default function MobileHUD() {
     const location = useLocation();
     const pathname = location.pathname;
 
+    const excludedPaths = ["/login", "/signup", "/about"];
+    if (excludedPaths.includes(pathname)) return null;
+
     const isActive = (path: string) => {
         if (path === '/timeline' && (pathname === '/timeline' || pathname === '/')) return true;
         return pathname.startsWith(path);
     };
 
     return (
-        <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm animate-in slide-in-from-bottom-10 duration-700">
-            <div className="glass-card bg-white/70 backdrop-blur-3xl border-pink-100/50 rounded-[2.5rem] p-2 flex justify-around shadow-2xl shadow-pink-100/30">
+        <div className="lg:hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-sm animate-in slide-in-from-bottom-10 duration-700">
+            <div className="bg-white/60 backdrop-blur-3xl border border-white/40 rounded-[2.5rem] p-2 flex justify-around shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
                 <Link
                     to="/timeline"
                     className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${isActive('/timeline') ? "bg-zinc-900 text-white shadow-xl shadow-zinc-400 scale-105" : "text-zinc-400 hover:text-pink-500 hover:bg-pink-50"}`}
