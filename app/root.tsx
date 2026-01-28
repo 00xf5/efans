@@ -24,6 +24,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 import Navbar from "./components/Navbar";
+import MobileNav from "./components/MobileNav";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,9 +37,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="premium-blur h-[100dvh] flex flex-col overflow-hidden w-full bg-white dark:bg-zinc-950">
         <Navbar />
-        <main className="flex-1 pt-16 overflow-y-auto scrollbar-hide relative w-full">
+        <main className="flex-1 pt-16 pb-20 md:pb-0 overflow-y-auto scrollbar-hide relative w-full">
           {children}
         </main>
+        <MobileNav />
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -32,6 +32,13 @@ export default function IdentitySanctuary() {
         "Resonance Shield": true
     });
 
+    const [toast, setToast] = useState<string | null>(null);
+
+    const showToast = (msg: string) => {
+        setToast(msg);
+        setTimeout(() => setToast(null), 3000);
+    };
+
     const toggleSetting = (title: string) => {
         setPrivacySettings(prev => ({
             ...prev,
@@ -81,6 +88,14 @@ export default function IdentitySanctuary() {
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
                 <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-pink-50/50 rounded-full blur-[160px]"></div>
             </div>
+
+            {/* Live Feedback Toast */}
+            {toast && (
+                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-zinc-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
+                    <span className="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+                    {toast}
+                </div>
+            )}
 
             <div className="w-full md:max-w-[1400px] h-full flex flex-col relative z-10 overflow-x-hidden">
                 {/* Scrollable Content */}
@@ -233,7 +248,12 @@ export default function IdentitySanctuary() {
                                                 <p className="text-[10px] text-pink-500/60 font-bold italic mt-2">Immediately vault all data and exit the Sovereign Hub.</p>
                                             </div>
                                         </div>
-                                        <button className="px-8 py-4 bg-pink-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-pink-200">Deactivate</button>
+                                        <button
+                                            onClick={() => showToast("Sovereign Termination Protocol Initiated... Verification Required")}
+                                            className="px-8 py-4 bg-pink-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-pink-200"
+                                        >
+                                            Deactivate
+                                        </button>
                                     </div>
                                 </div>
                             </div>

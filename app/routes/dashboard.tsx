@@ -17,6 +17,27 @@ const RECENT_CONVERSIONS = [
     { id: 4, type: "Vision Unlock", fan: "Sensus_Fan", amount: "+₦25,000", time: "3h ago", status: "success" },
 ];
 
+const MOCK_BAN_REGISTRY = [
+    { id: 1, user: "Shadow_Stalker", reason: "Siphon Attempt", status: "Quarantined", time: "2h ago" },
+    { id: 2, user: "Bot_Nexus_9", reason: "Velocity Abuse", status: "Neutralized", time: "5h ago" },
+    { id: 3, user: "Echo_Phantom", reason: "Direct Resonance Interference", status: "Silenced", time: "12h ago" },
+    { id: 4, user: "Void_Walker", reason: "Aggressive Sanitization", status: "Purged", time: "1d ago" },
+];
+
+const MOCK_RESONANCE_DATA = [
+    { id: 1, location: "Lagos, NG", power: "42%", activity: "Peak", color: "bg-emerald-500" },
+    { id: 2, location: "London, UK", power: "18%", activity: "Steady", color: "bg-blue-500" },
+    { id: 3, location: "New York, US", power: "24%", activity: "Rising", color: "bg-pink-500" },
+    { id: 4, location: "Tokyo, JP", power: "16%", activity: "Dormant", color: "bg-zinc-400" },
+];
+
+const MOCK_WHISPERS = [
+    "The silence is where the magic happens. Prepare for the midnight reveal.",
+    "Your resonance is growing. I can feel the connection expanding.",
+    "A new vision is manifesting. Only the elite will behold it.",
+    "The shadow performance at the studio today was... electric.",
+];
+
 export default function ExperienceHub() {
     const [subPrice, setSubPrice] = useState(15000);
     const [activeView, setActiveView] = useState("overview");
@@ -274,7 +295,7 @@ export default function ExperienceHub() {
                                             <p className="text-violet-100/60 text-[11px] font-bold leading-relaxed italic">Your membership ensures ultra-low latency vision unlocks and priority DM resonance.</p>
                                         </div>
                                         <button
-                                            onClick={() => showToast("Whisper Received: New Glimpse Protocol Initiated")}
+                                            onClick={() => setActiveModal('daily_whisper')}
                                             className="w-full py-5 bg-white text-violet-900 rounded-full text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-xl shadow-indigo-900/40 relative z-10"
                                         >
                                             Claim Daily Whisper
@@ -386,7 +407,7 @@ export default function ExperienceHub() {
                                         <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Live Extraction</h4>
                                     </div>
                                     <button
-                                        onClick={() => showToast("Under Calibration: Resonance Mapping Active Soon")}
+                                        onClick={() => setActiveModal('resonance_map')}
                                         className="text-[8px] font-black text-zinc-300 uppercase tracking-widest hover:text-zinc-900 transition-colors"
                                     >
                                         Resonance Map
@@ -496,7 +517,7 @@ export default function ExperienceHub() {
                                     </div>
                                 </div>
                                 <button
-                                    onClick={() => showToast("Accessing Aegis Registry... Credentials Required")}
+                                    onClick={() => setActiveModal('ban_registry')}
                                     className="w-full py-5 bg-zinc-900 text-white rounded-full text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-xl shadow-zinc-200"
                                 >
                                     View Ban Registry
@@ -518,7 +539,15 @@ export default function ExperienceHub() {
                                 <div className="flex gap-4 w-full md:w-auto">
                                     <div className="relative w-full">
                                         <input readOnly value="https://fns.fan/ref/creator_apex" className="bg-white/5 border border-white/10 text-white px-6 md:px-8 py-5 md:py-6 rounded-full font-bold text-[10px] md:text-[11px] w-full md:w-80 outline-none" />
-                                        <button className="absolute right-2 top-2 bottom-2 bg-white text-zinc-900 px-4 md:px-6 rounded-2xl md:rounded-3xl font-black text-[9px] uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all">Copy</button>
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText("https://fns.fan/ref/creator_apex");
+                                                showToast("Referral Engine Vector Copied");
+                                            }}
+                                            className="absolute right-2 top-2 bottom-2 bg-white text-zinc-900 px-4 md:px-6 rounded-2xl md:rounded-3xl font-black text-[9px] uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all"
+                                        >
+                                            Copy
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -768,6 +797,95 @@ export default function ExperienceHub() {
                     </div>
                 </div>
             )}
+            {activeModal === 'ban_registry' && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
+                        <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                        </button>
+                        <div className="space-y-12">
+                            <div className="space-y-4 text-center">
+                                <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] italic leading-none">Aegis Guard</h4>
+                                <h3 className="text-4xl text-premium italic text-zinc-900">Ban Registry.</h3>
+                            </div>
+                            <div className="space-y-4">
+                                {MOCK_BAN_REGISTRY.map((item) => (
+                                    <div key={item.id} className="flex items-center justify-between p-6 bg-zinc-50 rounded-3xl border border-zinc-100">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 bg-zinc-950 rounded-xl flex items-center justify-center text-rose-500 font-black text-[10px] opacity-50">SHD</div>
+                                            <div>
+                                                <p className="text-[11px] font-black uppercase text-zinc-900">{item.user}</p>
+                                                <p className="text-[9px] text-zinc-400 font-bold italic mt-0.5">{item.reason}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="text-[8px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-2 py-1 rounded-full">{item.status}</span>
+                                            <p className="text-[8px] text-zinc-300 font-bold uppercase tracking-widest mt-1.5">{item.time}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeModal === 'resonance_map' && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
+                        <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                        </button>
+                        <div className="space-y-12">
+                            <div className="space-y-4 text-center">
+                                <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] italic leading-none">Global Frequency</h4>
+                                <h3 className="text-4xl text-premium italic text-zinc-900">Resonance Map.</h3>
+                            </div>
+                            <div className="space-y-4">
+                                {MOCK_RESONANCE_DATA.map((item) => (
+                                    <div key={item.id} className="p-6 bg-zinc-50 rounded-3xl border border-zinc-100 space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-2 h-2 rounded-full ${item.color} animate-pulse`}></div>
+                                                <p className="text-[11px] font-black uppercase text-zinc-900">{item.location}</p>
+                                            </div>
+                                            <span className="text-[10px] font-black text-zinc-900">{item.power}</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-zinc-200 rounded-full overflow-hidden">
+                                            <div className={`h-full ${item.color} rounded-full`} style={{ width: item.power }}></div>
+                                        </div>
+                                        <p className="text-[8px] font-black text-zinc-300 uppercase tracking-[0.2em] italic">{item.activity} Activity Flow</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeModal === 'daily_whisper' && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="bg-white w-full max-w-lg rounded-[2.5rem] md:rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-zinc-100">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-indigo-600"></div>
+                        <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                        </button>
+                        <div className="space-y-8 text-center py-4">
+                            <div className="w-20 h-20 bg-violet-50 rounded-[2rem] flex items-center justify-center text-violet-500 mx-auto mb-4">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 21a9 9 0 1 0-9-9c0 1.488.36 2.89 1 4.127L3 21l4.873-1c1.236.64 2.64 1 4.127 1Z" /></svg>
+                            </div>
+                            <h4 className="text-[10px] font-black text-violet-500 uppercase tracking-[0.4em] italic leading-none">Transmission Decrypted</h4>
+                            <p className="text-xl md:text-2xl font-black italic text-zinc-900 leading-relaxed px-4">
+                                "{MOCK_WHISPERS[Math.floor(Math.random() * MOCK_WHISPERS.length)]}"
+                            </p>
+                            <button onClick={closeModals} className="px-10 py-4 bg-zinc-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-zinc-200 mt-8">
+                                Return to Nexus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
