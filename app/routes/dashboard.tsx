@@ -315,7 +315,12 @@ export default function ExperienceHub() {
                                     </div>
                                     <div className="w-full md:w-auto text-left md:text-right flex flex-col md:items-end gap-3">
                                         <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic leading-none">Optimized for Conversion</span>
-                                        <button className="w-full md:w-auto px-6 py-3 bg-zinc-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-zinc-200">Apply Pricing</button>
+                                        <button
+                                            onClick={() => showToast(`Pricing Strategy Updated to ₦${subPrice.toLocaleString()}`)}
+                                            className="w-full md:w-auto px-6 py-3 bg-zinc-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-zinc-200"
+                                        >
+                                            Apply Pricing
+                                        </button>
                                     </div>
                                 </div>
 
@@ -345,11 +350,11 @@ export default function ExperienceHub() {
                                         <div className="w-full md:w-56 flex md:flex-col justify-between md:justify-start gap-4 p-6 md:p-0 bg-zinc-50 md:bg-transparent rounded-3xl md:rounded-none">
                                             <div>
                                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Your Take (80%)</p>
-                                                <p className="text-xl md:text-2xl font-black text-emerald-500 italic leading-none">₦{Math.floor(subPrice * 0.82).toLocaleString()}</p>
+                                                <p className="text-xl md:text-2xl font-black text-emerald-500 italic leading-none">₦{Math.floor(subPrice * 0.80).toLocaleString()}</p>
                                             </div>
                                             <div className="text-right md:text-left">
-                                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Platform (18%)</p>
-                                                <p className="text-sm font-black text-zinc-300 italic leading-none">₦{Math.floor(subPrice * 0.18).toLocaleString()}</p>
+                                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Platform (20%)</p>
+                                                <p className="text-sm font-black text-zinc-300 italic leading-none">₦{Math.floor(subPrice * 0.20).toLocaleString()}</p>
                                             </div>
                                         </div>
                                     </div>
