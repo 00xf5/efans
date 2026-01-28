@@ -83,6 +83,7 @@ export default function PrivateSanctuary() {
     const [isUnlocking, setIsUnlocking] = useState<number | null>(null);
     const [reactions, setReactions] = useState<{ id: number; x: number; y: number }[]>([]);
     const [toast, setToast] = useState<string | null>(null);
+    const [mobileView, setMobileView] = useState<"list" | "chat">("list");
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const activeConv = conversations.find(c => c.id === activeId) || conversations[0];
@@ -193,10 +194,10 @@ export default function PrivateSanctuary() {
                 </div>
             )}
 
-            <div className="w-full md:max-w-[1800px] h-full flex relative z-10 px-0 md:px-6 py-8 gap-0 md:gap-8 overflow-x-hidden">
+            <div className="w-full md:max-w-[1800px] h-full flex relative z-10 px-0 md:px-6 md:py-8 gap-0 md:gap-8 overflow-x-hidden">
 
                 {/* 1. The Sanctuary List (Conversations) */}
-                <aside className="w-96 flex flex-col gap-6 h-full animate-entrance">
+                <aside className={`w-full md:w-96 flex flex-col gap-6 h-full animate-entrance ${mobileView === 'chat' ? 'hidden md:flex' : 'flex'} px-6 py-8 md:px-0 md:py-0`}>
                     <header className="flex flex-col gap-4">
                         <div className="flex justify-between items-end">
                             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Private Sanctuary</h3>
@@ -223,7 +224,10 @@ export default function PrivateSanctuary() {
                         {conversations.map((conv) => (
                             <button
                                 key={conv.id}
-                                onClick={() => setActiveId(conv.id)}
+                                onClick={() => {
+                                    setActiveId(conv.id);
+                                    setMobileView("chat");
+                                }}
                                 className={`w-full p-5 rounded-[2.5rem] border transition-all flex items-center gap-4 group text-left ${activeId === conv.id ? 'bg-zinc-900 border-zinc-900 shadow-xl shadow-zinc-200 text-white' : 'bg-white border-zinc-100 hover:border-pink-200 text-zinc-900'}`}
                             >
                                 <div className="relative">
@@ -247,7 +251,7 @@ export default function PrivateSanctuary() {
                 </aside>
 
                 {/* 2. The Whisper Room (Active Chat) */}
-                <main className="flex-grow flex flex-col bg-white rounded-[4rem] border border-zinc-100 shadow-sm relative overflow-hidden animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards]">
+                <main className={`flex-grow flex flex-col bg-white md:rounded-[4rem] md:border md:border-zinc-100 md:shadow-sm relative overflow-hidden animate-entrance [animation-delay:100ms] ${mobileView === 'list' ? 'hidden md:flex' : 'flex'} h-full md:h-auto`}>
                     {/* Floating Reactions Layer */}
                     <div className="absolute inset-0 pointer-events-none z-50">
                         {reactions.map(r => (
@@ -256,19 +260,25 @@ export default function PrivateSanctuary() {
                     </div>
 
                     {/* Header */}
-                    <header className="px-10 py-8 border-b border-zinc-50 flex items-center justify-between bg-white/50 backdrop-blur-md z-20">
-                        <div className="flex items-center gap-6">
-                            <div className="w-14 h-14 bg-zinc-900 rounded-[1.8rem] flex items-center justify-center text-white text-sm font-black italic shadow-lg">
+                    <header className="px-6 md:px-10 py-6 md:py-8 border-b border-zinc-50 flex items-center justify-between bg-white/50 backdrop-blur-md z-20">
+                        <div className="flex items-center gap-4 md:gap-6">
+                            <button
+                                onClick={() => setMobileView("list")}
+                                className="md:hidden w-10 h-10 bg-zinc-50 rounded-xl flex items-center justify-center text-zinc-400"
+                            >
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6" /></svg>
+                            </button>
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-zinc-900 rounded-[1.2rem] md:rounded-[1.8rem] flex items-center justify-center text-white text-xs md:text-sm font-black italic shadow-lg">
                                 {activeConv.user.avatar}
                             </div>
                             <div>
-                                <div className="flex items-center gap-3">
-                                    <h3 className="text-xl font-black italic text-zinc-900 tracking-tighter">{activeConv.user.name}</h3>
-                                    <span className="px-3 py-1 bg-pink-50 text-pink-500 rounded-full text-[8px] font-black uppercase tracking-widest">{activeConv.user.tier}</span>
+                                <div className="flex items-center gap-2 md:gap-3">
+                                    <h3 className="text-lg md:text-xl font-black italic text-zinc-900 tracking-tighter leading-none">{activeConv.user.name}</h3>
+                                    <span className="px-2 py-0.5 md:px-3 md:py-1 bg-pink-50 text-pink-500 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest">{activeConv.user.tier}</span>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{activeConv.user.status} • {activeConv.user.resonance}% Resonance</span>
+                                    <span className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span className="text-[8px] md:text-[10px] font-black text-zinc-400 uppercase tracking-widest">{activeConv.user.status} • {activeConv.user.resonance}%</span>
                                 </div>
                             </div>
                         </div>
@@ -282,22 +292,22 @@ export default function PrivateSanctuary() {
                     {/* Chat Messages */}
                     <div
                         ref={scrollRef}
-                        className="flex-grow overflow-y-auto scrollbar-hide p-10 space-y-8 bg-zinc-50/30"
+                        className="flex-grow overflow-y-auto scrollbar-hide p-6 md:p-10 space-y-6 md:space-y-8 bg-zinc-50/30"
                     >
                         {activeConv.chat.map((msg) => (
                             <div key={msg.id} className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'} group animate-in slide-in-from-bottom-2`}>
                                 {msg.type === 'text' ? (
-                                    <div className={`max-w-[70%] p-6 rounded-[2.5rem] text-[13px] font-bold leading-relaxed shadow-sm transition-all hover:shadow-md ${msg.sender === 'me' ? 'bg-zinc-900 text-white rounded-tr-none' : 'bg-white text-zinc-800 border border-zinc-100 rounded-tl-none italic'}`}>
+                                    <div className={`max-w-[85%] md:max-w-[70%] p-5 md:p-6 rounded-[2rem] md:rounded-[2.5rem] text-[12px] md:text-[13px] font-bold leading-relaxed shadow-sm transition-all hover:shadow-md ${msg.sender === 'me' ? 'bg-zinc-900 text-white rounded-tr-none' : 'bg-white text-zinc-800 border border-zinc-100 rounded-tl-none italic'}`}>
                                         {msg.text}
                                     </div>
                                 ) : msg.type === 'gift' ? (
-                                    <div className="bg-gradient-to-br from-pink-500 to-rose-500 p-8 rounded-[3rem] text-white shadow-xl shadow-pink-200 flex flex-col items-center gap-3 animate-pulse">
-                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-2xl">💝</div>
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em]">Resonance Gift</p>
-                                        <p className="text-2xl font-black italic">{msg.giftAmount}</p>
+                                    <div className="bg-gradient-to-br from-pink-500 to-rose-500 p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] text-white shadow-xl shadow-pink-200 flex flex-col items-center gap-2 md:gap-3 animate-pulse">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center text-xl md:text-2xl">💝</div>
+                                        <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">Resonance Gift</p>
+                                        <p className="text-xl md:text-2xl font-black italic">{msg.giftAmount}</p>
                                     </div>
                                 ) : (
-                                    <div className="max-w-md w-full bg-white rounded-[3rem] border border-zinc-100 overflow-hidden shadow-2xl group/vision">
+                                    <div className="max-w-xs md:max-w-md w-full bg-white rounded-[2rem] md:rounded-[3rem] border border-zinc-100 overflow-hidden shadow-2xl group/vision">
                                         <div className="relative aspect-video bg-zinc-900">
                                             <img
                                                 src={msg.preview}
@@ -305,19 +315,19 @@ export default function PrivateSanctuary() {
                                                 alt=""
                                             />
                                             {!msg.unlocked && (
-                                                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-pink-900/10 backdrop-blur-m">
-                                                    <div className="w-16 h-16 bg-white/20 border border-white/20 rounded-full flex items-center justify-center text-white mb-4 shadow-2xl animate-pulse">
-                                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-8 bg-pink-900/10 backdrop-blur-m">
+                                                    <div className="w-12 h-12 md:w-16 md:h-16 bg-white/20 border border-white/20 rounded-full flex items-center justify-center text-white mb-2 md:mb-4 shadow-2xl animate-pulse">
+                                                        <svg viewBox="0 0 24 24" width="20" height="20" md:width="24" md:height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                                                     </div>
-                                                    <h5 className="text-[11px] font-black text-white uppercase tracking-widest text-center mb-6">{msg.description}</h5>
+                                                    <h5 className="text-[9px] md:text-[11px] font-black text-white uppercase tracking-widest text-center mb-4 md:mb-6">{msg.description}</h5>
                                                     <button
                                                         onClick={() => handleUnlock(msg.id)}
                                                         disabled={isUnlocking === msg.id}
-                                                        className="bg-white text-zinc-900 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50"
+                                                        className="bg-white text-zinc-900 px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 md:gap-3 disabled:opacity-50"
                                                     >
                                                         {isUnlocking === msg.id ? (
                                                             <>
-                                                                <span className="w-3 h-3 border-2 border-zinc-200 border-t-pink-500 rounded-full animate-spin"></span>
+                                                                <span className="w-2 md:w-3 h-2 md:h-3 border-2 border-zinc-200 border-t-pink-500 rounded-full animate-spin"></span>
                                                                 Resonating...
                                                             </>
                                                         ) : `Unlock Vision for ${msg.price}`}
@@ -325,69 +335,69 @@ export default function PrivateSanctuary() {
                                                 </div>
                                             )}
                                             {msg.unlocked && (
-                                                <div className="absolute top-6 left-6 flex gap-2">
-                                                    <span className="bg-pink-500 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg h-min">Unlocked</span>
+                                                <div className="absolute top-4 md:top-6 left-4 md:left-6 flex gap-2">
+                                                    <span className="bg-pink-500 text-white text-[7px] md:text-[8px] font-black uppercase tracking-widest px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-lg h-min">Unlocked</span>
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="p-6 flex justify-between items-center bg-white">
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-none">The Altar Collection</p>
-                                                <p className="text-[11px] font-black text-zinc-900 italic">{msg.description}</p>
+                                        <div className="p-4 md:p-6 flex justify-between items-center bg-white">
+                                            <div className="space-y-0.5 md:space-y-1">
+                                                <p className="text-[8px] md:text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-none">The Altar Collection</p>
+                                                <p className="text-[9px] md:text-[11px] font-black text-zinc-900 italic">{msg.description}</p>
                                             </div>
                                             {msg.unlocked && (
                                                 <button className="text-zinc-300 hover:text-pink-500 transition-colors">
-                                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+                                                    <svg viewBox="0 0 24 24" width="18" height="18" md:width="20" md:height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
                                                 </button>
                                             )}
                                         </div>
                                     </div>
                                 )}
-                                <span className={`text-[8px] font-black text-zinc-300 mt-2 uppercase tracking-widest ${msg.sender === 'me' ? 'mr-2' : 'ml-2'}`}>{msg.time}</span>
+                                <span className={`text-[7px] md:text-[8px] font-black text-zinc-300 mt-2 uppercase tracking-widest ${msg.sender === 'me' ? 'mr-1 md:mr-2' : 'ml-1 md:ml-2'}`}>{msg.time}</span>
                             </div>
                         ))}
                     </div>
 
                     {/* Composer Area */}
-                    <footer className="p-8 border-t border-zinc-50 bg-white z-20">
-                        <div className="max-w-4xl mx-auto flex items-end gap-4">
+                    <footer className="p-4 md:p-8 border-t border-zinc-50 bg-white z-20">
+                        <div className="max-w-4xl mx-auto flex items-end gap-2 md:gap-4">
                             <div className="flex-grow relative group/composer">
-                                <div className="absolute inset-0 bg-pink-100/20 rounded-[2.5rem] blur-xl scale-95 opacity-0 group-focus-within/composer:opacity-100 transition-opacity"></div>
-                                <div className="relative bg-zinc-50 border border-zinc-100 rounded-[2.5rem] p-2 flex items-end shadow-inner focus-within:border-pink-200 focus-within:bg-white transition-all">
-                                    <button className="w-12 h-12 flex items-center justify-center text-zinc-400 hover:text-pink-500 transition-colors">
-                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v20M2 12h20" /></svg>
+                                <div className="absolute inset-0 bg-pink-100/20 rounded-2xl md:rounded-[2.5rem] blur-xl scale-95 opacity-0 group-focus-within/composer:opacity-100 transition-opacity"></div>
+                                <div className="relative bg-zinc-50 border border-zinc-100 rounded-2xl md:rounded-[2.5rem] p-1.5 md:p-2 flex items-end shadow-inner focus-within:border-pink-200 focus-within:bg-white transition-all">
+                                    <button className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-zinc-400 hover:text-pink-500 transition-colors">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" md:width="20" md:height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v20M2 12h20" /></svg>
                                     </button>
                                     <textarea
                                         rows={1}
                                         value={messageInput}
                                         onChange={(e) => setMessageInput(e.target.value)}
                                         onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
-                                        placeholder="Whisper something meaningful..."
-                                        className="flex-grow bg-transparent border-none outline-none py-4 px-2 text-[13px] font-bold italic text-zinc-900 placeholder:text-zinc-300 resize-none min-h-[56px] max-h-48"
+                                        placeholder="Whisper..."
+                                        className="flex-grow bg-transparent border-none outline-none py-3 md:py-4 px-1 md:px-2 text-[12px] md:text-[13px] font-bold italic text-zinc-900 placeholder:text-zinc-300 resize-none min-h-[48px] max-h-32 md:max-h-48"
                                     />
                                     <div className="flex items-center p-1 gap-1">
                                         {persona === 'fan' ? (
                                             <button
                                                 onClick={handleSupport}
-                                                className="h-10 px-4 bg-pink-50 text-pink-500 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all flex items-center gap-2"
+                                                className="h-8 md:h-10 px-3 md:px-4 bg-pink-50 text-pink-500 rounded-xl md:rounded-2xl text-[8px] md:text-[9px] font-black uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all flex items-center gap-1.5 md:gap-2"
                                             >
-                                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3"><rect width="20" height="14" x="2" y="5" rx="2" /><path d="M2 10h20" /><path d="M12 14v.01" /></svg>
-                                                Support
+                                                <svg viewBox="0 0 24 24" width="10" height="10" md:width="12" md:height="12" fill="none" stroke="currentColor" strokeWidth="3"><rect width="20" height="14" x="2" y="5" rx="2" /><path d="M2 10h20" /><path d="M12 14v.01" /></svg>
+                                                <span className="hidden sm:inline">Support</span>
                                             </button>
                                         ) : (
                                             <button
                                                 onClick={handleSendLocked}
-                                                className="h-10 px-4 bg-blue-50 text-blue-500 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all flex items-center gap-2"
+                                                className="h-8 md:h-10 px-3 md:px-4 bg-blue-50 text-blue-500 rounded-xl md:rounded-2xl text-[8px] md:text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all flex items-center gap-1.5 md:gap-2"
                                             >
-                                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M12 18v-4M12 14l-2 2M12 14l2 2" /></svg>
-                                                Locked Vision
+                                                <svg viewBox="0 0 24 24" width="10" height="10" md:width="12" md:height="12" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M12 18v-4M12 14l-2 2M12 14l2 2" /></svg>
+                                                <span className="hidden sm:inline">Locked</span>
                                             </button>
                                         )}
                                         <button
                                             onClick={handleSendMessage}
-                                            className="w-10 h-10 bg-zinc-900 text-white rounded-2xl flex items-center justify-center hover:bg-black transition-all shadow-lg active:scale-95"
+                                            className="w-8 h-8 md:w-10 md:h-10 bg-zinc-900 text-white rounded-xl md:rounded-2xl flex items-center justify-center hover:bg-black transition-all shadow-lg active:scale-95"
                                         >
-                                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+                                            <svg viewBox="0 0 24 24" width="14" height="14" md:width="18" md:height="18" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
                                         </button>
                                     </div>
                                 </div>
