@@ -310,13 +310,70 @@ const MomentCardSkeleton = () => (
     </div>
 );
 
-const TrendingAltarItem = memo(({ creator, rank, onBoost }: { creator: TrendingCreator, rank: number, onBoost: (id: string) => void }) => {
+const MediaModal = memo(({ media, onClose }: { media: { url: string, type: 'video' | 'image' | 'any', name?: string }, onClose: () => void }) => {
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [onClose]);
+
+    const isVideo = media.url.includes('.mp4') || media.type === 'video';
+
+    return (
+        <div
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-500"
+            onClick={onClose}
+        >
+            <div className="absolute inset-0 bg-zinc-950/95 backdrop-blur-3xl"></div>
+
+            <button
+                className="absolute top-8 right-8 z-[210] w-14 h-14 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-all border border-white/10"
+                onClick={onClose}
+            >
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+
+            <div
+                className="relative z-[205] max-w-7xl max-h-full w-full h-full flex flex-col items-center justify-center animate-in zoom-in-95 duration-500"
+                onClick={e => e.stopPropagation()}
+            >
+                {isVideo ? (
+                    <video
+                        src={media.url}
+                        controls
+                        autoPlay
+                        className="max-w-full max-h-[85vh] rounded-[2.5rem] shadow-2xl border border-white/10 shadow-pink-500/20"
+                    />
+                ) : (
+                    <img
+                        src={media.url}
+                        className="max-w-full max-h-[85vh] object-contain rounded-[2.5rem] shadow-2xl border border-white/10 shadow-pink-500/20"
+                        alt={media.name || ""}
+                    />
+                )}
+
+                {media.name && (
+                    <div className="mt-10 text-center space-y-3">
+                        <h3 className="text-4xl font-black italic text-white tracking-[0.2em] uppercase leading-none">{media.name}</h3>
+                        <div className="flex items-center justify-center gap-4">
+                            <div className="h-[1px] w-8 bg-gradient-to-r from-transparent to-pink-500"></div>
+                            <p className="text-[10px] font-black uppercase text-pink-400 tracking-[0.5em] italic">Resonance Portal</p>
+                            <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-pink-500"></div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+});
+
+const TrendingAltarItem = memo(({ creator, rank, onBoost, onMediaClick }: { creator: TrendingCreator, rank: number, onBoost: (id: string) => void, onMediaClick: (media: { url: string, type: 'video' | 'image' | 'any', name?: string }) => void }) => {
     const [ref, isVisible] = useVisibility({ rootMargin: '200px' });
 
     return (
         <div ref={ref} className="relative min-h-[500px] w-full">
             {isVisible ? (
-                <div className="relative group cursor-pointer animate-in fade-in duration-700">
+                <div className="relative group cursor-pointer animate-in fade-in duration-700" onClick={() => onMediaClick({ url: creator.avatar, type: 'image', name: creator.name })}>
                     <div className="relative aspect-[3/4.5] w-full rounded-[4.5rem] overflow-hidden border-[3px] border-pink-50/50 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] group-hover:scale-[1.02] transition-transform duration-1000">
                         <img src={creator.avatar} loading="lazy" className="w-full h-full object-cover transition-all duration-[8s] ease-out group-hover:scale-110" alt="" />
 
@@ -394,7 +451,7 @@ const RelayIcon = () => (
     </svg>
 );
 
-const MomentCard = memo(({ moment, addReaction, reactions, isFlow = false, onAddComment, onRelay, onUnlock }: { moment: Post, addReaction: (e: React.MouseEvent) => void, reactions: { id: number, x: number, y: number }[], isFlow?: boolean, onAddComment?: (postId: string, content: string) => void, onRelay?: (post: Post) => void, onUnlock?: (postId: string) => void }) => {
+const MomentCard = memo(({ moment, addReaction, reactions, isFlow = false, onAddComment, onRelay, onUnlock, onMediaClick }: { moment: Post, addReaction: (e: React.MouseEvent) => void, reactions: { id: number, x: number, y: number }[], isFlow?: boolean, onAddComment?: (postId: string, content: string) => void, onRelay?: (post: Post) => void, onUnlock?: (postId: string) => void, onMediaClick: (media: { url: string, type: 'video' | 'image', name?: string }) => void }) => {
     const [ref, isVisible] = useVisibility({ threshold: 0.1, rootMargin: '400px' });
     const [showComments, setShowComments] = useState(false);
     const [commentInput, setCommentInput] = useState("");
@@ -457,7 +514,19 @@ const MomentCard = memo(({ moment, addReaction, reactions, isFlow = false, onAdd
                 {moment.media && (
                     <div className="px-4 mb-4">
                         {isVisible ? (
-                            <div className="relative aspect-video rounded-2xl overflow-hidden group/media cursor-pointer select-none shadow-sm" onDoubleClick={addReaction}>
+                            <div
+                                className="relative aspect-video rounded-2xl overflow-hidden group/media cursor-pointer select-none shadow-sm"
+                                onDoubleClick={addReaction}
+                                onClick={(e) => {
+                                    if (!moment.locked) {
+                                        onMediaClick({
+                                            url: moment.media!,
+                                            type: moment.media!.endsWith('.mp4') ? 'video' : 'image',
+                                            name: moment.source.name
+                                        });
+                                    }
+                                }}
+                            >
                                 {moment.media.endsWith('.mp4') ? (
                                     <video src={moment.media} autoPlay loop muted playsInline className="w-full h-full object-cover" />
                                 ) : (
@@ -552,6 +621,7 @@ export default function Timeline() {
     const [toast, setToast] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const carouselRef = useRef<HTMLDivElement>(null);
+    const [expandedMedia, setExpandedMedia] = useState<{ url: string, type: 'video' | 'image', name?: string } | null>(null);
 
     const showToast = (msg: string) => {
         setToast(msg);
@@ -679,6 +749,7 @@ export default function Timeline() {
 
     return (
         <div className="relative w-full h-full bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden">
+            {expandedMedia && <MediaModal media={expandedMedia} onClose={() => setExpandedMedia(null)} />}
 
             {/* Dynamic Background Light */}
             {/* Notification Altar */}
@@ -772,7 +843,7 @@ export default function Timeline() {
                             </div>
                             <div className="flex gap-4 overflow-x-auto scrollbar-hide px-1 pb-4">
                                 {MOCK_REELS.map((reel) => (
-                                    <div key={reel.id} className="flex-none w-28 group relative cursor-pointer">
+                                    <div key={reel.id} className="flex-none w-28 group relative cursor-pointer" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
                                         <div className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-pink-50 shadow-lg">
                                             <img src={reel.poster} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-pink-900/80 via-transparent to-transparent opacity-80"></div>
@@ -899,7 +970,7 @@ export default function Timeline() {
                                         </>
                                     ) : (
                                         flowPosts.map((post) => (
-                                            <MomentCard key={post.id} moment={post} addReaction={addReaction} reactions={reactions} isFlow onAddComment={handleAddComment} onRelay={handleRelay} onUnlock={handleUnlock} />
+                                            <MomentCard key={post.id} moment={post} addReaction={addReaction} reactions={reactions} isFlow onAddComment={handleAddComment} onRelay={handleRelay} onUnlock={handleUnlock} onMediaClick={setExpandedMedia} />
                                         ))
                                     )}
                                 </div>
@@ -911,7 +982,7 @@ export default function Timeline() {
                                 <h1 className="text-5xl text-premium italic text-center text-pink-900">Divine <span className="text-gradient">Muse.</span></h1>
                                 <div ref={carouselRef} className="flex overflow-x-auto gap-8 pb-12 snap-x scrollbar-hide px-4">
                                     {FEATURED_CREATORS.map((creator, i) => (
-                                        <div key={i} className="flex-none w-[320px] h-[480px] snap-center rounded-[3rem] overflow-hidden glass-card relative group/card cursor-pointer shadow-2xl shadow-pink-100">
+                                        <div key={i} className="flex-none w-[320px] h-[480px] snap-center rounded-[3rem] overflow-hidden glass-card relative group/card cursor-pointer shadow-2xl shadow-pink-100" onClick={() => setExpandedMedia({ url: creator.img, type: 'image', name: creator.name })}>
                                             <img src={creator.img} loading="lazy" className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover/card:grayscale-0 transition-all duration-1000 animated-sensual" alt="" />
                                             <div className="absolute inset-0 vignette opacity-60"></div>
                                             <div className="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-pink-900/50 to-transparent">
@@ -928,7 +999,7 @@ export default function Timeline() {
                                 <h1 className="text-5xl text-premium italic text-center text-pink-900">Live <span className="text-gradient">Flow.</span></h1>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 pb-20">
                                     {MOCK_REELS.map((reel) => (
-                                        <div key={reel.id} className="relative aspect-[9/16] rounded-[3rem] overflow-hidden glass-card group/reel-tab cursor-pointer hover:card-glow-primary transition-all duration-700">
+                                        <div key={reel.id} className="relative aspect-[9/16] rounded-[3rem] overflow-hidden glass-card group/reel-tab cursor-pointer hover:card-glow-primary transition-all duration-700" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
                                             <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover group-hover/reel-tab:scale-105 transition-transform" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-pink-900/60 via-transparent to-transparent"></div>
                                             <div className="absolute inset-0 p-8 flex flex-col justify-end">
@@ -946,7 +1017,7 @@ export default function Timeline() {
                         {(activeTab === "all" || activeTab === "unlocked") && (
                             <div className="space-y-20 pb-32">
                                 {visions.map((moment) => (
-                                    <MomentCard key={moment.id} moment={moment} addReaction={addReaction} reactions={reactions} onRelay={handleRelay} onUnlock={handleUnlock} />
+                                    <MomentCard key={moment.id} moment={moment} addReaction={addReaction} reactions={reactions} onRelay={handleRelay} onUnlock={handleUnlock} onMediaClick={setExpandedMedia} />
                                 ))}
                             </div>
                         )}
@@ -961,7 +1032,7 @@ export default function Timeline() {
 
                         <div className="flex-grow space-y-6 overflow-y-auto scrollbar-hide pb-32 relative" style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
                             {[...MOCK_REELS, ...MOCK_REELS].map((reel, idx) => (
-                                <div key={`${reel.id}-${idx}`} className="relative aspect-[9/16] w-full rounded-[2.5rem] overflow-hidden border border-pink-100 group/reel cursor-pointer shadow-xl transition-all duration-500 hover:scale-[1.02]">
+                                <div key={`${reel.id}-${idx}`} className="relative aspect-[9/16] w-full rounded-[2.5rem] overflow-hidden border border-pink-100 group/reel cursor-pointer shadow-xl transition-all duration-500 hover:scale-[1.02]" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
                                     <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" />
                                     <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-pink-900/80 to-transparent">
                                         <h5 className="text-[11px] font-black uppercase text-white italic tracking-widest">{reel.name}</h5>
@@ -998,7 +1069,7 @@ export default function Timeline() {
                                 </>
                             ) : (
                                 trending.map((creator, i) => (
-                                    <TrendingAltarItem key={creator.id} creator={creator} rank={i + 1} onBoost={handleBoost} />
+                                    <TrendingAltarItem key={creator.id} creator={creator} rank={i + 1} onBoost={handleBoost} onMediaClick={setExpandedMedia} />
                                 ))
                             )}
                         </div>
