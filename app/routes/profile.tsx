@@ -83,7 +83,7 @@ export default function IdentitySanctuary() {
     };
 
     return (
-        <div className="relative w-full h-full bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="relative w-full h-full bg-[var(--color-bg-app)] text-zinc-900 dark:text-zinc-100 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
             {/* Global Background Grain/Blur */}
             <div className="fixed inset-0 pointer-events-none opacity-50">
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
@@ -169,7 +169,7 @@ export default function IdentitySanctuary() {
                     <div className="mt-16 md:mt-32 px-4 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
                         {/* Side: Identity Stats */}
                         <div className="col-span-full md:col-span-4 space-y-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards]">
-                            <div className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-sm space-y-8">
+                            <div className="bg-white dark:bg-zinc-900/60 p-10 rounded-[3rem] border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-8">
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] italic">Bio Calibration</h4>
                                     <p className="text-zinc-600 font-bold leading-relaxed italic text-sm">
@@ -205,7 +205,7 @@ export default function IdentitySanctuary() {
 
                         {/* Main: Advanced Settings */}
                         <div className="col-span-full md:col-span-8 space-y-8 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
-                            <div className="bg-white rounded-[2rem] md:rounded-[4rem] border border-zinc-100 p-6 md:p-12 shadow-sm min-h-[500px]">
+                            <div className="bg-white dark:bg-zinc-900/60 rounded-[2rem] md:rounded-[4rem] border border-zinc-100 dark:border-zinc-800 p-6 md:p-12 shadow-sm min-h-[500px]">
                                 <nav className="flex gap-4 md:gap-12 border-b border-zinc-100 dark:border-zinc-800 mb-8 md:mb-12 overflow-x-auto scrollbar-hide">
                                     {['Privacy Control', 'Security Core', 'Account Core', 'Experience Calibration'].map((tab) => (
                                         <button

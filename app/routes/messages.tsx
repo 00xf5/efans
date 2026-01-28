@@ -214,9 +214,9 @@ export default function PrivateSanctuary() {
                         <div className="relative">
                             <input
                                 placeholder="Search Connections..."
-                                className="w-full bg-white border border-zinc-100 rounded-2xl px-6 py-4 text-[11px] font-bold italic outline-none focus:border-pink-200 shadow-sm transition-all"
+                                className="w-full bg-white dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 rounded-2xl px-6 py-4 text-[11px] font-bold italic outline-none focus:border-pink-200 shadow-sm transition-all dark:text-white"
                             />
-                            <svg className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-300" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                            <svg className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-600" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                         </div>
                     </header>
 
@@ -228,7 +228,7 @@ export default function PrivateSanctuary() {
                                     setActiveId(conv.id);
                                     setMobileView("chat");
                                 }}
-                                className={`w-full p-5 rounded-[2.5rem] border transition-all flex items-center gap-4 group text-left ${activeId === conv.id ? 'bg-zinc-900 border-zinc-900 shadow-xl shadow-zinc-200 text-white' : 'bg-white border-zinc-100 hover:border-pink-200 text-zinc-900'}`}
+                                className={`w-full p-5 rounded-[2.5rem] border transition-all flex items-center gap-4 group text-left ${activeId === conv.id ? 'bg-zinc-900 border-zinc-900 shadow-xl shadow-zinc-200 text-white dark:bg-zinc-100 dark:text-zinc-900' : 'bg-white dark:bg-white/5 border-zinc-100 dark:border-zinc-800 hover:border-pink-200 text-zinc-900 dark:text-zinc-300'}`}
                             >
                                 <div className="relative">
                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-sm font-black italic shadow-sm transition-transform group-hover:scale-110 ${activeId === conv.id ? 'bg-white/10' : 'bg-zinc-50 border border-zinc-100'}`}>
@@ -251,7 +251,7 @@ export default function PrivateSanctuary() {
                 </aside>
 
                 {/* 2. The Whisper Room (Active Chat) */}
-                <main className={`flex-grow flex flex-col bg-white md:rounded-[4rem] md:border md:border-zinc-100 md:shadow-sm relative overflow-hidden animate-entrance [animation-delay:100ms] ${mobileView === 'list' ? 'hidden md:flex' : 'flex'} h-full md:h-auto`}>
+                <main className={`flex-grow flex flex-col bg-white dark:bg-zinc-900/40 md:rounded-[4rem] md:border md:border-zinc-100 md:dark:border-zinc-800 md:shadow-sm relative overflow-hidden animate-entrance [animation-delay:100ms] ${mobileView === 'list' ? 'hidden md:flex' : 'flex'} h-full md:h-auto`}>
                     {/* Floating Reactions Layer */}
                     <div className="absolute inset-0 pointer-events-none z-50">
                         {reactions.map(r => (
@@ -260,7 +260,7 @@ export default function PrivateSanctuary() {
                     </div>
 
                     {/* Header */}
-                    <header className="px-6 md:px-10 py-6 md:py-8 border-b border-zinc-50 flex items-center justify-between bg-white/50 backdrop-blur-md z-20">
+                    <header className="px-6 md:px-10 py-6 md:py-8 border-b border-zinc-50 dark:border-zinc-800 flex items-center justify-between bg-white/50 dark:bg-zinc-950/50 backdrop-blur-md z-20">
                         <div className="flex items-center gap-4 md:gap-6">
                             <button
                                 onClick={() => setMobileView("list")}
@@ -273,8 +273,8 @@ export default function PrivateSanctuary() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-2 md:gap-3">
-                                    <h3 className="text-lg md:text-xl font-black italic text-zinc-900 tracking-tighter leading-none">{activeConv.user.name}</h3>
-                                    <span className="px-2 py-0.5 md:px-3 md:py-1 bg-pink-50 text-pink-500 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest">{activeConv.user.tier}</span>
+                                    <h3 className="text-lg md:text-xl font-black italic text-zinc-900 dark:text-zinc-100 tracking-tighter leading-none">{activeConv.user.name}</h3>
+                                    <span className="px-2 py-0.5 md:px-3 md:py-1 bg-pink-50 dark:bg-pink-500/10 text-pink-500 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest">{activeConv.user.tier}</span>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
                                     <span className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -297,7 +297,7 @@ export default function PrivateSanctuary() {
                         {activeConv.chat.map((msg) => (
                             <div key={msg.id} className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'} group animate-in slide-in-from-bottom-2`}>
                                 {msg.type === 'text' ? (
-                                    <div className={`max-w-[85%] md:max-w-[70%] p-5 md:p-6 rounded-[2rem] md:rounded-[2.5rem] text-[12px] md:text-[13px] font-bold leading-relaxed shadow-sm transition-all hover:shadow-md ${msg.sender === 'me' ? 'bg-zinc-900 text-white rounded-tr-none' : 'bg-white text-zinc-800 border border-zinc-100 rounded-tl-none italic'}`}>
+                                    <div className={`max-w-[85%] md:max-w-[70%] p-5 md:p-6 rounded-[2rem] md:rounded-[2.5rem] text-[12px] md:text-[13px] font-bold leading-relaxed shadow-sm transition-all hover:shadow-md ${msg.sender === 'me' ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-tr-none' : 'bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-700 rounded-tl-none italic'}`}>
                                         {msg.text}
                                     </div>
                                 ) : msg.type === 'gift' ? (
@@ -317,7 +317,7 @@ export default function PrivateSanctuary() {
                                             {!msg.unlocked && (
                                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-8 bg-pink-900/10 backdrop-blur-m">
                                                     <div className="w-12 h-12 md:w-16 md:h-16 bg-white/20 border border-white/20 rounded-full flex items-center justify-center text-white mb-2 md:mb-4 shadow-2xl animate-pulse">
-                                                        <svg viewBox="0 0 24 24" width="20" height="20" md:width="24" md:height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                                                        <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                                                     </div>
                                                     <h5 className="text-[9px] md:text-[11px] font-black text-white uppercase tracking-widest text-center mb-4 md:mb-6">{msg.description}</h5>
                                                     <button
@@ -347,7 +347,7 @@ export default function PrivateSanctuary() {
                                             </div>
                                             {msg.unlocked && (
                                                 <button className="text-zinc-300 hover:text-pink-500 transition-colors">
-                                                    <svg viewBox="0 0 24 24" width="18" height="18" md:width="20" md:height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+                                                    <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] md:w-5 md:h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
                                                 </button>
                                             )}
                                         </div>
@@ -359,13 +359,13 @@ export default function PrivateSanctuary() {
                     </div>
 
                     {/* Composer Area */}
-                    <footer className="p-4 md:p-8 border-t border-zinc-50 bg-white z-20">
+                    <footer className="p-4 md:p-8 border-t border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-950/20 z-20">
                         <div className="max-w-4xl mx-auto flex items-end gap-2 md:gap-4">
                             <div className="flex-grow relative group/composer">
                                 <div className="absolute inset-0 bg-pink-100/20 rounded-2xl md:rounded-[2.5rem] blur-xl scale-95 opacity-0 group-focus-within/composer:opacity-100 transition-opacity"></div>
                                 <div className="relative bg-zinc-50 border border-zinc-100 rounded-2xl md:rounded-[2.5rem] p-1.5 md:p-2 flex items-end shadow-inner focus-within:border-pink-200 focus-within:bg-white transition-all">
                                     <button className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-zinc-400 hover:text-pink-500 transition-colors">
-                                        <svg viewBox="0 0 24 24" width="18" height="18" md:width="20" md:height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v20M2 12h20" /></svg>
+                                        <svg viewBox="0 0 24 24" className="w-[18px] h-[18px] md:w-5 md:h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v20M2 12h20" /></svg>
                                     </button>
                                     <textarea
                                         rows={1}
@@ -381,7 +381,7 @@ export default function PrivateSanctuary() {
                                                 onClick={handleSupport}
                                                 className="h-8 md:h-10 px-3 md:px-4 bg-pink-50 text-pink-500 rounded-xl md:rounded-2xl text-[8px] md:text-[9px] font-black uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all flex items-center gap-1.5 md:gap-2"
                                             >
-                                                <svg viewBox="0 0 24 24" width="10" height="10" md:width="12" md:height="12" fill="none" stroke="currentColor" strokeWidth="3"><rect width="20" height="14" x="2" y="5" rx="2" /><path d="M2 10h20" /><path d="M12 14v.01" /></svg>
+                                                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" strokeWidth="3"><rect width="20" height="14" x="2" y="5" rx="2" /><path d="M2 10h20" /><path d="M12 14v.01" /></svg>
                                                 <span className="hidden sm:inline">Support</span>
                                             </button>
                                         ) : (
@@ -389,7 +389,7 @@ export default function PrivateSanctuary() {
                                                 onClick={handleSendLocked}
                                                 className="h-8 md:h-10 px-3 md:px-4 bg-blue-50 text-blue-500 rounded-xl md:rounded-2xl text-[8px] md:text-[9px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all flex items-center gap-1.5 md:gap-2"
                                             >
-                                                <svg viewBox="0 0 24 24" width="10" height="10" md:width="12" md:height="12" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M12 18v-4M12 14l-2 2M12 14l2 2" /></svg>
+                                                <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" strokeWidth="3"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M12 18v-4M12 14l-2 2M12 14l2 2" /></svg>
                                                 <span className="hidden sm:inline">Locked</span>
                                             </button>
                                         )}
@@ -397,7 +397,7 @@ export default function PrivateSanctuary() {
                                             onClick={handleSendMessage}
                                             className="w-8 h-8 md:w-10 md:h-10 bg-zinc-900 text-white rounded-xl md:rounded-2xl flex items-center justify-center hover:bg-black transition-all shadow-lg active:scale-95"
                                         >
-                                            <svg viewBox="0 0 24 24" width="14" height="14" md:width="18" md:height="18" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+                                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
                                         </button>
                                     </div>
                                 </div>
@@ -408,7 +408,7 @@ export default function PrivateSanctuary() {
 
                 {/* 3. The Resonance Profile (Right Rail) */}
                 <aside className="hidden xl:flex flex-col w-80 h-full animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
-                    <div className="bg-white rounded-[4rem] border border-zinc-100 p-10 flex flex-col items-center text-center shadow-sm">
+                    <div className="bg-white dark:bg-zinc-900/60 rounded-[4rem] border border-zinc-100 dark:border-zinc-800 p-10 flex flex-col items-center text-center shadow-sm">
                         <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-rose-500 rounded-[2.5rem] flex items-center justify-center text-white text-3xl font-black italic shadow-2xl mb-6 ring-8 ring-pink-50/50">
                             {activeConv.user.avatar}
                         </div>

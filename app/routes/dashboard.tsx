@@ -87,7 +87,7 @@ export default function ExperienceHub() {
     };
 
     return (
-        <div className="relative w-full h-full bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="relative w-full h-full bg-[var(--color-bg-app)] text-zinc-900 dark:text-zinc-100 flex justify-center selection:bg-pink-100 overflow-hidden font-display transition-colors duration-500">
             {/* Resonance Feedback Altar */}
             {toast && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
@@ -109,7 +109,7 @@ export default function ExperienceHub() {
                         <div className="space-y-12">
                             {/* Persona Switcher */}
                             <div className="px-5">
-                                <div className="p-1 bg-zinc-100 rounded-[2rem] flex items-center relative gap-1 shadow-inner">
+                                <div className="p-1 bg-zinc-100 dark:bg-zinc-900/40 rounded-[2rem] flex items-center relative gap-1 shadow-inner border dark:border-zinc-800">
                                     <button
                                         onClick={() => setPersona('creator')}
                                         className={`flex-1 py-3.5 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all z-10 ${persona === 'creator' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-400 hover:text-zinc-600'}`}
@@ -122,7 +122,7 @@ export default function ExperienceHub() {
                                     >
                                         Fan Nexus
                                     </button>
-                                    <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-[1.8rem] transition-all duration-500 ease-out-back ${persona === 'fan' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'}`}></div>
+                                    <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-zinc-800 rounded-[1.8rem] transition-all duration-500 ease-out-back ${persona === 'fan' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'}`}></div>
                                 </div>
                             </div>
 
