@@ -40,8 +40,16 @@ export default function IdentitySanctuary() {
     };
 
     const [isProcessingVisual, setIsProcessingVisual] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [toast, setToast] = useState<string | null>(null);
+    const [passForm, setPassForm] = useState({ current: "", new: "", confirm: "" });
     const coverInputRef = useRef<HTMLInputElement>(null);
     const profileInputRef = useRef<HTMLInputElement>(null);
+
+    const showToast = (msg: string) => {
+        setToast(msg);
+        setTimeout(() => setToast(null), 3000);
+    };
 
     const handleSave = () => {
         setIsSaving(true);
@@ -75,7 +83,7 @@ export default function IdentitySanctuary() {
     };
 
     return (
-        <div className="relative w-full h-full bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="relative w-full h-full bg-[var(--color-bg-app)] text-[var(--color-text-main)] flex justify-center selection:bg-pink-100 overflow-hidden font-display">
             {/* Global Background Grain/Blur */}
             <div className="fixed inset-0 pointer-events-none opacity-50">
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
@@ -109,7 +117,7 @@ export default function IdentitySanctuary() {
                         <div className="absolute -bottom-12 md:-bottom-24 left-4 md:left-12 flex items-end gap-4 md:gap-8">
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-pink-500/20 rounded-[2rem] md:rounded-[3rem] blur-2xl group-hover:scale-125 transition-all duration-700"></div>
-                                <div className="w-24 h-24 md:w-48 md:h-48 bg-white p-1 md:p-2 rounded-[2rem] md:rounded-[3rem] shadow-2xl relative z-10">
+                                <div className="w-24 h-24 md:w-48 md:h-48 bg-[var(--color-card)] p-1 md:p-2 rounded-[2rem] md:rounded-[3rem] shadow-2xl relative z-10">
                                     <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-2xl md:text-5xl font-black text-white italic shadow-inner overflow-hidden">
                                         {identity.profileImg ? (
                                             <img src={identity.profileImg} className="w-full h-full object-cover" alt="Profile" />
@@ -125,7 +133,7 @@ export default function IdentitySanctuary() {
                                 </div>
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all z-20 border border-zinc-100"
+                                    className="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-[var(--color-card)] p-2 md:p-3 rounded-xl md:rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all z-20 border border-[var(--color-border-app)]"
                                 >
                                     <svg viewBox="0 0 24 24" width="16" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                                 </button>
@@ -144,7 +152,7 @@ export default function IdentitySanctuary() {
                     <div className="mt-16 md:mt-32 px-4 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
                         {/* Side: Identity Stats */}
                         <div className="col-span-full md:col-span-4 space-y-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards]">
-                            <div className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-sm space-y-8">
+                            <div className="bg-[var(--color-card)] p-10 rounded-[3rem] border border-[var(--color-border-app)] shadow-sm space-y-8">
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] italic">Bio Calibration</h4>
                                     <p className="text-zinc-600 font-bold leading-relaxed italic text-sm">
@@ -180,13 +188,13 @@ export default function IdentitySanctuary() {
 
                         {/* Main: Advanced Settings */}
                         <div className="col-span-full md:col-span-8 space-y-8 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
-                            <div className="bg-white rounded-[2rem] md:rounded-[4rem] border border-zinc-100 p-6 md:p-12 shadow-sm min-h-[500px]">
-                                <nav className="flex gap-4 md:gap-12 border-b border-zinc-100 mb-8 md:mb-12 overflow-x-auto scrollbar-hide">
+                            <div className="bg-[var(--color-card)] rounded-[2rem] md:rounded-[4rem] border border-[var(--color-border-app)] p-6 md:p-12 shadow-sm min-h-[500px]">
+                                <nav className="flex gap-4 md:gap-12 border-b border-[var(--color-border-app)] mb-8 md:mb-12 overflow-x-auto scrollbar-hide">
                                     {['Privacy Control', 'Security Core', 'Experience Calibration'].map((tab) => (
                                         <button
                                             key={tab}
                                             onClick={() => setActiveSettingsTab(tab)}
-                                            className={`pb-6 text-[11px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSettingsTab === tab ? 'text-zinc-900 border-b-2 border-zinc-900' : 'text-zinc-300 hover:text-zinc-500'}`}
+                                            className={`pb-6 text-[11px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSettingsTab === tab ? 'text-[var(--color-text-main)] border-b-2 border-zinc-900 dark:border-white' : 'text-zinc-300 dark:text-zinc-600 hover:text-zinc-500'}`}
                                         >
                                             {tab}
                                         </button>
@@ -202,34 +210,55 @@ export default function IdentitySanctuary() {
                                             { title: "Stealth Discovery", desc: "Appear only via direct link or QR resonance." }
                                         ] : activeSettingsTab === 'Security Core' ? [
                                             { title: "Biometric Altar", desc: "Unlock Sanctuary via local device biometrics." },
-                                            { title: "Hardware Key", desc: "Require physical security token for entry." }
+                                            { title: "Hardware Key", desc: "Require physical security token for entry." },
+                                            { title: "Authentication Protocol", desc: "Update your secret resonance key (password)." }
                                         ] : [
                                             { title: "Deep Analytics", desc: "Enable granular tracking of fan resonance heat." },
-                                            { title: "Resonance Shield", desc: "Auto-filter low-status interaction requests." }
+                                            { title: "Resonance Shield", desc: "Auto-filter low-status interaction requests." },
+                                            { title: "Aura Calibration", desc: "Toggle between Light and Dark essence modes." }
                                         ]).map(setting => (
                                             <button
                                                 key={setting.title}
-                                                onClick={() => toggleSetting(setting.title)}
-                                                className="p-8 bg-zinc-50 rounded-[2.5rem] border border-zinc-100 flex items-center justify-between group hover:border-pink-200 transition-all text-left"
+                                                onClick={() => {
+                                                    if (setting.title === 'Aura Calibration') {
+                                                        const isDark = document.documentElement.classList.toggle('dark');
+                                                        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                                                    } else if (setting.title === 'Authentication Protocol') {
+                                                        setShowPasswordModal(true);
+                                                    } else {
+                                                        toggleSetting(setting.title);
+                                                    }
+                                                }}
+                                                className="p-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-[2.5rem] border border-zinc-100 dark:border-white/5 flex items-center justify-between group hover:border-pink-200 transition-all text-left"
                                             >
                                                 <div className="space-y-2">
-                                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-zinc-900 leading-none">{setting.title}</h5>
+                                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-white leading-none">{setting.title}</h5>
                                                     <p className="text-[10px] text-zinc-400 font-bold italic pr-4 leading-relaxed">{setting.desc}</p>
                                                 </div>
-                                                <div className={`w-12 h-6 rounded-full p-1 transition-all ${privacySettings[setting.title as keyof typeof privacySettings] ? 'bg-zinc-900' : 'bg-zinc-200'}`}>
-                                                    <div className={`w-4 h-4 bg-white rounded-full transition-all ${privacySettings[setting.title as keyof typeof privacySettings] ? 'translate-x-6' : 'translate-x-0'}`}></div>
-                                                </div>
+                                                {setting.title === 'Authentication Protocol' ? (
+                                                    <div className="text-zinc-300 group-hover:text-pink-500 transition-colors">
+                                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
+                                                    </div>
+                                                ) : setting.title === 'Aura Calibration' ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded-full bg-zinc-900 dark:bg-white transition-all"></div>
+                                                    </div>
+                                                ) : (
+                                                    <div className={`w-12 h-6 rounded-full p-1 transition-all ${privacySettings[setting.title as keyof typeof privacySettings] ? 'bg-zinc-900 dark:bg-pink-500' : 'bg-zinc-200 dark:bg-zinc-800'}`}>
+                                                        <div className={`w-4 h-4 bg-white rounded-full transition-all ${privacySettings[setting.title as keyof typeof privacySettings] ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                                                    </div>
+                                                )}
                                             </button>
                                         ))}
                                     </div>
 
-                                    <div className="bg-pink-50/30 p-8 rounded-[3rem] border border-pink-100 flex items-center justify-between">
+                                    <div className="bg-pink-50/30 dark:bg-pink-900/10 p-8 rounded-[3rem] border border-pink-100 dark:border-pink-900/20 flex items-center justify-between">
                                         <div className="flex items-center gap-6">
-                                            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-pink-100 text-pink-500">
+                                            <div className="w-14 h-14 bg-white dark:bg-zinc-900 rounded-2xl flex items-center justify-center shadow-sm border border-pink-100 dark:border-white/5 text-pink-500">
                                                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6M9 9l6 6" /></svg>
                                             </div>
                                             <div>
-                                                <p className="text-[11px] font-black text-pink-900 uppercase tracking-widest leading-none">Terminate Protocol</p>
+                                                <p className="text-[11px] font-black text-pink-900 dark:text-pink-300 uppercase tracking-widest leading-none">Terminate Protocol</p>
                                                 <p className="text-[10px] text-pink-500/60 font-bold italic mt-2">Immediately vault all data and exit the Sovereign Hub.</p>
                                             </div>
                                         </div>
@@ -245,15 +274,15 @@ export default function IdentitySanctuary() {
             {/* Edit Profile Modal: Calibration Portal */}
             {isEditing && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-zinc-950/40 backdrop-blur-2xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-2xl rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
-                        <button onClick={() => setIsEditing(false)} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
+                    <div className="bg-[var(--color-card)] w-full max-w-2xl rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-[var(--color-border-app)] max-h-[90vh] overflow-y-auto scrollbar-hide">
+                        <button onClick={() => setIsEditing(false)} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
                             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
                         </button>
 
                         <div className="space-y-12">
                             <header className="space-y-4 text-center">
                                 <h4 className="text-[10px] font-black text-pink-500 uppercase tracking-[0.4em] italic leading-none">Identity Calibration</h4>
-                                <h3 className="text-4xl text-zinc-900 font-black italic tracking-tighter">Modify Residency.</h3>
+                                <h3 className="text-4xl text-[var(--color-text-main)] font-black italic tracking-tighter">Modify Residency.</h3>
                             </header>
 
                             <div className="space-y-8">
@@ -363,6 +392,78 @@ export default function IdentitySanctuary() {
                                 ) : "Commit Resonance Changes"}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+            {/* Password Modal: Authentication Calibration */}
+            {showPasswordModal && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-zinc-950/60 backdrop-blur-3xl animate-in fade-in duration-500">
+                    <div className="bg-white dark:bg-zinc-900 w-full max-w-lg rounded-[3.5rem] p-10 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 dark:border-white/5">
+                        <button onClick={() => setShowPasswordModal(false)} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                        </button>
+
+                        <div className="space-y-10">
+                            <header className="space-y-3 text-center">
+                                <h4 className="text-[10px] font-black text-pink-500 uppercase tracking-[0.4em] italic leading-none">Security Altar</h4>
+                                <h3 className="text-3xl text-zinc-900 dark:text-white font-black italic">Reset Resonance Key.</h3>
+                            </header>
+
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-4">Current Key</label>
+                                    <input
+                                        type="password"
+                                        value={passForm.current}
+                                        onChange={(e) => setPassForm(p => ({ ...p, current: e.target.value }))}
+                                        placeholder="••••••••"
+                                        className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-white/5 px-6 py-4 rounded-2xl font-bold text-zinc-900 dark:text-white outline-none focus:border-pink-200 transition-all shadow-inner"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-4">New Secret Essence</label>
+                                    <input
+                                        type="password"
+                                        value={passForm.new}
+                                        onChange={(e) => setPassForm(p => ({ ...p, new: e.target.value }))}
+                                        placeholder="••••••••"
+                                        className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-white/5 px-6 py-4 rounded-2xl font-bold text-zinc-900 dark:text-white outline-none focus:border-pink-200 transition-all shadow-inner"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-4">Confirm New Essence</label>
+                                    <input
+                                        type="password"
+                                        value={passForm.confirm}
+                                        onChange={(e) => setPassForm(p => ({ ...p, confirm: e.target.value }))}
+                                        placeholder="••••••••"
+                                        className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-white/5 px-6 py-4 rounded-2xl font-bold text-zinc-900 dark:text-white outline-none focus:border-pink-200 transition-all shadow-inner"
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    showToast("Resonance Key Updated Successfully");
+                                    setShowPasswordModal(false);
+                                    setPassForm({ current: "", new: "", confirm: "" });
+                                }}
+                                disabled={!passForm.current || !passForm.new || passForm.new !== passForm.confirm}
+                                className="w-full bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white py-6 rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-xl hover:scale-105 active:scale-95 disabled:opacity-30 transition-all"
+                            >
+                                Commute Security Ritual
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Toast Notification System */}
+            {toast && (
+                <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[200] animate-in slide-in-from-bottom-5 duration-500">
+                    <div className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 px-8 py-4 rounded-[2rem] shadow-2xl border border-white/10 flex items-center gap-4 backdrop-blur-xl">
+                        <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">{toast}</span>
                     </div>
                 </div>
             )}
