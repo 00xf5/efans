@@ -65,7 +65,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="premium-blur h-[100dvh] w-full bg-[var(--color-bg-app)] overflow-hidden">
         <Navbar />
-        <main className="h-full pt-16 overflow-y-auto scrollbar-hide relative w-full">
+        <main className="h-full pt-16 pb-32 lg:pb-0 overflow-y-auto scrollbar-hide relative w-full">
           {children}
         </main>
         <MobileHUD />

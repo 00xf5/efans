@@ -114,45 +114,44 @@ export default function IdentitySanctuary() {
                         </div>
 
                         {/* Identity Badge Overlap */}
-                        <div className="absolute -bottom-12 md:-bottom-24 left-4 md:left-12 flex items-end gap-4 md:gap-8">
-                            <div className="relative group">
-                                <div className="absolute inset-0 bg-pink-500/20 rounded-[2rem] md:rounded-[3rem] blur-2xl group-hover:scale-125 transition-all duration-700"></div>
-                                <div className="w-24 h-24 md:w-48 md:h-48 bg-[var(--color-card)] p-1 md:p-2 rounded-[2rem] md:rounded-[3rem] shadow-2xl relative z-10">
-                                    <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-2xl md:text-5xl font-black text-white italic shadow-inner overflow-hidden">
+                        <div className="absolute -bottom-16 md:-bottom-24 left-4 md:left-12 flex items-end gap-3 md:gap-8 w-full pr-4">
+                            <div className="relative group flex-shrink-0">
+                                <div className="absolute inset-0 bg-pink-500/20 rounded-[2rem] md:rounded-[3rem] blur-xl md:blur-2xl group-hover:scale-125 transition-all duration-700"></div>
+                                <div className="w-28 h-28 md:w-48 md:h-48 bg-[var(--color-card)] p-1 md:p-2 rounded-[2.2rem] md:rounded-[3rem] shadow-2xl relative z-10">
+                                    <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-3xl md:text-5xl font-black text-white italic shadow-inner overflow-hidden">
                                         {identity.profileImg ? (
                                             <img src={identity.profileImg} className="w-full h-full object-cover" alt="Profile" />
                                         ) : identity.avatar}
                                     </div>
-                                    {/* Profile Pic Tooltip */}
                                     <button
                                         onClick={() => setIsEditing(true)}
-                                        className="absolute inset-1 md:inset-2 bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-[8px] font-black text-white uppercase tracking-tighter"
+                                        className="absolute inset-1 md:inset-2 bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest"
                                     >
-                                        Update Visual
+                                        Update
                                     </button>
                                 </div>
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-[var(--color-card)] p-2 md:p-3 rounded-xl md:rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all z-20 border border-[var(--color-border-app)]"
+                                    className="absolute -bottom-2 -right-2 md:bottom-4 md:right-4 bg-[var(--color-card)] p-2.5 md:p-3 rounded-xl md:rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all z-20 border border-[var(--color-border-app)]"
                                 >
-                                    <svg viewBox="0 0 24 24" width="16" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="3"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                                 </button>
                             </div>
 
-                            <div className="pb-4 md:pb-8 space-y-1">
-                                <div className="flex items-center gap-2 md:gap-4">
+                            <div className="pb-2 md:pb-8 flex-grow">
+                                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
                                     <h1 className="text-2xl md:text-5xl font-black text-white italic tracking-tighter leading-none">{identity.name}</h1>
-                                    <span className="hidden md:inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Sovereign Mode</span>
+                                    <span className="inline-block w-fit px-2 py-0.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest">Sovereign Mode</span>
                                 </div>
-                                <p className="text-white/60 font-bold italic tracking-wide text-sm md:text-lg">{identity.tag}</p>
+                                <p className="text-white/60 font-bold italic tracking-wide text-xs md:text-lg mt-1">{identity.tag}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="mt-16 md:mt-32 px-4 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+                    <div className="mt-20 md:mt-32 px-4 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12">
                         {/* Side: Identity Stats */}
-                        <div className="col-span-full md:col-span-4 space-y-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards]">
-                            <div className="bg-[var(--color-card)] p-10 rounded-[3rem] border border-[var(--color-border-app)] shadow-sm space-y-8">
+                        <div className="col-span-full md:col-span-4 space-y-6 md:space-y-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards]">
+                            <div className="bg-[var(--color-card)] p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-[var(--color-border-app)] shadow-sm space-y-6 md:space-y-8">
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] italic">Bio Calibration</h4>
                                     <p className="text-zinc-600 font-bold leading-relaxed italic text-sm">
@@ -229,11 +228,11 @@ export default function IdentitySanctuary() {
                                                         toggleSetting(setting.title);
                                                     }
                                                 }}
-                                                className="p-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-[2.5rem] border border-zinc-100 dark:border-white/5 flex items-center justify-between group hover:border-pink-200 transition-all text-left"
+                                                className="p-6 md:p-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-[2rem] md:rounded-[2.5rem] border border-zinc-100 dark:border-white/5 flex items-center justify-between group hover:border-pink-200 transition-all text-left"
                                             >
-                                                <div className="space-y-2">
-                                                    <h5 className="text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-white leading-none">{setting.title}</h5>
-                                                    <p className="text-[10px] text-zinc-400 font-bold italic pr-4 leading-relaxed">{setting.desc}</p>
+                                                <div className="space-y-1.5 md:space-y-2">
+                                                    <h5 className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-white leading-none">{setting.title}</h5>
+                                                    <p className="text-[9px] md:text-[10px] text-zinc-400 font-bold italic pr-4 leading-relaxed">{setting.desc}</p>
                                                 </div>
                                                 {setting.title === 'Authentication Protocol' ? (
                                                     <div className="text-zinc-300 group-hover:text-pink-500 transition-colors">
@@ -252,17 +251,17 @@ export default function IdentitySanctuary() {
                                         ))}
                                     </div>
 
-                                    <div className="bg-pink-50/30 dark:bg-pink-900/10 p-8 rounded-[3rem] border border-pink-100 dark:border-pink-900/20 flex items-center justify-between">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-14 h-14 bg-white dark:bg-zinc-900 rounded-2xl flex items-center justify-center shadow-sm border border-pink-100 dark:border-white/5 text-pink-500">
-                                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6M9 9l6 6" /></svg>
+                                    <div className="bg-pink-50/30 dark:bg-pink-900/10 p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] border border-pink-100 dark:border-pink-900/20 flex flex-col md:flex-row items-center justify-between gap-6">
+                                        <div className="flex items-center gap-4 md:gap-6 w-full">
+                                            <div className="w-12 h-12 md:w-14 md:h-14 bg-white dark:bg-zinc-900 rounded-2xl flex items-center justify-center shadow-sm border border-pink-100 dark:border-white/5 text-pink-500 flex-shrink-0">
+                                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6M9 9l6 6" /></svg>
                                             </div>
                                             <div>
-                                                <p className="text-[11px] font-black text-pink-900 dark:text-pink-300 uppercase tracking-widest leading-none">Terminate Protocol</p>
-                                                <p className="text-[10px] text-pink-500/60 font-bold italic mt-2">Immediately vault all data and exit the Sovereign Hub.</p>
+                                                <p className="text-[10px] md:text-[11px] font-black text-pink-900 dark:text-pink-300 uppercase tracking-widest leading-none">Terminate Protocol</p>
+                                                <p className="text-[9px] md:text-[10px] text-pink-500/60 font-bold italic mt-1.5 md:mt-2">Immediately vault all data and exit the Sovereign Hub.</p>
                                             </div>
                                         </div>
-                                        <button className="px-8 py-4 bg-pink-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-pink-200">Deactivate</button>
+                                        <button className="w-full md:w-auto px-8 py-4 bg-pink-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-pink-200">Deactivate</button>
                                     </div>
                                 </div>
                             </div>
