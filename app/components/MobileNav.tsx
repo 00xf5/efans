@@ -3,30 +3,17 @@ import { Link, useLocation } from "react-router";
 const NAV_ITEMS = [
     {
         label: "Home",
-        to: "/dashboard",
-        icon: (active: boolean) => (
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" className={active ? "text-pink-500" : "text-zinc-400"}>
-                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-        )
-    },
-    {
-        label: "Discover",
-        to: "/creators",
-        icon: (active: boolean) => (
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" className={active ? "text-pink-500" : "text-zinc-400"}>
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-            </svg>
-        )
-    },
-    {
-        label: "Stream",
         to: "/timeline",
         icon: (active: boolean) => (
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" className={active ? "text-pink-500" : "text-zinc-400"}>
-                <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
+            <svg viewBox="0 0 24 24" width="22" height="22" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                {active ? (
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                ) : (
+                    <>
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </>
+                )}
             </svg>
         )
     },
@@ -34,18 +21,29 @@ const NAV_ITEMS = [
         label: "Messages",
         to: "/messages",
         icon: (active: boolean) => (
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" className={active ? "text-pink-500" : "text-zinc-400"}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
         )
     },
     {
-        label: "Account",
-        to: "/profile",
+        label: "Echoes",
+        to: "/notifications",
         icon: (active: boolean) => (
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" className={active ? "text-pink-500" : "text-zinc-400"}>
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+        )
+    },
+    {
+        label: "Hub",
+        to: "/dashboard",
+        icon: (active: boolean) => (
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <line x1="3" y1="9" x2="21" y2="9" />
+                <line x1="9" y1="21" x2="9" y2="9" />
             </svg>
         )
     }
@@ -55,27 +53,31 @@ export default function MobileNav() {
     const location = useLocation();
 
     return (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass h-20 border-t border-pink-100 flex items-center justify-around px-2 pb-2">
-            {NAV_ITEMS.map((item) => {
-                const isActive = location.pathname === item.to;
-                return (
-                    <Link
-                        key={item.to}
-                        to={item.to}
-                        className="flex flex-col items-center gap-1 group relative py-2 px-4"
-                    >
-                        <div className={`transition-transform duration-300 group-active:scale-90 ${isActive ? 'scale-110' : ''}`}>
+        <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-sm animate-in slide-in-from-bottom-8 duration-700">
+            <div className="glass-card bg-white/70 backdrop-blur-3xl border-pink-100/50 rounded-[2.5rem] p-2 flex justify-around shadow-2xl shadow-pink-100/30">
+                {NAV_ITEMS.map((item) => {
+                    const isActive = location.pathname === item.to;
+                    return (
+                        <Link
+                            key={item.to}
+                            to={item.to}
+                            className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 relative group ${isActive ? "bg-zinc-900 text-white shadow-xl shadow-zinc-400 scale-105" : "text-zinc-400 hover:text-pink-500 hover:bg-pink-50"}`}
+                        >
                             {item.icon(isActive)}
-                        </div>
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${isActive ? "text-pink-500" : "text-zinc-400"}`}>
-                            {item.label}
-                        </span>
-                        {isActive && (
-                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-pink-500 rounded-full blur-[2px]"></div>
-                        )}
-                    </Link>
-                );
-            })}
-        </nav>
+                            {!isActive && (
+                                <span className="absolute -top-10 px-3 py-1 bg-zinc-900 text-white text-[8px] font-black uppercase rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                                    {item.label}
+                                </span>
+                            )}
+                        </Link>
+                    );
+                })}
+                <Link to="/profile" className="w-14 h-14 rounded-2xl flex items-center justify-center group transition-all">
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 p-0.5 shadow-lg group-hover:scale-110 transition-transform ${location.pathname === '/profile' ? 'ring-2 ring-pink-500 ring-offset-2' : ''}`}>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=2" className="w-full h-full rounded-[10px] object-cover" alt="Profile" />
+                    </div>
+                </Link>
+            </div>
+        </div>
     );
 }
