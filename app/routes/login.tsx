@@ -31,7 +31,7 @@ export default function Login() {
             </div>
 
             {/* 50% Form Side: Sharp & Premium */}
-            <div className="w-full lg:w-1/2 h-full overflow-y-auto scrollbar-hide flex items-center lg:items-start justify-center p-8 md:p-20 lg:pt-32 bg-white relative">
+            <div className="w-full lg:w-1/2 h-full overflow-y-auto scrollbar-hide flex items-center lg:items-start justify-center p-8 pt-12 md:p-20 lg:pt-32 bg-white relative">
                 {/* Mobile Background Overlay - Removed for better visibility */}
 
                 <div className="w-full max-w-lg space-y-12 relative z-10">
