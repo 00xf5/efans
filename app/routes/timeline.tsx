@@ -451,7 +451,7 @@ const RelayIcon = () => (
     </svg>
 );
 
-const MomentCard = memo(({ moment, addReaction, reactions, isFlow = false, onAddComment, onRelay, onUnlock, onMediaClick }: { moment: Post, addReaction: (e: React.MouseEvent) => void, reactions: { id: number, x: number, y: number }[], isFlow?: boolean, onAddComment?: (postId: string, content: string) => void, onRelay?: (post: Post) => void, onUnlock?: (postId: string) => void, onMediaClick: (media: { url: string, type: 'video' | 'image', name?: string }) => void }) => {
+const MomentCard = memo(({ moment, addReaction, reactions, isFlow = false, onAddComment, onRelay, onUnlock, onMediaClick }: { moment: Post, addReaction: (e: React.MouseEvent) => void, reactions: { id: number, x: number, y: number }[], isFlow?: boolean, onAddComment?: (postId: string, content: string) => void, onRelay?: (post: Post) => void, onUnlock?: (postId: string) => void, onMediaClick: (media: { url: string, type: 'video' | 'image' | 'any', name?: string }) => void }) => {
     const [ref, isVisible] = useVisibility({ threshold: 0.1, rootMargin: '400px' });
     const [showComments, setShowComments] = useState(false);
     const [commentInput, setCommentInput] = useState("");
@@ -621,7 +621,7 @@ export default function Timeline() {
     const [toast, setToast] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const carouselRef = useRef<HTMLDivElement>(null);
-    const [expandedMedia, setExpandedMedia] = useState<{ url: string, type: 'video' | 'image', name?: string } | null>(null);
+    const [expandedMedia, setExpandedMedia] = useState<{ url: string, type: 'video' | 'image' | 'any', name?: string } | null>(null);
 
     const showToast = (msg: string) => {
         setToast(msg);

@@ -187,30 +187,30 @@ export default function ExperienceHub() {
                     <main className="flex-grow py-10 h-full overflow-y-auto scrollbar-hide space-y-12 pb-32">
                         {persona === 'creator' ? (
                             <>
-                                <header className="flex justify-between items-end animate-entrance">
+                                <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 md:gap-0 animate-entrance">
                                     <div className="space-y-3">
                                         <div className={`inline-flex items-center gap-2 px-4 py-1 bg-white border border-zinc-100 rounded-full shadow-lg ${statusTier.shadow} transition-all`}>
                                             <span className={`${statusTier.color}`}>{statusTier.icon}</span>
                                             <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${statusTier.color}`}>{statusTier.label}</span>
                                         </div>
-                                        <h1 className="text-6xl text-premium italic text-zinc-900 leading-tight">Sovereign <span className="text-gradient">Control.</span></h1>
-                                        <div className="flex items-center gap-4 text-zinc-400">
+                                        <h1 className="text-3xl md:text-6xl text-premium italic text-zinc-900 leading-tight">Sovereign <span className="text-gradient">Control.</span></h1>
+                                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-zinc-400">
                                             <span className="text-[10px] font-black uppercase tracking-[0.4em]">This is YOUR Space</span>
-                                            <div className="h-0.5 w-12 bg-blue-100 rounded-full"></div>
+                                            <div className="hidden md:block h-0.5 w-12 bg-blue-100 rounded-full"></div>
                                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500 leading-none">Aegis Guard Active</span>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-end gap-2">
+                                    <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-end gap-2 w-full md:w-auto">
                                         <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Net Revenue Share</span>
                                         <div className="px-6 py-3 bg-white border border-zinc-100 rounded-2xl shadow-sm">
-                                            <span className="text-3xl font-black text-zinc-900">80<span className="text-pink-500">%</span></span>
+                                            <span className="text-xl md:text-3xl font-black text-zinc-900">80<span className="text-pink-500">%</span></span>
                                         </div>
                                     </div>
                                 </header>
                             </>
                         ) : (
                             <>
-                                <header className="flex justify-between items-end animate-entrance">
+                                <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 md:gap-0 animate-entrance px-4 md:px-0">
                                     <div className="space-y-3">
                                         <div className="inline-flex items-center gap-2 px-4 py-1 bg-white border border-zinc-100 rounded-full shadow-lg shadow-violet-500/10 transition-all">
                                             <span className="text-violet-500">
@@ -218,26 +218,26 @@ export default function ExperienceHub() {
                                             </span>
                                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-500">Nexus Elite</span>
                                         </div>
-                                        <h1 className="text-6xl text-premium italic text-zinc-900 leading-tight">Nexus <span className="text-gradient-fan">Collection.</span></h1>
-                                        <div className="flex items-center gap-4 text-zinc-400">
+                                        <h1 className="text-3xl md:text-6xl text-premium italic text-zinc-900 leading-tight">Nexus <span className="text-gradient-fan">Collection.</span></h1>
+                                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-zinc-400">
                                             <span className="text-[10px] font-black uppercase tracking-[0.4em]">Your Exclusive Access</span>
-                                            <div className="h-0.5 w-12 bg-violet-100 rounded-full"></div>
+                                            <div className="hidden md:block h-0.5 w-12 bg-violet-100 rounded-full"></div>
                                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-violet-500 leading-none">24 Unlocked Visions</span>
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => setActiveModal('add_funds')}
-                                        className="flex flex-col items-end gap-2 group"
+                                        className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-end gap-2 w-full md:w-auto group"
                                     >
                                         <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">Spending Power</span>
                                         <div className="px-6 py-3 bg-white border border-zinc-100 rounded-2xl shadow-sm group-hover:border-violet-200 transition-all">
-                                            <span className="text-3xl font-black text-zinc-900 tabular-nums">₦{walletBalance.toLocaleString()}</span>
+                                            <span className="text-xl md:text-3xl font-black text-zinc-900 tabular-nums">₦{walletBalance.toLocaleString()}</span>
                                         </div>
                                     </button>
                                 </header>
 
-                                <div className="grid grid-cols-3 gap-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards]">
-                                    <div className="col-span-2 bg-white rounded-[4rem] border border-zinc-100 p-12 shadow-sm hover:shadow-xl transition-all shadow-zinc-100/50 group/nexus">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards] px-4 md:px-0">
+                                    <div className="col-span-1 md:col-span-2 bg-white rounded-[3rem] md:rounded-[4rem] border border-zinc-100 p-8 md:p-12 shadow-sm hover:shadow-xl transition-all shadow-zinc-100/50 group/nexus">
                                         <div className="flex justify-between items-center mb-8">
                                             <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Active Connections</h4>
                                             <span className="text-[9px] font-black text-violet-500 uppercase tracking-widest bg-violet-50 px-3 py-1 rounded-full">Pro Status</span>
@@ -285,46 +285,46 @@ export default function ExperienceHub() {
                         )}
 
                         {/* Apex Stats Grid */}
-                        <div className="grid grid-cols-4 gap-6 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards] px-4 md:px-0">
                             {(persona === 'creator' ? MOCK_ROI_STATS : [
                                 { label: "Total Contributed", val: "₦85.4k", sub: "+₦12k this month", color: "from-violet-500/20" },
                                 { label: "Unlocked Visions", val: "142", sub: "24 new in Nexus", color: "from-emerald-500/20" },
                                 { label: "Resonance Level", val: "92", sub: "Top 5% Hub Member", color: "from-pink-500/20" },
                                 { label: "Sovereign Tier", val: "Gold", sub: "Priority Resonance", color: "from-amber-500/20" }
                             ]).map((stat) => (
-                                <div key={stat.label} className="bg-white p-8 rounded-[3.5rem] border border-zinc-100 hover:shadow-2xl hover:shadow-zinc-100 transition-all duration-700 relative overflow-hidden group">
+                                <div key={stat.label} className="bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-zinc-100 hover:shadow-2xl hover:shadow-zinc-100 transition-all duration-700 relative overflow-hidden group">
                                     <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 blur-3xl transition-opacity duration-1000`}></div>
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-6 italic">{stat.label}</p>
-                                    <div className="flex flex-col gap-2">
-                                        <h3 className="text-5xl font-black text-zinc-950 tabular-nums tracking-tighter leading-none">{stat.val}</h3>
-                                        <p className={`text-[11px] font-black uppercase tracking-widest ${stat.sub.includes('+') || stat.sub.includes('Referral') ? 'text-emerald-500' : 'text-zinc-400'} italic`}>{stat.sub}</p>
+                                    <div className="flex flex-col gap-1 md:gap-2">
+                                        <h3 className="text-2xl md:text-5xl font-black text-zinc-950 tabular-nums tracking-tighter leading-none">{stat.val}</h3>
+                                        <p className={`text-[9px] md:text-[11px] font-black uppercase tracking-widest ${stat.sub.includes('+') || stat.sub.includes('Referral') ? 'text-emerald-500' : 'text-zinc-400'} italic truncate`}>{stat.sub}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Subscription Callibrator & Payouts */}
-                        <div className="grid grid-cols-3 gap-8 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards]">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards] px-4 md:px-0">
                             {/* Vault Calibration (Price Setting) */}
-                            <div className="col-span-2 bg-white rounded-[4rem] border border-zinc-100 p-12 relative overflow-hidden shadow-sm hover:shadow-xl transition-all shadow-zinc-100/50 group/calib">
+                            <div className="col-span-1 md:col-span-2 bg-white rounded-[3rem] md:rounded-[4rem] border border-zinc-100 p-8 md:p-12 relative overflow-hidden shadow-sm hover:shadow-xl transition-all shadow-zinc-100/50 group/calib">
                                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 to-rose-600 scale-x-0 group-hover/calib:scale-x-100 transition-transform duration-700 origin-left"></div>
-                                <div className="flex justify-between items-center mb-12">
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0 mb-12">
                                     <div className="space-y-1">
                                         <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Loyalty Calibration</h4>
-                                        <h3 className="text-3xl text-premium italic text-zinc-900">Set your Monthly Fuel.</h3>
+                                        <h3 className="text-2xl md:text-3xl text-premium italic text-zinc-900 leading-tight">Set your Monthly Fuel.</h3>
                                     </div>
-                                    <div className="text-right">
-                                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mr-4 italic">Optimized for Conversion</span>
-                                        <button className="px-6 py-3 bg-zinc-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-zinc-200">Apply Pricing</button>
+                                    <div className="w-full md:w-auto text-left md:text-right flex flex-col md:items-end gap-3">
+                                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic leading-none">Optimized for Conversion</span>
+                                        <button className="w-full md:w-auto px-6 py-3 bg-zinc-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-zinc-200">Apply Pricing</button>
                                     </div>
                                 </div>
 
                                 <div className="space-y-12">
-                                    <div className="flex items-center gap-12">
+                                    <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-12">
                                         <div className="flex-grow space-y-6">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">Monthly Subscription Fee</span>
-                                                <span className="text-4xl font-black text-zinc-950 italic tabular-nums">₦{subPrice.toLocaleString()}</span>
+                                                <span className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">Monthly Sub Fee</span>
+                                                <span className="text-2xl md:text-4xl font-black text-zinc-950 italic tabular-nums">₦{subPrice.toLocaleString()}</span>
                                             </div>
                                             <input
                                                 type="range"
@@ -335,43 +335,46 @@ export default function ExperienceHub() {
                                                 onChange={(e) => setSubPrice(parseInt(e.target.value))}
                                                 className="w-full h-2 bg-zinc-100 rounded-full appearance-none cursor-pointer accent-pink-500"
                                             />
-                                            <div className="flex justify-between text-[10px] font-black text-zinc-300 uppercase tracking-widest italic">
+                                            <div className="flex justify-between text-[9px] font-black text-zinc-300 uppercase tracking-widest italic">
                                                 <span>₦5,000</span>
-                                                <span>Optimal Reach</span>
+                                                <span className="hidden md:block">Optimal Reach</span>
                                                 <span>₦50,000</span>
                                             </div>
                                         </div>
-                                        <div className="w-[1px] h-24 bg-zinc-100"></div>
-                                        <div className="w-56 space-y-4">
+                                        <div className="hidden md:block w-[1px] h-24 bg-zinc-100"></div>
+                                        <div className="w-full md:w-56 flex md:flex-col justify-between md:justify-start gap-4 p-6 md:p-0 bg-zinc-50 md:bg-transparent rounded-3xl md:rounded-none">
                                             <div>
                                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Your Take (80%)</p>
-                                                <p className="text-2xl font-black text-emerald-500 italic leading-none">₦{Math.floor(subPrice * 0.82).toLocaleString()}</p>
+                                                <p className="text-xl md:text-2xl font-black text-emerald-500 italic leading-none">₦{Math.floor(subPrice * 0.82).toLocaleString()}</p>
                                             </div>
-                                            <div>
+                                            <div className="text-right md:text-left">
                                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Platform (18%)</p>
                                                 <p className="text-sm font-black text-zinc-300 italic leading-none">₦{Math.floor(subPrice * 0.18).toLocaleString()}</p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-6 pt-6 border-t border-zinc-50">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-zinc-50">
                                         <div className="p-6 bg-emerald-50/30 rounded-3xl border border-emerald-100">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <span className="animate-pulse-live w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                                 <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest italic leading-none">Fast Payout Protocol</h4>
                                             </div>
-                                            <p className="text-[11px] text-zinc-600 font-bold leading-relaxed">Direct Naira transfer within 24 hours. No currency lag.</p>
+                                            <p className="text-[11px] text-zinc-600 font-bold leading-relaxed">Direct Naira transfer within 24 hours. No lag.</p>
                                         </div>
                                         <div className="p-6 bg-pink-50/30 rounded-3xl border border-pink-100">
-                                            <h4 className="text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2 italic">Hub Growth</h4>
-                                            <p className="text-[11px] text-zinc-600 font-bold leading-relaxed">Top 1% engagement niche. ₦12k-₦18k range optimal.</p>
+                                            <h4 className="text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2 italic leading-none">Hub Growth</h4>
+                                            <p className="text-[11px] text-zinc-600 font-bold leading-relaxed">Niche engagement. ₦12k-₦18k range optimal.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Live Extraction Stream / Social Graph Mock */}
-                            <div className="space-y-8">
+                        {/* Live Extraction Stream & Vault Hub */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
+                            {/* Live Extraction: Primary on Desktop, Second on Mobile */}
+                            <div className="md:col-span-2 order-2 md:order-1 space-y-8">
                                 <div className="flex justify-between items-center px-4">
                                     <div className="flex items-center gap-2">
                                         <span className="animate-pulse-live w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -385,23 +388,6 @@ export default function ExperienceHub() {
                                     </button>
                                 </div>
                                 <div className="space-y-4">
-                                    <div className="bg-white p-6 rounded-[2.5rem] border border-pink-100 shadow-xl shadow-pink-500/5 relative overflow-hidden group">
-                                        <div className="absolute top-0 right-0 w-24 h-24 bg-pink-500/5 blur-2xl"></div>
-                                        <div className="flex justify-between items-start mb-6">
-                                            <span className="text-[9px] font-black text-pink-500 uppercase tracking-[0.25em] italic">Current Destination</span>
-                                            <button onClick={triggerEditBank} className="text-[9px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-900 transition-colors">Edit Hub</button>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white text-[11px] font-black group-hover:rotate-12 transition-transform">
-                                                {bankAccount.bank.substring(0, 3).toUpperCase()}
-                                            </div>
-                                            <div>
-                                                <p className="text-[11px] font-black uppercase text-zinc-900 tracking-wider font-display leading-none">{bankAccount.bank}</p>
-                                                <p className="text-[10px] text-zinc-400 font-bold italic mt-2 tracking-wide font-display">**** {bankAccount.number.slice(-4)}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     {RECENT_CONVERSIONS.map((log) => (
                                         <div key={log.id} className="bg-white p-6 rounded-[2.5rem] border border-zinc-100 flex items-center justify-between hover:shadow-xl hover:shadow-zinc-100 transition-all cursor-pointer group hover:-translate-y-1">
                                             <div className="flex items-center gap-6">
@@ -421,23 +407,46 @@ export default function ExperienceHub() {
                                     ))}
                                 </div>
                             </div>
+
+                            {/* Vault Hub: First on Mobile, Third on Desktop */}
+                            <div className="col-span-1 order-1 md:order-2 space-y-8">
+                                <div className="flex justify-between items-center px-4">
+                                    <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Vault Hub</h4>
+                                </div>
+                                <div className="bg-white p-8 rounded-[3rem] border border-pink-100 shadow-xl shadow-pink-500/5 relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 blur-3xl"></div>
+                                    <div className="flex justify-between items-start mb-8">
+                                        <span className="text-[9px] font-black text-pink-500 uppercase tracking-[0.25em] italic leading-none">Destination Hub</span>
+                                        <button onClick={triggerEditBank} className="text-[9px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-900 transition-colors leading-none">Edit</button>
+                                    </div>
+                                    <div className="flex items-center gap-5">
+                                        <div className="w-16 h-16 bg-zinc-900 rounded-[1.5rem] flex items-center justify-center text-white text-[12px] font-black group-hover:rotate-12 transition-transform shadow-xl shadow-zinc-200">
+                                            {bankAccount.bank.substring(0, 3).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="text-[12px] font-black uppercase text-zinc-900 tracking-wider font-display leading-none">{bankAccount.bank}</p>
+                                            <p className="text-[11px] text-zinc-400 font-bold italic mt-2 tracking-wide font-display">**** {bankAccount.number.slice(-4)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Aegis Sovereignty Panel */}
-                        <div className="grid grid-cols-3 gap-8">
-                            <div className="col-span-2 bg-zinc-950 rounded-[4rem] p-12 relative overflow-hidden">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
+                            <div className="col-span-1 md:col-span-2 bg-zinc-950 rounded-[3rem] md:rounded-[4rem] p-8 md:p-12 relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px]"></div>
-                                <div className="flex justify-between items-start mb-12">
+                                <div className="flex flex-col md:flex-row justify-between items-start gap-6 md:gap-0 mb-12">
                                     <div className="space-y-1">
                                         <h4 className="text-[11px] font-black text-blue-400 uppercase tracking-[0.5em] italic">Aegis Sovereignty</h4>
-                                        <h3 className="text-3xl text-premium italic text-white">Your rules, your sanctuary.</h3>
+                                        <h3 className="text-2xl md:text-3xl text-premium italic text-white leading-tight">Your rules, your sanctuary.</h3>
                                     </div>
                                     <div className="px-5 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full">
                                         <span className="text-[9px] font-black text-blue-300 uppercase tracking-widest">Self-HEALING MODE: ACTIVE</span>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                                     {[
                                         { id: 'ghostComments', label: 'Ghost Commenting', sub: 'Non-patrons see themselves posting, but no one else does.', icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /><path d="M10 21V19M14 21V19" /></svg> },
                                         { id: 'stealthMode', label: 'Stealth Discovery', sub: 'Remove yourself from the Global Altar temporarily.', icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.12 13.12 0 0 1-1.5 2.5" /><path d="M8.47 5.76C3.41 7.21 2 12 2 12s3 7 10 7c1.44 0 2.63-.31 3.65-.85" /><path d="m2 2 20 20" /></svg> },
@@ -491,20 +500,20 @@ export default function ExperienceHub() {
                         </div>
 
                         {/* Retention & Growth Altar */}
-                        <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-[4rem] p-16 relative overflow-hidden">
+                        <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-[3rem] md:rounded-[4rem] p-8 md:p-16 relative overflow-hidden px-4 md:px-16 mx-4 md:mx-0">
                             <div className="absolute top-0 right-0 w-[50%] h-full bg-white opacity-[0.03] -skew-x-12 translate-x-1/2"></div>
-                            <div className="w-full max-w-[100vw] md:max-w-[1600px] h-full flex flex-col md:flex-row relative z-10 overflow-x-hidden items-center justify-between gap-12">
-                                <div className="space-y-4">
+                            <div className="w-full max-w-[100vw] md:max-w-[1600px] h-full flex flex-col md:flex-row relative z-10 items-center justify-between gap-12">
+                                <div className="space-y-4 text-center md:text-left">
                                     <div className="inline-flex px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
-                                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">growth protocol • 10% lifetime Referral</span>
+                                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">growth protocol • 10% referral</span>
                                     </div>
-                                    <h3 className="text-5xl text-premium italic text-white leading-tight">Scale your <br /><span className="text-gradient">Engine.</span></h3>
-                                    <p className="text-zinc-400 text-sm max-w-md leading-relaxed italic">Turn your connections into fuel. Every creator you bring onboard expands your passive resonance by 10% of their net split.</p>
+                                    <h3 className="text-3xl md:text-5xl text-premium italic text-white leading-tight">Scale your <br /><span className="text-gradient">Engine.</span></h3>
+                                    <p className="text-zinc-400 text-xs md:text-sm max-w-md leading-relaxed italic">Turn connections into fuel. Every creator you bring onboard expands your passive resonance by 10% of their net split.</p>
                                 </div>
-                                <div className="flex gap-4">
-                                    <div className="relative">
-                                        <input readOnly value="https://fns.fan/ref/creator_apex" className="bg-white/5 border border-white/10 text-white px-8 py-6 rounded-full font-bold text-[11px] w-80 outline-none" />
-                                        <button className="absolute right-3 top-3 bottom-3 bg-white text-zinc-900 px-6 rounded-3xl font-black text-[9px] uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all">Copy</button>
+                                <div className="flex gap-4 w-full md:w-auto">
+                                    <div className="relative w-full">
+                                        <input readOnly value="https://fns.fan/ref/creator_apex" className="bg-white/5 border border-white/10 text-white px-6 md:px-8 py-5 md:py-6 rounded-full font-bold text-[10px] md:text-[11px] w-full md:w-80 outline-none" />
+                                        <button className="absolute right-2 top-2 bottom-2 bg-white text-zinc-900 px-4 md:px-6 rounded-2xl md:rounded-3xl font-black text-[9px] uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all">Copy</button>
                                     </div>
                                 </div>
                             </div>
@@ -515,8 +524,8 @@ export default function ExperienceHub() {
 
             {/* --- Economic Portals (Modals) --- */}
             {activeModal === 'withdraw' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-xl rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-zinc-100">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
                         <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
                             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
                         </button>
@@ -526,20 +535,20 @@ export default function ExperienceHub() {
                                 <h3 className="text-4xl text-premium italic text-zinc-900">Withdrawal Vault.</h3>
                             </div>
 
-                            <div className="p-10 bg-zinc-50 rounded-[3rem] space-y-8">
+                            <div className="p-6 md:p-10 bg-zinc-50 rounded-[2rem] md:rounded-[3rem] space-y-6 md:space-y-8">
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-end">
-                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Withdrawal Amount</span>
+                                    <div className="flex justify-between items-end px-2">
+                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Amount</span>
                                         <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic">Max: ₦{vaultBalance.toLocaleString()}</span>
                                     </div>
                                     <div className="relative">
-                                        <span className="absolute left-8 top-1/2 -translate-y-1/2 text-3xl font-black text-zinc-300">₦</span>
+                                        <span className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 text-xl md:text-3xl font-black text-zinc-300">₦</span>
                                         <input
                                             type="number"
                                             value={withdrawAmount}
                                             onChange={(e) => setWithdrawAmount(e.target.value)}
                                             placeholder="0.00"
-                                            className="w-full bg-white border border-zinc-100 pl-16 pr-8 py-8 rounded-[2rem] text-4xl font-black text-zinc-950 outline-none focus:border-emerald-200 transition-all placeholder:text-zinc-100"
+                                            className="w-full bg-white border border-zinc-100 pl-12 md:pl-16 pr-6 md:pr-8 py-6 md:py-8 rounded-[1.5rem] md:rounded-[2rem] text-2xl md:text-4xl font-black text-zinc-950 outline-none focus:border-emerald-200 transition-all placeholder:text-zinc-100"
                                         />
                                     </div>
                                 </div>
@@ -587,8 +596,8 @@ export default function ExperienceHub() {
             )}
 
             {activeModal === 'split' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-xl rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-zinc-100">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
                         <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
                             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
                         </button>
@@ -629,8 +638,8 @@ export default function ExperienceHub() {
                 </div>
             )}
             {activeModal === 'link_bank' && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-zinc-900/60 backdrop-blur-2xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-lg rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-zinc-100">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
                         <button onClick={() => setActiveModal('withdraw')} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
                             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
                         </button>
@@ -700,8 +709,8 @@ export default function ExperienceHub() {
                 </div>
             )}
             {activeModal === 'add_funds' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-xl rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-zinc-100">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
                         <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
                             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
                         </button>
@@ -718,13 +727,13 @@ export default function ExperienceHub() {
                                         <span className="text-[10px] font-black text-violet-500 uppercase tracking-widest italic leading-none">Instant Naira Top-up</span>
                                     </div>
                                     <div className="relative">
-                                        <span className="absolute left-8 top-1/2 -translate-y-1/2 text-3xl font-black text-zinc-300">₦</span>
+                                        <span className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 text-xl md:text-3xl font-black text-zinc-300">₦</span>
                                         <input
                                             type="number"
                                             value={addAmount}
                                             onChange={(e) => setAddAmount(e.target.value)}
                                             placeholder="5,000"
-                                            className="w-full bg-zinc-50 border border-zinc-100 pl-16 pr-8 py-8 rounded-[2rem] text-4xl font-black text-zinc-950 outline-none focus:border-violet-200 transition-all placeholder:text-zinc-100"
+                                            className="w-full bg-zinc-50 border border-zinc-100 pl-12 md:pl-16 pr-6 md:pr-8 py-6 md:py-8 rounded-[1.5rem] md:rounded-[2rem] text-2xl md:text-4xl font-black text-zinc-950 outline-none focus:border-violet-200 transition-all placeholder:text-zinc-100"
                                         />
                                     </div>
                                 </div>
