@@ -28,14 +28,14 @@ import MobileHUD from "./components/MobileHUD";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark overflow-x-hidden">
+    <html lang="en" className="overflow-x-hidden">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
         <Meta />
         <Links />
       </head>
-      <body className="premium-blur h-[100dvh] flex flex-col overflow-hidden w-full bg-white dark:bg-zinc-950">
+      <body className="premium-blur h-[100dvh] flex flex-col overflow-hidden w-full bg-[#FAFAFA]">
         <Navbar />
         <main className="flex-1 pt-16 pb-24 lg:pb-0 overflow-y-auto scrollbar-hide relative w-full">
           {children}
