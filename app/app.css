@@ -31,6 +31,13 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
+  /* Respect safe-area insets and provide --vh fallback */
+  :root {
+    --vh: 1vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   .dark body {
     @apply bg-[var(--color-bg-app-dark)] text-[var(--color-text-main-dark)];
   }

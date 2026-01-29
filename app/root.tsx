@@ -31,11 +31,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en" className="overflow-x-hidden">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
         <Meta />
         <Links />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){function setVh(){document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px')}setVh();window.addEventListener('resize', setVh);})();`,
+          }}
+        />
       </head>
-      <body className="premium-blur h-[100dvh] w-full overflow-hidden">
+      <body className="premium-blur min-h-[calc(var(--vh,1vh)*100)] w-full">
         <Navbar />
         <main className="h-full pt-16 overflow-y-auto scrollbar-hide relative w-full">
           {children}
