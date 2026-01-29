@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
+import Navbar from "../components/Navbar";
 
 // --- Sovereign Design Language: Type Definitions ---
 
@@ -180,6 +181,8 @@ export default function PrivateSanctuary() {
 
     return (
         <div className="relative w-full h-full bg-[#FAFAFA] text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+            {/* Ensure top navigation is present on messages pages */}
+            <Navbar />
             {/* Ambient Background Resonance */}
             <div className="fixed inset-0 pointer-events-none opacity-40">
                 <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-pink-100/40 rounded-full blur-[160px] animate-pulse"></div>
