@@ -95,11 +95,7 @@ const MOCK_WHISPERS = [
     { id: "w3", content: "New vision dropping at midnight. Be ready.", time: "2d ago", likes: "1.2k", whispers: 210 },
 ];
 
-const MOCK_COLLECTIBLES = [
-    { id: "c1", name: "Midnight Silhouette #01", price: "2.4 ETH", image: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800", type: "Digital Artifact" },
-    { id: "c2", name: "The Velvet Void", price: "1.8 ETH", image: "https://images.unsplash.com/photo-1550684847-75bdda21cc95?auto=format&fit=crop&q=80&w=800", type: "Ephemeral Fragment" },
-    { id: "c3", name: "Tactile Silence", price: "3.5 ETH", image: "https://images.unsplash.com/photo-1550684848-86a5d8727436?auto=format&fit=crop&q=80&w=800", type: "Core Genesis" },
-];
+// Collectibles removed — feature deprecated for now
 
 export default function CreatorProfile() {
     const { username } = useParams();
@@ -221,7 +217,7 @@ export default function CreatorProfile() {
                         {/* Content Feed Tabs */}
                         <div className="mt-12 sticky top-0 z-20 bg-white/80 backdrop-blur-3xl border-b border-pink-50 py-4 px-2">
                             <div className="flex gap-4">
-                                {["Visions", "Glimpses", "Whispers", "Collectibles"].map(tab => (
+                                    {["Visions", "Glimpses", "Whispers"].map(tab => (
                                     <button
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
@@ -304,36 +300,7 @@ export default function CreatorProfile() {
                                 </div>
                             )}
 
-                            {activeTab === "Collectibles" && (
-                                <div className="grid grid-cols-1 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                    {MOCK_COLLECTIBLES.map((nft) => (
-                                        <div key={nft.id} className="glass-card rounded-[3rem] overflow-hidden flex flex-col md:flex-row shadow-2xl shadow-pink-100/30 group/artifact">
-                                            <div className="w-full md:w-1/2 aspect-square relative overflow-hidden">
-                                                <img src={nft.image} className="absolute inset-0 w-full h-full object-cover group-hover/artifact:scale-110 transition-transform duration-[5s]" alt="" />
-                                                <div className="absolute inset-0 bg-gradient-to-r from-pink-900/20 to-transparent"></div>
-                                            </div>
-                                            <div className="p-10 flex flex-col justify-center space-y-6 md:w-1/2">
-                                                <div>
-                                                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-pink-400">{nft.type}</span>
-                                                    <h3 className="text-3xl text-premium italic text-pink-900 mt-2 leading-tight">{nft.name}</h3>
-                                                </div>
-                                                <div className="flex items-center justify-between align-bottom">
-                                                    <div>
-                                                        <p className="text-[8px] font-black uppercase text-zinc-300 tracking-widest">Reserve Price</p>
-                                                        <p className="text-2xl font-black text-zinc-900">{nft.price}</p>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => showToast(`Artifact ${nft.name} Reserved`)}
-                                                        className="bg-zinc-900 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-pink-600 transition-all active:scale-95"
-                                                    >
-                                                        Acquire
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            
                         </div>
                     </main>
 
