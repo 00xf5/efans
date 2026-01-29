@@ -166,7 +166,7 @@ export default function CreatorProfile() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-pink-900/40 via-transparent to-transparent"></div>
 
                                 {/* Overlay Stats */}
-                                <div className="absolute bottom-8 right-12 flex gap-8">
+                                <div className="absolute bottom-8 right-4 md:right-12 flex gap-4 md:gap-8">
                                     {Object.entries(creator.stats).map(([k, v]) => (
                                         <div key={k} className="text-center">
                                             <p className="text-white font-black text-xl leading-none">{v}</p>
@@ -177,7 +177,7 @@ export default function CreatorProfile() {
                             </div>
 
                             {/* Avatar Float */}
-                            <div className="absolute -bottom-12 left-12 flex items-end gap-6">
+                            <div className="absolute -bottom-12 left-4 md:left-12 flex items-end gap-6">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-pink-500/20 rounded-3xl blur-xl animate-pulse"></div>
                                     <img src={creator.avatar} className="w-32 h-32 rounded-[2.5rem] object-cover ring-8 ring-white relative z-10 shadow-2xl" alt="" />
