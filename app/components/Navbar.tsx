@@ -1,10 +1,12 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useTheme } from "../hooks/useTheme";
 
 export default function Navbar() {
     const { theme, toggleTheme } = useTheme();
+    const { pathname } = useLocation();
+    const hideOnMessages = pathname.startsWith("/messages");
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 glass h-16 flex items-center px-4 md:px-6 justify-between overflow-hidden">
+        <nav className={`${hideOnMessages ? 'hidden md:flex md:fixed md:top-0 md:left-0 md:right-0 md:z-50' : 'fixed top-0 left-0 right-0 z-50'} glass h-16 flex items-center px-4 md:px-6 justify-between overflow-hidden`}>
             <div className="flex items-center gap-4">
                 <Link to="/" className="flex items-center gap-2 group">
                     <div className="relative w-10 h-10 flex items-center justify-center">
