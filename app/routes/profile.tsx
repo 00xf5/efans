@@ -83,16 +83,16 @@ export default function IdentitySanctuary() {
     };
 
     return (
-        <div className="relative w-full h-full bg-[var(--color-bg-app)] text-zinc-900 dark:text-zinc-100 flex justify-center selection:bg-pink-100 overflow-hidden font-display">
+        <div className="relative w-full min-h-screen bg-[var(--color-bg-app)] text-zinc-900 dark:text-zinc-100 flex justify-center selection:bg-pink-100 font-display">
             {/* Global Background Grain/Blur */}
             <div className="fixed inset-0 pointer-events-none opacity-50">
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
                 <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-pink-50/50 rounded-full blur-[160px]"></div>
             </div>
 
-            <div className="w-full md:max-w-[1400px] h-full flex flex-col relative z-10 overflow-x-hidden">
-                {/* Scrollable Content */}
-                <div className="flex-grow overflow-y-auto overflow-x-hidden scrollbar-hide pb-32">
+            <div className="w-full md:max-w-[1400px] flex flex-col relative z-10">
+                {/* Content wrapper */}
+                <div className="flex-grow pb-32">
 
                     {/* Header: The Altar */}
                     <div className="relative h-48 md:h-96 w-full animate-entrance group/banner">

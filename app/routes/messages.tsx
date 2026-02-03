@@ -180,9 +180,15 @@ export default function PrivateSanctuary() {
     };
 
     return (
-        <div className="relative w-full h-full bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden font-display">
-            <Navbar />
-            {/* Ambient Background Resonance */}
+        <div className="relative w-full h-screen bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden font-display pt-4">
+            {/* Global Context Indicator - Professional & Visible */}
+            <div className="fixed top-20 left-6 z-[60] animate-in fade-in slide-in-from-left-4 duration-1000">
+                <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-zinc-800/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                    <h2 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 italic">Whisper Room</h2>
+                </div>
+            </div>
+            {/* Ambient Background Resonance spirit */}
             <div className="fixed inset-0 pointer-events-none opacity-20">
                 <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-zinc-800/20 rounded-full blur-[160px]"></div>
                 <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-zinc-900/40 rounded-full blur-[160px]"></div>

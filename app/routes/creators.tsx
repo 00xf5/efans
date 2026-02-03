@@ -113,14 +113,14 @@ export default function DiscoveryAltar() {
     };
 
     return (
-        <div className="relative w-full h-full bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden font-display">
+        <div className="relative w-full min-h-screen bg-black text-white flex justify-center selection:bg-primary/20 font-display">
             {/* Ambient Background Resonance */}
             <div className="fixed inset-0 pointer-events-none opacity-40">
                 <div className="absolute top-[-20%] right-[-10%] w-[70%] h-[70%] bg-zinc-900/40 rounded-full blur-[160px]"></div>
                 <div className="absolute bottom-[-20%] left-[-10%] w-[70%] h-[70%] bg-zinc-800/30 rounded-full blur-[160px]"></div>
             </div>
 
-            <div className="w-full md:max-w-[1800px] h-full flex flex-col relative z-10 px-4 md:px-6 py-10 gap-10 overflow-x-hidden">
+            <div className="w-full md:max-w-[1800px] flex flex-col relative z-10 px-4 md:px-6 py-10 gap-10">
 
                 {/* 1. Header: The Global Altar Sequence */}
                 <header className="flex flex-col md:flex-row items-end justify-between gap-8">
@@ -170,7 +170,7 @@ export default function DiscoveryAltar() {
                 </nav>
 
                 {/* 3. The High-Density Altar Grid */}
-                <main className="flex-grow overflow-y-auto scrollbar-hide pb-32">
+                <main className="flex-grow pb-32">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredCreators.map((creator) => (
                             <Link

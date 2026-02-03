@@ -245,43 +245,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full border-t border-zinc-900 py-32 px-6 bg-black">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-24">
-          <div className="col-span-2 space-y-10 text-center md:text-left">
-            <Link to="/" className="text-3xl font-black tracking-tighter text-gradient italic">
-              eFans
-            </Link>
-            <p className="text-zinc-600 font-bold italic max-w-xs leading-relaxed text-sm">
-              The premium destination for the elite digital creator. Manifest your legacy with SEO-first architecture.
-            </p>
-          </div>
-          <div className="space-y-6">
-            <h5 className="font-black uppercase tracking-[0.4em] text-[10px] text-zinc-500 italic">Sanctuary</h5>
-            <ul className="space-y-3 text-xs font-black uppercase tracking-widest text-zinc-700">
-              <li><Link to="/creators" className="hover:text-white transition-colors">Discover</Link></li>
-              <li><Link to="/pricing" className="hover:text-white transition-colors">Calibration</Link></li>
-              <li><Link to="/features" className="hover:text-white transition-colors">Essence</Link></li>
-            </ul>
-          </div>
-          <div className="space-y-6">
-            <h5 className="font-black uppercase tracking-[0.4em] text-[10px] text-zinc-500 italic">Protocols</h5>
-            <ul className="space-y-3 text-xs font-black uppercase tracking-widest text-zinc-700">
-              <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Union</Link></li>
-              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Shield</Link></li>
-              <li><Link to="/compliance" className="hover:text-white transition-colors">Vigilance</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto pt-24 mt-24 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-black text-zinc-800 uppercase tracking-[0.5em] italic">
-          <p>© 2026 EFANS. THE SOVEREIGN SANCTUARY.</p>
-          <div className="flex gap-12 grayscale opacity-40 hover:opacity-100 transition-opacity">
-            <a href="#" className="hover:text-white transition-colors">TW</a>
-            <a href="#" className="hover:text-white transition-colors">IG</a>
-            <a href="#" className="hover:text-white transition-colors">LI</a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

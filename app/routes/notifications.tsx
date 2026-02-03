@@ -68,35 +68,35 @@ export default function Notifications() {
     };
 
     return (
-        <div className="relative w-full h-full bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden font-display">
+        <div className="relative w-full min-h-screen bg-black text-white flex justify-center selection:bg-primary/20 font-display">
             <div className="fixed inset-0 pointer-events-none opacity-20">
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-zinc-800/20 rounded-full blur-[140px]"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-zinc-900/40 rounded-full blur-[140px]"></div>
             </div>
 
-            <div className="w-full flex justify-center px-4 md:px-6 relative z-10 h-full">
-                <div className="flex w-full max-w-[1700px] gap-8 h-full">
+            <div className="w-full flex justify-center px-4 md:px-6 relative z-10">
+                <div className="flex w-full max-w-[1700px] gap-8">
 
                     {/* Navigation Sidebar */}
-                    <aside className="hidden lg:flex flex-col w-72 py-8 h-full overflow-y-auto scrollbar-hide">
+                    <aside className="hidden lg:flex flex-col w-72 py-8">
                         <nav className="space-y-1">
-                            <Link to="/timeline" className="flex items-center gap-4 px-5 py-3 hover:bg-zinc-900/50 rounded-2xl text-zinc-500 hover:text-zinc-100 transition-all font-bold">
+                            <Link to="/timeline" className="flex items-center gap-4 px-5 py-3 hover:bg-zinc-900/50 rounded-2xl text-zinc-400 hover:text-white transition-all font-bold">
                                 <span className="text-xl">✨</span>
                                 <span className="text-[11px] font-black uppercase tracking-widest">Visions</span>
                             </Link>
-                            <Link to="/messages" className="flex items-center gap-4 px-5 py-3 hover:bg-zinc-900/50 rounded-2xl text-zinc-500 hover:text-zinc-100 transition-all font-bold">
+                            <Link to="/messages" className="flex items-center gap-4 px-5 py-3 hover:bg-zinc-900/50 rounded-2xl text-zinc-400 hover:text-white transition-all font-bold">
                                 <span className="text-xl">💌</span>
                                 <span className="text-[11px] font-black uppercase tracking-widest">Whispers</span>
                             </Link>
-                            <Link to="/notifications" className="flex items-center justify-between px-5 py-3 bg-white text-black rounded-2xl font-bold transition-all shadow-none">
+                            <Link to="/notifications" className="flex items-center justify-between px-5 py-3 bg-white text-black rounded-2xl font-bold transition-all shadow-none group">
                                 <div className="flex items-center gap-4">
-                                    <span className="text-xl">🔔</span>
+                                    <span className="text-xl group-hover:scale-110 transition-transform">🔔</span>
                                     <span className="text-[11px] font-black uppercase tracking-widest">Echoes</span>
                                 </div>
                             </Link>
                         </nav>
 
-                        <div className="mt-auto p-5 bg-zinc-900/40 rounded-[2rem] border border-zinc-800 flex items-center gap-4 mb-8">
+                        <div className="mt-12 p-5 bg-zinc-900/40 rounded-[2rem] border border-zinc-800 flex items-center gap-4 mb-8">
                             <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center font-black text-sm text-black shadow-lg shadow-white/5">U2</div>
                             <div className="space-y-0.5">
                                 <p className="text-[10px] font-black uppercase text-white leading-none">Account</p>
@@ -106,11 +106,15 @@ export default function Notifications() {
                     </aside>
 
                     {/* Echoes Interface */}
-                    <main className="flex-grow max-w-2xl py-8 h-full flex flex-col min-w-0">
-                        <div className="flex-grow overflow-y-auto scrollbar-hide space-y-8 px-2 pb-20">
+                    <main className="flex-grow max-w-2xl py-8 flex flex-col min-w-0">
+                        <div className="space-y-8 px-2 pb-20">
 
-                            <div className="sticky top-0 z-20 bg-black/80 backdrop-blur-3xl py-4 border-b border-zinc-800 flex items-center justify-between gap-4 -mx-2 px-4 shadow-none rounded-t-[3rem]">
-                                <h1 className="text-2xl text-premium italic text-white leading-none">Recent <span className="text-gradient">Echoes.</span></h1>
+                            <div className="sticky top-0 z-20 bg-black/90 backdrop-blur-3xl py-6 border-b border-zinc-800 flex items-center justify-between gap-4 -mx-2 px-6 shadow-2xl rounded-t-[3rem]">
+                                <h1 className="text-3xl font-black italic text-white tracking-tighter leading-none">Recent <span className="text-gradient">Echoes.</span></h1>
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Realtime</span>
+                                </div>
                             </div>
 
                             <div className="space-y-4 pt-4">
@@ -118,11 +122,11 @@ export default function Notifications() {
                                     <button
                                         key={echo.id}
                                         onClick={() => handleEchoClick(echo.id, echo.link)}
-                                        className={`w-full text-left glass-card p-6 rounded-[2.5rem] border border-zinc-800 flex items-center gap-6 transition-all duration-500 shadow-none ${echo.unread ? 'bg-white text-black border-white' : 'bg-zinc-900/40 hover:bg-zinc-900/60'}`}
+                                        className={`w-full text-left glass-card p-6 rounded-[2.5rem] border transition-all duration-500 shadow-none ${echo.unread ? 'bg-white text-black border-white' : 'bg-black/40 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/60'}`}
                                     >
                                         <div className="relative flex-shrink-0">
                                             <img src={echo.user.avatar} className="w-14 h-14 rounded-2xl object-cover ring-2 ring-zinc-800 shadow-xl" alt="" />
-                                            <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-full shadow-lg flex items-center justify-center text-[10px] ${echo.unread ? 'bg-black text-white' : 'bg-primary text-white'}`}>
+                                            <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-full shadow-lg flex items-center justify-center text-[10px] ${echo.unread ? 'bg-black text-white' : 'bg-white text-black border border-zinc-200'}`}>
                                                 {echo.type === 'PULSE' ? '❤️' : echo.type === 'VISION' ? '✨' : '💌'}
                                             </div>
                                         </div>
@@ -130,10 +134,10 @@ export default function Notifications() {
                                         <div className="flex-grow min-w-0">
                                             <div className="flex justify-between items-start">
                                                 <div>
-                                                    <h3 className={`text-[10px] font-black uppercase tracking-widest italic ${echo.unread ? 'text-black' : 'text-white'}`}>{echo.user.name}</h3>
-                                                    <p className={`text-sm mt-1 font-medium truncate ${echo.unread ? 'text-black/70' : 'text-zinc-500'}`}>{echo.content}</p>
+                                                    <h3 className={`text-[10px] font-black uppercase tracking-widest italic ${echo.unread ? 'text-black' : 'text-zinc-100'}`}>{echo.user.name}</h3>
+                                                    <p className={`text-sm mt-1 font-bold truncate ${echo.unread ? 'text-black/80' : 'text-zinc-400'}`}>{echo.content}</p>
                                                 </div>
-                                                <span className={`text-[9px] font-black uppercase tracking-widest flex-shrink-0 ${echo.unread ? 'text-black/40' : 'text-zinc-700'}`}>{echo.time}</span>
+                                                <span className={`text-[9px] font-black uppercase tracking-widest flex-shrink-0 ${echo.unread ? 'text-black/40' : 'text-zinc-600'}`}>{echo.time}</span>
                                             </div>
                                             {echo.unread && (
                                                 <div className="mt-3 flex items-center gap-2">

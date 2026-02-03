@@ -25,6 +25,7 @@ export const links: Route.LinksFunction = () => [
 
 import Navbar from "./components/Navbar";
 import MobileHUD from "./components/MobileHUD";
+import Footer from "./components/Footer";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -44,6 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Navbar />
         <main className="h-full pt-16 overflow-y-auto scrollbar-hide relative w-full">
           {children}
+          <Footer />
         </main>
         <MobileHUD />
         <ScrollRestoration />

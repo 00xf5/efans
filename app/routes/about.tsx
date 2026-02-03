@@ -10,14 +10,14 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function About() {
     return (
-        <div className="relative w-full h-full bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden font-display">
+        <div className="relative w-full min-h-screen bg-black text-white flex justify-center selection:bg-primary/20 font-display">
             {/* Premium Background Elements */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-40">
                 <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-zinc-800/20 rounded-full blur-[160px]"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-zinc-900/40 rounded-full blur-[160px]"></div>
             </div>
 
-            <div className="w-full max-w-4xl px-8 flex flex-col items-center justify-center text-center relative z-10 space-y-12 h-screen overflow-y-auto scrollbar-hide py-20">
+            <div className="w-full max-w-4xl px-8 flex flex-col items-center justify-center text-center relative z-10 space-y-12 py-20">
 
                 {/* Hero Section */}
                 <section className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -66,7 +66,7 @@ export default function About() {
                 </div>
 
                 {/* CTA */}
-                <div className="pt-8 pb-20">
+                <div className="pt-8 mb-20">
                     <Link to="/signup" className="bg-white text-black px-12 py-5 rounded-full font-black text-xs uppercase tracking-[0.4em] shadow-none hover:bg-primary hover:text-white transition-all active:scale-95">
                         Become the Muse
                     </Link>

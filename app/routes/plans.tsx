@@ -12,7 +12,7 @@ export default function Pricing() {
     const referralPotential = platformTake * 0.10; // 10% of platform cut for referrers
 
     return (
-        <div className="relative w-full min-h-screen bg-black text-white selection:bg-primary/20 font-display overflow-x-hidden">
+        <div className="relative w-full min-h-screen bg-black text-white selection:bg-primary/20 font-display">
             {/* Cinematic Background */}
             <div className="fixed inset-0 z-0 opacity-30 pointer-events-none">
                 <img src="/pricing_aesthetic.png" className="w-full h-full object-cover grayscale brightness-50" alt="" />
@@ -199,21 +199,6 @@ export default function Pricing() {
                     ))}
                 </section>
             </main>
-
-            {/* Footer */}
-            <footer className="relative z-10 w-full border-t border-zinc-900 py-32 px-6 bg-black">
-                <div className="max-w-7xl mx-auto space-y-12">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-12">
-                        <Link to="/" className="text-3xl font-black tracking-tighter text-gradient italic">eFans</Link>
-                        <nav className="flex gap-12 text-[10px] font-black uppercase tracking-widest text-zinc-600">
-                            <Link to="/about" className="hover:text-white transition-colors">About Sanctuary</Link>
-                            <Link to="/terms" className="hover:text-white transition-colors">Common Law</Link>
-                            <Link to="/compliance" className="hover:text-white transition-colors">Vigilance</Link>
-                        </nav>
-                    </div>
-                    <p className="text-center text-[9px] font-black text-zinc-800 uppercase tracking-[0.5em] italic">© 2026 EFANS REGISTRY. ALL RIGHTS RESERVED.</p>
-                </div>
-            </footer>
         </div>
     );
 }

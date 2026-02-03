@@ -86,7 +86,7 @@ export default function ExperienceHub() {
     };
 
     return (
-        <div className="relative w-full h-full bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden font-display transition-colors duration-500">
+        <div className="relative w-full min-h-screen bg-[var(--color-bg-app)] text-zinc-900 dark:text-zinc-100 flex justify-center selection:bg-pink-100 font-display transition-colors duration-500">
             {/* Resonance Feedback Altar */}
             {toast && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 border border-zinc-800 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
@@ -100,14 +100,15 @@ export default function ExperienceHub() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-zinc-900/40 rounded-full blur-[160px]"></div>
             </div>
 
-            <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-x-hidden">
-                <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12 h-full overflow-x-hidden">
+            <div className="w-full flex justify-center px-0 md:px-6 relative z-10">
+                <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12">
 
                     {/* Left Pillar: Navigation */}
-                    <aside className="hidden lg:flex flex-col w-72 py-10 h-full overflow-y-auto scrollbar-hide">
+                    <aside className="hidden lg:flex flex-col w-72 py-10">
                         <div className="space-y-12">
                             {/* Persona Switcher */}
                             <div className="px-5">
+                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Persona</h4>
                                 <div className="p-1 bg-zinc-900/40 rounded-[2rem] flex items-center relative gap-1 border border-zinc-800">
                                     <button
                                         onClick={() => setPersona('creator')}
@@ -169,7 +170,7 @@ export default function ExperienceHub() {
                     </aside>
 
                     {/* Main Content: The Hub */}
-                    <main className="flex-grow py-10 h-full overflow-y-auto scrollbar-hide space-y-12 pb-32">
+                    <main className="flex-grow py-10 space-y-12 pb-32">
                         {persona === 'creator' ? (
                             <>
                                 <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 md:gap-0 animate-entrance">
