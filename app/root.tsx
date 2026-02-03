@@ -9,6 +9,12 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { getUserId } from "./utils/session.server";
+
+export async function loader({ request }: { request: Request }) {
+  const userId = await getUserId(request);
+  return { userId };
+}
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

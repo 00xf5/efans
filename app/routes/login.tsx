@@ -1,6 +1,29 @@
-import { Link } from "react-router";
+import { Link, Form, useActionData, useNavigation, redirect } from "react-router";
+import { login } from "../utils/auth.server";
+import { createUserSession } from "../utils/session.server";
+
+export async function action({ request }: { request: Request }) {
+    const formData = await request.formData();
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    if (!email || !password) {
+        return { error: "Both hub portal and security key are required." };
+    }
+
+    try {
+        const user = await login({ email, password });
+        return createUserSession(user.id, "/dashboard");
+    } catch (error: any) {
+        return { error: error.message };
+    }
+}
 
 export default function Login() {
+    const actionData = useActionData() as { error?: string };
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === "submitting";
+
     return (
         <div className="relative w-full h-full flex bg-black overflow-hidden font-display">
             {/* 50% Aesthetic Side: Sapphire & Silk */}
@@ -46,12 +69,19 @@ export default function Login() {
                         <p className="text-zinc-500 font-bold italic">Your digital hub is awaiting your return signature.</p>
                     </header>
 
-                    <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+                    <Form method="post" className="space-y-8">
                         <div className="space-y-6">
+                            {actionData?.error && (
+                                <div className="bg-red-500/10 border border-red-500/20 px-6 py-4 rounded-2xl">
+                                    <p className="text-red-500 text-[11px] font-black uppercase tracking-widest italic">{actionData.error}</p>
+                                </div>
+                            )}
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block ml-6 leading-none">Hub Portal (Email)</label>
                                 <input
                                     type="email"
+                                    name="email"
+                                    required
                                     placeholder="resonance@efans.hub"
                                     className="w-full bg-zinc-900 border border-zinc-800 px-8 py-6 rounded-[2rem] font-bold text-white outline-none focus:border-primary transition-all text-lg shadow-none"
                                 />
@@ -63,6 +93,8 @@ export default function Login() {
                                 </div>
                                 <input
                                     type="password"
+                                    name="password"
+                                    required
                                     placeholder="••••••••••••"
                                     className="w-full bg-zinc-900 border border-zinc-800 px-8 py-6 rounded-[2rem] font-bold text-white outline-none focus:border-primary transition-all text-lg shadow-none"
                                 />
@@ -70,14 +102,18 @@ export default function Login() {
                         </div>
 
                         <div className="space-y-6 pt-4">
-                            <button className="w-full bg-white text-black py-7 rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-none hover:scale-[1.02] active:scale-95 transition-all">
-                                Authenticate Resonance
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full bg-white text-black py-7 rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-none hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                            >
+                                {isSubmitting ? "Authenticating..." : "Authenticate Resonance"}
                             </button>
                             <p className="text-center text-[11px] text-zinc-500 font-bold italic translate-y-2">
                                 New to the circle? <Link to="/signup" className="text-primary hover:text-primary-dark transition-colors">Establish your identity</Link>
                             </p>
                         </div>
-                    </form>
+                    </Form>
 
                     <footer className="pt-10 border-t border-zinc-900 flex items-center justify-between">
                         <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic">Identity Shield Active</span>

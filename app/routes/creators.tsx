@@ -1,5 +1,15 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
+import { db } from "../db/index.server";
+import { profiles } from "../db/schema";
+import { eq } from "drizzle-orm";
+
+export async function loader() {
+    const creators = await db.query.profiles.findMany({
+        where: eq(profiles.persona, 'creator')
+    });
+    return { creators };
+}
 
 // --- Sovereign Design Language: Discovery Altar Data ---
 
@@ -94,17 +104,37 @@ const DISCOVERY_CREATORS = [
 ];
 
 export default function DiscoveryAltar() {
+    const { creators: dbCreators } = useLoaderData() as { creators: any[] };
     const [activeTab, setActiveTab] = useState("All Resonance");
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
 
+    // Merge DB creators with mock data for aesthetic variety during dev
+    const allCreators = useMemo(() => {
+        const mappedDb = dbCreators.map(c => ({
+            id: c.id,
+            name: c.name || "Anonymous Soul",
+            tag: `@${c.tag || 'essence'}`,
+            category: "Sovereign Souls",
+            resonance: parseFloat(c.resonanceScore) || 50,
+            transmission_rate: "New Resonance",
+            payout_velocity: `₦${parseFloat(c.balance).toLocaleString()}`,
+            status: "Online",
+            avatar: c.avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + c.tag,
+            bio: c.bio || "No description of their digital sanctuary yet.",
+            badges: ["New"]
+        }));
+
+        return [...mappedDb, ...DISCOVERY_CREATORS];
+    }, [dbCreators]);
+
     const filteredCreators = useMemo(() => {
-        return DISCOVERY_CREATORS.filter(c => {
+        return allCreators.filter(c => {
             const matchesTab = activeTab === "All Resonance" || c.category === activeTab;
             const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.tag.toLowerCase().includes(searchQuery.toLowerCase());
             return matchesTab && matchesSearch;
         });
-    }, [activeTab, searchQuery]);
+    }, [activeTab, searchQuery, allCreators]);
 
     const handleSearch = (val: string) => {
         setSearchQuery(val);

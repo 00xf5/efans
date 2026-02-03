@@ -1,10 +1,13 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useRouteLoaderData, Form } from "react-router";
 import { useTheme } from "../hooks/useTheme";
 
 export default function Navbar() {
     const { theme, toggleTheme } = useTheme();
     const { pathname } = useLocation();
+    const rootData = useRouteLoaderData("root") as { userId?: string };
+    const isAuthenticated = !!rootData?.userId;
     const hideOnMessages = pathname.startsWith("/messages");
+
     return (
         <nav className={`${hideOnMessages ? 'hidden md:flex md:fixed md:top-0 md:left-0 md:right-0 md:z-50' : 'fixed top-0 left-0 right-0 z-50'} glass h-16 flex items-center px-4 md:px-6 justify-between overflow-hidden`}>
             <div className="flex items-center gap-4">
@@ -33,18 +36,39 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-4">
-                <Link
-                    to="/login"
-                    className="text-sm font-medium hover:text-primary transition-colors"
-                >
-                    Sign In
-                </Link>
-                <Link
-                    to="/signup"
-                    className="bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-full text-sm font-semibold transition-all shadow-lg shadow-violet-600/20 active:scale-95"
-                >
-                    Get Started
-                </Link>
+                {isAuthenticated ? (
+                    <>
+                        <Link
+                            to="/dashboard"
+                            className="bg-zinc-800 text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:bg-zinc-700 active:scale-95"
+                        >
+                            Dashboard
+                        </Link>
+                        <Form method="post" action="/logout">
+                            <button
+                                type="submit"
+                                className="text-sm font-medium text-zinc-400 hover:text-red-500 transition-colors"
+                            >
+                                Log Out
+                            </button>
+                        </Form>
+                    </>
+                ) : (
+                    <>
+                        <Link
+                            to="/login"
+                            className="text-sm font-medium hover:text-primary transition-colors"
+                        >
+                            Sign In
+                        </Link>
+                        <Link
+                            to="/signup"
+                            className="bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-full text-sm font-semibold transition-all shadow-lg shadow-violet-600/20 active:scale-95"
+                        >
+                            Get Started
+                        </Link>
+                    </>
+                )}
             </div>
         </nav>
     );

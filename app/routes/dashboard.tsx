@@ -1,5 +1,23 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
+import { requireUserId } from "../utils/session.server";
+import { db } from "../db/index.server";
+import { profiles } from "../db/schema";
+import { eq } from "drizzle-orm";
+
+export async function loader({ request }: { request: Request }) {
+    const userId = await requireUserId(request);
+    const profile = await db.query.profiles.findFirst({
+        where: eq(profiles.id, userId)
+    });
+
+    if (!profile) {
+        // This shouldn't happen if auth logic is correct, but for safety:
+        throw new Error("Profile resonance lost.");
+    }
+
+    return { profile };
+}
 
 // --- ROI-Focused Design Tokens ---
 
@@ -18,8 +36,9 @@ const RECENT_CONVERSIONS = [
 ];
 
 export default function ExperienceHub() {
+    const { profile } = useLoaderData() as { profile: any };
     const [subPrice, setSubPrice] = useState(15000);
-    const [persona, setPersona] = useState<"creator" | "fan">("creator");
+    const [persona, setPersona] = useState<"creator" | "fan">(profile.persona);
     const [activeModal, setActiveModal] = useState<string | null>(null);
     const [sovereignty, setSovereignty] = useState({ ghostComments: true, stealthMode: false, aggressiveSanitization: true });
     const [toast, setToast] = useState<string | null>(null);
@@ -30,8 +49,8 @@ export default function ExperienceHub() {
     };
 
     // --- Vault & Bank State (Creator) ---
-    const [bankAccount, setBankAccount] = useState({ bank: "GTBank", name: "Valentina Noir", number: "0123456789", verified: true });
-    const [vaultBalance, setVaultBalance] = useState(4280000);
+    const [bankAccount, setBankAccount] = useState({ bank: "GTBank", name: profile.name || "Sovereign Soul", number: "0123456789", verified: true });
+    const [vaultBalance, setVaultBalance] = useState(parseFloat(profile.balance) || 0);
 
     // --- Apex Status Calculations ---
     const statusTier = useMemo(() => {
