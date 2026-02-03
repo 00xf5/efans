@@ -1,44 +1,183 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useLoaderData, useFetcher, useActionData } from "react-router";
 import { useTheme } from "../hooks/useTheme";
+import { db } from "../db/index.server";
+import { profiles } from "../db/schema";
+import { eq } from "drizzle-orm";
+import { requireUserId } from "../utils/session.server";
+import { getUploadUrl } from "../utils/r2.server";
+
+export async function loader({ request }: { request: Request }) {
+    const userId = await requireUserId(request);
+    const profile = await db.query.profiles.findFirst({
+        where: eq(profiles.id, userId)
+    });
+
+    if (!profile) {
+        // Create profile if it doesn't exist (failsafe)
+        const [newProfile] = await db.insert(profiles).values({
+            id: userId,
+            persona: 'fan',
+            resonanceScore: "100.00",
+            heatLevel: 50
+        }).returning();
+        return { profile: newProfile };
+    }
+
+    return { profile };
+}
+
+export async function action({ request }: { request: Request }) {
+    const userId = await requireUserId(request);
+    const formData = await request.formData();
+    const intent = formData.get("intent");
+
+    if (intent === "update_profile") {
+        const name = formData.get("name") as string;
+        const tag = formData.get("tag") as string;
+        const bio = formData.get("bio") as string;
+
+        // Handle images if they were uploaded
+        const avatarFile = formData.get("avatarFile") as File;
+        const coverFile = formData.get("coverFile") as File;
+
+        let avatarUrl = formData.get("avatarUrl") as string;
+        let coverUrl = formData.get("coverUrl") as string;
+
+        if (avatarFile && avatarFile.size > 0) {
+            const fileName = `avatars/${userId}/${Date.now()}-${avatarFile.name}`;
+            const uploadUrl = await getUploadUrl(fileName, avatarFile.type);
+            await fetch(uploadUrl, {
+                method: "PUT",
+                body: avatarFile,
+                headers: { "Content-Type": avatarFile.type }
+            });
+            avatarUrl = `https://visions.efans.workers.dev/${fileName}`;
+        }
+
+        if (coverFile && coverFile.size > 0) {
+            const fileName = `banners/${userId}/${Date.now()}-${coverFile.name}`;
+            const uploadUrl = await getUploadUrl(fileName, coverFile.type);
+            await fetch(uploadUrl, {
+                method: "PUT",
+                body: coverFile,
+                headers: { "Content-Type": coverFile.type }
+            });
+            coverUrl = `https://visions.efans.workers.dev/${fileName}`;
+        }
+
+        await db.update(profiles).set({
+            name,
+            tag,
+            bio,
+            avatarUrl,
+            coverUrl,
+            updatedAt: new Date()
+        }).where(eq(profiles.id, userId));
+
+        return { success: true };
+    }
+
+    if (intent === "update_settings") {
+        const ghostMode = formData.get("ghostMode") === "true";
+        const cipherChat = formData.get("cipherChat") === "true";
+        const stealthMode = formData.get("stealthMode") === "true";
+
+        await db.update(profiles).set({
+            ghostMode,
+            cipherChat,
+            stealthMode,
+            updatedAt: new Date()
+        }).where(eq(profiles.id, userId));
+
+        return { success: true };
+    }
+
+    return { success: false };
+}
 
 export default function IdentitySanctuary() {
-    const [persona, setPersona] = useState<"creator" | "fan">("creator");
+    const { profile } = useLoaderData<typeof loader>();
+    const fetcher = useFetcher();
+    const actionData = useActionData<typeof action>();
+
     const [isEditing, setIsEditing] = useState(false);
     const { theme, toggleTheme } = useTheme();
 
-    // Identity State
+    // Identity State initialized from Loader
     const [identity, setIdentity] = useState({
-        name: "Valentina Noir",
-        tag: "@valen_noir",
-        bio: "Digital architect of sensual visions. Building a legacy of high-lvl resonance and unfiltered sovereignty.",
-        location: "Lagos, Nigeria",
-        website: "valentinanoir.hub",
-        avatar: "VN",
-        coverImg: "/profile_banner_aesthetic_1769530629270.png",
-        profileImg: "" // If empty, show initials
+        name: profile.name || "Sovereign Soul",
+        tag: profile.tag ? `@${profile.tag}` : "@essence",
+        bio: profile.bio || "Building a legacy of high-lvl resonance and unfiltered sovereignty.",
+        location: "Lagos, Nigeria", // Mocked for now
+        website: "efans.io", // Mocked for now
+        avatar: profile.name ? profile.name.substring(0, 2).toUpperCase() : "U",
+        coverImg: profile.coverUrl || "/profile_banner_aesthetic_1769530629270.png",
+        profileImg: profile.avatarUrl || ""
     });
 
+    useEffect(() => {
+        if (profile) {
+            setIdentity({
+                name: profile.name || "Sovereign Soul",
+                tag: profile.tag ? `@${profile.tag}` : "@essence",
+                bio: profile.bio || "Building a legacy of high-lvl resonance and unfiltered sovereignty.",
+                location: "Lagos, Nigeria",
+                website: "efans.io",
+                avatar: profile.name ? profile.name.substring(0, 2).toUpperCase() : "U",
+                coverImg: profile.coverUrl || "/profile_banner_aesthetic_1769530629270.png",
+                profileImg: profile.avatarUrl || ""
+            });
+            setEditForm({
+                name: profile.name || "Sovereign Soul",
+                tag: profile.tag || "essence",
+                bio: profile.bio || "Building a legacy of high-lvl resonance and unfiltered sovereignty.",
+                location: "Lagos, Nigeria",
+                website: "efans.io",
+                avatar: profile.name ? profile.name.substring(0, 2).toUpperCase() : "U",
+                coverImg: profile.coverUrl || "/profile_banner_aesthetic_1769530629270.png",
+                profileImg: profile.avatarUrl || ""
+            });
+        }
+    }, [profile]);
+
     // Form State
-    const [editForm, setEditForm] = useState({ ...identity });
-    const [isSaving, setIsSaving] = useState(false);
+    const [editForm, setEditForm] = useState({
+        name: profile.name || "",
+        tag: profile.tag || "",
+        bio: profile.bio || "",
+        location: "Lagos, Nigeria",
+        website: "efans.io",
+        avatar: "U",
+        coverImg: profile.coverUrl || "",
+        profileImg: profile.avatarUrl || ""
+    });
 
     // --- Settings & Tabs State ---
     const [activeSettingsTab, setActiveSettingsTab] = useState("Privacy Control");
     const [privacySettings, setPrivacySettings] = useState({
-        "Ghost Mode": true,
-        "Cipher Chat": true,
+        "Ghost Mode": profile.ghostMode || false,
+        "Cipher Chat": profile.cipherChat || false,
         "Vault Protection": false,
-        "Stealth Discovery": true,
+        "Stealth Discovery": profile.stealthMode || false,
         "Deep Analytics": false,
         "Resonance Shield": true
     });
 
     const toggleSetting = (title: string) => {
+        const newValue = !privacySettings[title as keyof typeof privacySettings];
         setPrivacySettings(prev => ({
             ...prev,
-            [title]: !prev[title as keyof typeof privacySettings]
+            [title]: newValue
         }));
+
+        // Persist privacy settings
+        const formData = new FormData();
+        formData.append("intent", "update_settings");
+        formData.append("ghostMode", (title === "Ghost Mode" ? newValue : privacySettings["Ghost Mode"]).toString());
+        formData.append("cipherChat", (title === "Cipher Chat" ? newValue : privacySettings["Cipher Chat"]).toString());
+        formData.append("stealthMode", (title === "Stealth Discovery" ? newValue : privacySettings["Stealth Discovery"]).toString());
+        fetcher.submit(formData, { method: "POST" });
     };
 
     const [passwordForm, setPasswordForm] = useState({
@@ -51,13 +190,25 @@ export default function IdentitySanctuary() {
     const coverInputRef = useRef<HTMLInputElement>(null);
     const profileInputRef = useRef<HTMLInputElement>(null);
 
+    // Selected files for upload
+    const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null);
+    const [selectedCoverFile, setSelectedCoverFile] = useState<File | null>(null);
+
     const handleSave = () => {
-        setIsSaving(true);
-        setTimeout(() => {
-            setIdentity({ ...editForm });
-            setIsSaving(false);
-            setIsEditing(false);
-        }, 1500);
+        const formData = new FormData();
+        formData.append("intent", "update_profile");
+        formData.append("name", editForm.name);
+        formData.append("tag", editForm.tag.replace('@', ''));
+        formData.append("bio", editForm.bio);
+
+        if (selectedAvatarFile) formData.append("avatarFile", selectedAvatarFile);
+        if (selectedCoverFile) formData.append("coverFile", selectedCoverFile);
+
+        formData.append("avatarUrl", editForm.profileImg);
+        formData.append("coverUrl", editForm.coverImg);
+
+        fetcher.submit(formData, { method: "POST", encType: "multipart/form-data" });
+        setIsEditing(false);
     };
 
     const triggerVisualUpdate = (type: 'cover' | 'profile') => {
@@ -68,6 +219,9 @@ export default function IdentitySanctuary() {
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'cover' | 'profile') => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        if (type === 'profile') setSelectedAvatarFile(file);
+        else setSelectedCoverFile(file);
 
         setIsProcessingVisual(true);
         const reader = new FileReader();
@@ -118,7 +272,7 @@ export default function IdentitySanctuary() {
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-pink-500/20 rounded-[2rem] md:rounded-[3rem] blur-2xl group-hover:scale-125 transition-all duration-700"></div>
                                 <div className="w-24 h-24 md:w-48 md:h-48 bg-white p-1 md:p-2 rounded-[2rem] md:rounded-[3rem] shadow-2xl relative z-10">
-                                    <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-2xl md:text-5xl font-black text-white italic shadow-inner overflow-hidden">
+                                    <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 rounded-[1.8rem] md:rounded-[2.5rem] flex items-center justify-center text-2xl md:text-5xl font-black text-white italic shadow-inner overflow-hidden text-center">
                                         {identity.profileImg ? (
                                             <img src={identity.profileImg} className="w-full h-full object-cover" alt="Profile" />
                                         ) : identity.avatar}
@@ -143,7 +297,7 @@ export default function IdentitySanctuary() {
                                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                                     <h1 className="text-2xl md:text-5xl font-black text-white italic tracking-tighter leading-none">{identity.name}</h1>
                                     <div className="flex items-center gap-2">
-                                        <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Sovereign Mode</span>
+                                        <span className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black text-white uppercase tracking-widest">{profile.persona === 'creator' ? 'Sovereign Mode' : 'Fan Resonance'}</span>
                                         <button
                                             onClick={() => setIsEditing(true)}
                                             className="md:hidden px-4 py-2 bg-pink-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
@@ -172,11 +326,11 @@ export default function IdentitySanctuary() {
                             <div className="bg-white dark:bg-zinc-900/60 p-10 rounded-[3rem] border border-zinc-100 dark:border-zinc-800 shadow-sm space-y-8">
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] italic">Bio Calibration</h4>
-                                    <p className="text-zinc-600 font-bold leading-relaxed italic text-sm">
+                                    <p className="text-zinc-600 dark:text-zinc-400 font-bold leading-relaxed italic text-sm">
                                         {identity.bio}
                                     </p>
                                 </div>
-                                <div className="space-y-4 pt-6 border-t border-zinc-50">
+                                <div className="space-y-4 pt-6 border-t border-zinc-50 dark:border-zinc-800">
                                     <div className="flex items-center gap-4 text-zinc-400">
                                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                                         <span className="text-[11px] font-black uppercase tracking-widest leading-none">{identity.location}</span>
@@ -192,11 +346,11 @@ export default function IdentitySanctuary() {
                                 <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em] italic">Resonance Metrics</h4>
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <p className="text-3xl font-black italic tabular-nums leading-none">4.2k</p>
+                                        <p className="text-3xl font-black italic tabular-nums leading-none">0</p>
                                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Active Links</p>
                                     </div>
                                     <div className="space-y-2">
-                                        <p className="text-3xl font-black italic tabular-nums leading-none">92%</p>
+                                        <p className="text-3xl font-black italic tabular-nums leading-none">{profile.resonanceScore || "100"}%</p>
                                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Heat Level</p>
                                     </div>
                                 </div>
@@ -211,7 +365,7 @@ export default function IdentitySanctuary() {
                                         <button
                                             key={tab}
                                             onClick={() => setActiveSettingsTab(tab)}
-                                            className={`pb-6 text-[11px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSettingsTab === tab ? 'text-zinc-900 border-b-2 border-zinc-900' : 'text-zinc-300 hover:text-zinc-500'}`}
+                                            className={`pb-6 text-[11px] font-black uppercase tracking-[0.3em] transition-all relative ${activeSettingsTab === tab ? 'text-zinc-900 dark:text-white border-b-2 border-zinc-900 dark:border-white' : 'text-zinc-300 hover:text-zinc-500'}`}
                                         >
                                             {tab}
                                         </button>
@@ -416,10 +570,10 @@ export default function IdentitySanctuary() {
                                                 onClick={() => triggerVisualUpdate('profile')}
                                                 className="group/up relative h-32 w-full bg-zinc-50 rounded-3xl border-2 border-dashed border-zinc-100 flex flex-col items-center justify-center cursor-pointer hover:border-pink-200 transition-all overflow-hidden"
                                             >
-                                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm relative z-10 overflow-hidden">
+                                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm relative z-10 overflow-hidden text-center">
                                                     {editForm.profileImg ? (
                                                         <img src={editForm.profileImg} className="w-full h-full object-cover" />
-                                                    ) : <span className="text-zinc-300 font-black italic">VN</span>}
+                                                    ) : <span className="text-zinc-300 font-black italic">{editForm.name.substring(0, 2).toUpperCase()}</span>}
                                                 </div>
                                                 <span className="mt-2 text-[9px] font-black text-zinc-400 uppercase tracking-widest leading-none relative z-10">Select Icon</span>
                                             </div>
@@ -431,10 +585,10 @@ export default function IdentitySanctuary() {
 
                             <button
                                 onClick={handleSave}
-                                disabled={isSaving}
+                                disabled={fetcher.state === "submitting"}
                                 className="w-full bg-zinc-900 text-white py-6 rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4"
                             >
-                                {isSaving ? (
+                                {fetcher.state === "submitting" ? (
                                     <>
                                         <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
                                         Committing Residency...

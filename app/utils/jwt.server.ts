@@ -1,6 +1,14 @@
 import { SignJWT, jwtVerify } from "jose";
 
-const SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "default_sovereign_secret");
+// Safe access to environment variables
+const getEnv = (key: string) => {
+    if (typeof process !== "undefined" && process.env) {
+        return process.env[key];
+    }
+    return undefined;
+};
+
+const SECRET = new TextEncoder().encode(getEnv("JWT_SECRET") || "default_sovereign_secret");
 
 export async function createJWT(userId: string) {
     return await new SignJWT({ userId })

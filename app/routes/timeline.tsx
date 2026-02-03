@@ -1,11 +1,19 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router";
-
+import { Link, useLoaderData, useFetcher, useNavigation } from "react-router";
 import type { Post } from "../types/timeline";
 import { MomentCard } from "../components/timeline/MomentCard";
 import { TrendingAltarItem } from "../components/timeline/TrendingAltarItem";
 import { MediaModal } from "../components/timeline/MediaModal";
 import { MomentCardSkeleton } from "../components/timeline/MomentCardSkeleton";
+
+import { db } from "../db/index.server";
+import { moments, users, profiles, echoes, pulses, whispers, loyaltyStats, ledger, unlocks } from "../db/schema";
+import { desc, eq, and } from "drizzle-orm";
+import { requireUserId } from "../utils/session.server";
+import { getUploadUrl } from "../utils/r2.server";
+import { sanitizeContent } from "../utils/aegis.server";
+import { getTierBadge, hasRequiredTier, calculateLoyaltyTier, LOYALTY_TIERS } from "../utils/loyalty";
+import type { LoyaltyTier } from "../utils/loyalty";
 
 import {
     MOCK_MOMENTS,
@@ -15,16 +23,324 @@ import {
     INITIAL_TRENDING
 } from "../data/mock-timeline";
 
+export async function loader({ request }: { request: Request }) {
+    const userId = await requireUserId(request);
+
+    // Parallel High-Fidelity Data Extraction
+    const [userUnlocks, userLoyalty, realMomentsRaw, dbFeatured] = await Promise.all([
+        db.query.unlocks.findMany({ where: eq(unlocks.userId, userId) }),
+        db.query.loyaltyStats.findMany({ where: eq(loyaltyStats.fanId, userId) }),
+        db.query.moments.findMany({
+            with: {
+                creator: true,
+                whispers: {
+                    with: {
+                        fan: { with: { loyaltyStats: true } }
+                    },
+                    orderBy: [desc(whispers.createdAt)],
+                    limit: 10
+                }
+            },
+            orderBy: [desc(moments.createdAt)],
+            limit: 50
+        }),
+        db.query.profiles.findMany({
+            where: eq(profiles.persona, 'creator'),
+            limit: 10
+        })
+    ]);
+
+    const unlockedIds = userUnlocks.map((u: any) => u.momentId);
+
+    // Map DB moments to Post interface
+    const realMoments: Post[] = (realMomentsRaw as any[]).map((m: any) => {
+        const isUnlocked = unlockedIds.includes(m.id);
+        const creatorId = m.creatorId;
+        const fanLoyaltyInCreatorHub = userLoyalty.find((l: any) => l.creatorId === creatorId);
+        const currentTier = (fanLoyaltyInCreatorHub?.tier as LoyaltyTier) || "Acquaintance";
+        const requiredTier = (m.requiredTier as LoyaltyTier) || "Acquaintance";
+
+        const meetsTier = hasRequiredTier(currentTier, requiredTier);
+
+        // Locked if it's a vision AND (not unlocked AND (not meeting tier OR price > 0))
+        // Actually, if price is 0 but tier is required, meeting tier unlocks it?
+        // Let's say: if price > 0, always needs unlock. If price is 0, just needs tier.
+        const isLocked = m.type === 'vision' && !isUnlocked && (parseFloat(m.price || "0") > 0 || !meetsTier);
+
+        return {
+            id: m.id,
+            creatorId: m.creatorId,
+            source: {
+                name: m.creator?.name || "Anonymous",
+                username: m.creator?.tag || "user",
+                avatar: m.creator?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.creator?.id}`,
+                verified: m.creator?.isVerified || false
+            },
+            type: m.type === 'vision' ? 'VISION' : 'FLOW_POST',
+            timestamp: new Date(m.createdAt).toLocaleDateString(),
+            content: m.content || "",
+            media: m.mediaAssets?.[0]?.url || undefined,
+            stats: { likes: "0", whispers: m.whispers?.length || 0, shares: 0 },
+            locked: isLocked,
+            price: m.price?.toString(),
+            requiredTier: m.requiredTier,
+            meetsRequirement: meetsTier,
+            isAegisGuided: m.isAegisGuided,
+            comments: (m.whispers || []).map((w: any) => {
+                const badge = getTierBadge((w.fan?.loyaltyStats || []).find((ls: any) => ls.creatorId === m.creatorId)?.tier || "Acquaintance");
+                return {
+                    id: w.id,
+                    user: w.fan?.name || "Fan",
+                    avatar: w.fan?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${w.fanId}`,
+                    content: w.content,
+                    loyalty: { label: badge.label, color: badge.color, icon: badge.icon }
+                };
+            })
+        };
+    });
+
+    // Identify featured creators from profiles
+
+    const featured = dbFeatured.length > 0 ? (dbFeatured as any[]).map((c: any) => ({
+        name: c.name || "Genesis Creator",
+        img: c.avatarUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=400",
+        handle: `@${c.tag}`
+    })) : FEATURED_CREATORS;
+
+    return {
+        realMoments,
+        featured,
+        userId
+    };
+}
+
+export async function action({ request }: { request: Request }) {
+    const userId = await requireUserId(request);
+    const formData = await request.formData();
+    const intent = formData.get("intent");
+
+    if (intent === "post") {
+        const content = formData.get("content") as string;
+        const mediaType = formData.get("mediaType") as string;
+        const isLocked = formData.get("isLocked") === "true";
+        const mediaFile = formData.get("mediaFile") as File;
+
+        let mediaUrl = "";
+        if (mediaFile && mediaFile.size > 0) {
+            // Secure R2 Upload Flow
+            const fileName = `visions/${userId}/${Date.now()}-${mediaFile.name}`;
+            const uploadUrl = await getUploadUrl(fileName, mediaFile.type);
+
+            // Upload to R2 via PUT
+            await fetch(uploadUrl, {
+                method: "PUT",
+                body: mediaFile,
+                headers: { "Content-Type": mediaFile.type }
+            });
+
+            mediaUrl = `https://visions.efans.workers.dev/${fileName}`;
+        }
+
+        const creatorProfile = await db.query.profiles.findFirst({
+            where: eq(profiles.id, userId)
+        });
+
+        const aegisLevel = creatorProfile?.aggressiveSanitization ? 'aggressive' : 'standard';
+        const aegisResult = await sanitizeContent(content, aegisLevel);
+
+        if (!aegisResult.isPure && aegisLevel === 'aggressive') {
+            return { success: false, error: aegisResult.reason };
+        }
+
+        const price = formData.get("price") as string;
+        const reqTier = formData.get("requiredTier") as string;
+
+        const filteredContent = aegisResult.purifiedContent || content;
+
+        const [newMoment] = await db.insert(moments).values({
+            creatorId: userId,
+            content: filteredContent,
+            type: isLocked ? 'vision' : 'flow',
+            mediaAssets: mediaUrl ? [{ url: mediaUrl, type: (mediaType || "").includes('video') ? 'video' : 'image' }] : [],
+            price: price || "0.00",
+            requiredTier: reqTier || "Acquaintance",
+            isAegisGuided: true
+        }).returning();
+
+        return { success: true, moment: newMoment };
+    }
+
+    if (intent === "unlock") {
+        const momentId = formData.get("momentId") as string;
+
+        // Fetch moment and prices
+        const moment = await db.query.moments.findFirst({
+            where: eq(moments.id, momentId),
+            with: { creator: true }
+        });
+
+        if (!moment || moment.type !== 'vision') return { success: false, error: "Vision not found" };
+        const price = parseFloat(moment.price?.toString() || "0");
+        const creatorId = moment.creatorId;
+
+        // Fetch fan balance
+        const fanProfile = await db.query.profiles.findFirst({ where: eq(profiles.id, userId) });
+        if (!fanProfile) return { success: false, error: "Identity not found" };
+
+        // Verify Loyalty Tier Requirement
+        if (moment.requiredTier && moment.requiredTier !== 'Acquaintance') {
+            const fanLoyalty = await db.query.loyaltyStats.findFirst({
+                where: and(eq(loyaltyStats.fanId, userId), eq(loyaltyStats.creatorId, creatorId))
+            });
+            const currentTier = (fanLoyalty?.tier as LoyaltyTier) || "Acquaintance";
+            const reqTier = moment.requiredTier as LoyaltyTier;
+
+            if (!hasRequiredTier(currentTier, reqTier)) {
+                return { success: false, error: `Inadequate Resonance: ${reqTier} standing required.` };
+            }
+        }
+
+        const currentBalance = parseFloat(fanProfile.balance?.toString() || "0");
+        if (currentBalance < price) return { success: false, error: "Insufficient resonance" };
+
+        const creatorCut = price * 0.8;
+        const platformCut = price * 0.2;
+
+        await db.transaction(async (tx: any) => {
+            // Deduct from fan
+            await tx.update(profiles)
+                .set({ balance: (currentBalance - price).toString() })
+                .where(eq(profiles.id, userId));
+
+            // Add to creator
+            const creatorBalance = parseFloat(moment.creator?.balance?.toString() || "0");
+            await tx.update(profiles)
+                .set({ balance: (creatorBalance + creatorCut).toString() })
+                .where(eq(profiles.id, creatorId));
+
+            // Record unlock
+            await tx.insert(unlocks).values({
+                userId,
+                momentId
+            });
+
+            // Update Loyalty
+            const existingLoyalty = await tx.query.loyaltyStats.findFirst({
+                where: and(eq(loyaltyStats.fanId, userId), eq(loyaltyStats.creatorId, creatorId))
+            });
+
+            const newTotalSpend = parseFloat(existingLoyalty?.lifetimeResonance?.toString() || "0") + price;
+            const newTier = calculateLoyaltyTier(newTotalSpend);
+
+            if (existingLoyalty) {
+                await tx.update(loyaltyStats)
+                    .set({ lifetimeResonance: newTotalSpend.toString(), tier: newTier, updatedAt: new Date() })
+                    .where(eq(loyaltyStats.id, existingLoyalty.id));
+            } else {
+                await tx.insert(loyaltyStats).values({ fanId: userId, creatorId: creatorId, lifetimeResonance: newTotalSpend.toString(), tier: newTier });
+            }
+
+            // Ledger
+            await tx.insert(ledger).values({
+                senderId: userId,
+                receiverId: creatorId,
+                amount: price.toString(),
+                creatorCut: creatorCut.toString(),
+                platformCut: platformCut.toString(),
+                type: "unlock",
+                status: "success"
+            });
+        });
+
+        return { success: true };
+    }
+
+    if (intent === "whisper") {
+        const momentId = formData.get("momentId") as string;
+        const content = formData.get("content") as string;
+
+        const moment = await db.query.moments.findFirst({ where: eq(moments.id, momentId) });
+        if (!moment) return { success: false, error: "Vision lost" };
+
+        const creatorProfile = await db.query.profiles.findFirst({ where: eq(profiles.id, moment.creatorId) });
+        const aegisLevel = creatorProfile?.aggressiveSanitization ? 'aggressive' : 'standard';
+
+        const aegisResult = await sanitizeContent(content, aegisLevel);
+        if (!aegisResult.isPure && aegisLevel === 'aggressive') {
+            return { success: false, error: aegisResult.reason };
+        }
+
+        const filteredContent = aegisResult.purifiedContent || content;
+
+        await db.insert(whispers).values({
+            momentId: momentId,
+            fanId: userId,
+            content: filteredContent,
+            status: aegisResult.isPure ? 'pure' : 'redacted'
+        });
+
+        return { success: true };
+    }
+
+    if (intent === "pulse") {
+        const momentId = formData.get("momentId") as string;
+        const creatorId = formData.get("creatorId") as string;
+
+        // Create Pulse record
+        await db.insert(pulses).values({
+            userId,
+            momentId: momentId
+        });
+
+        // Create Echo for Creator
+        const userProfile = await db.query.profiles.findFirst({
+            where: eq(profiles.id, userId)
+        });
+
+        await db.insert(echoes).values({
+            recipientId: creatorId,
+            senderId: userId,
+            type: 'pulse',
+            content: `${userProfile?.name || 'A fan'} pulsed your essence`,
+            link: `/timeline`
+        });
+
+        return { success: true };
+    }
+
+    return { success: false };
+}
+
 export default function Timeline() {
+    const { realMoments, featured } = useLoaderData<typeof loader>();
+    const fetcher = useFetcher();
+    const navigation = useNavigation();
+
     const [activeTab, setActiveTab] = useState("all");
     const [isLoading, setIsLoading] = useState(true);
     const [reactions, setReactions] = useState<{ id: number, x: number, y: number }[]>([]);
-    const [flowPosts, setFlowPosts] = useState(INITIAL_FLOW_POSTS);
-    const [visions, setVisions] = useState(MOCK_MOMENTS);
+
+    // Hybrid Data Strategy: Real data prioritized, Mocks for visual density
+    const [flowPosts, setFlowPosts] = useState<Post[]>([]);
+    const [visions, setVisions] = useState<Post[]>([]);
+
+    useEffect(() => {
+        // Merge real moments into the appropriate lists
+        const dbFlowOnly = realMoments.filter(m => m.type === 'FLOW_POST');
+        const dbVisionsOnly = realMoments.filter(m => m.type === 'VISION');
+
+        setFlowPosts([...dbFlowOnly, ...INITIAL_FLOW_POSTS]);
+        setVisions([...dbVisionsOnly, ...MOCK_MOMENTS]);
+    }, [realMoments]);
+
     const [trending, setTrending] = useState(INITIAL_TRENDING);
     const [newPostContent, setNewPostContent] = useState("");
-    const [attachedMedia, setAttachedMedia] = useState<string | null>(null);
+    const [attachedMedia, setAttachedMedia] = useState<{ file: File, url: string } | null>(null);
+    const [isLocked, setIsLocked] = useState(false);
+    const [unlockPrice, setUnlockPrice] = useState("500");
+    const [requiredTier, setRequiredTier] = useState<LoyaltyTier>("Acquaintance");
     const [toast, setToast] = useState<string | null>(null);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const carouselRef = useRef<HTMLDivElement>(null);
     const [expandedMedia, setExpandedMedia] = useState<{ url: string, type: 'video' | 'image' | 'any', name?: string } | null>(null);
@@ -39,7 +355,7 @@ export default function Timeline() {
         const interval = setInterval(() => {
             setTrending(prev => {
                 const refreshed = prev.map(c => {
-                    const decay = 0.08; // Economic Gravity: Status fades without fuel
+                    const decay = 0.08;
                     const drift = (Math.random() * 0.4) - 0.1;
                     const newHeat = Math.max(0, Math.min(100, c.heat - decay + drift));
                     return {
@@ -53,9 +369,7 @@ export default function Timeline() {
             });
         }, 5000);
 
-        // Simulated skeleton clearing
         const timer = setTimeout(() => setIsLoading(false), 900);
-
         return () => {
             clearInterval(interval);
             clearTimeout(timer);
@@ -74,33 +388,30 @@ export default function Timeline() {
     const handlePostSubmit = () => {
         if (!newPostContent.trim() && !attachedMedia) return;
 
-        const newPost: Post = {
-            id: `fp-${Date.now()}`,
-            source: {
-                name: "Premium Fan",
-                username: "fan_02",
-                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-                verified: false
-            },
-            type: "FLOW_POST",
-            timestamp: "Just now",
-            content: newPostContent,
-            media: attachedMedia || undefined,
-            stats: { likes: "0", whispers: 0, shares: 0 },
-            isPublic: true,
-            comments: []
-        };
+        const formData = new FormData();
+        formData.append("intent", "post");
+        formData.append("content", newPostContent);
+        formData.append("isLocked", isLocked.toString());
+        formData.append("price", unlockPrice);
+        formData.append("requiredTier", requiredTier);
+        if (attachedMedia) {
+            formData.append("mediaFile", attachedMedia.file);
+            formData.append("mediaType", attachedMedia.file.type);
+        }
 
-        setFlowPosts([newPost, ...flowPosts]);
+        fetcher.submit(formData, { method: "POST", encType: "multipart/form-data" });
+
+        // Optimistic UI/Clearance
         setNewPostContent("");
         setAttachedMedia(null);
+        showToast("Transmission Distributed to the Flow");
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const url = URL.createObjectURL(file);
-            setAttachedMedia(url);
+            setAttachedMedia({ file, url });
         }
     };
 
@@ -114,6 +425,7 @@ export default function Timeline() {
     };
 
     const handleAddComment = (postId: string, content: string) => {
+        // Real comment logic will be added next...
         setFlowPosts(prev => prev.map(post => {
             if (post.id === postId) {
                 return {
@@ -137,11 +449,11 @@ export default function Timeline() {
         const relayPost: Post = {
             ...originalPost,
             id: `relay-${Date.now()}`,
-            timestamp: "Just now",
             relayer: {
                 name: "Premium Fan",
                 username: "fan_02"
             },
+            timestamp: "Just now",
             stats: { likes: "0", whispers: 0, shares: 0 },
             comments: []
         };
@@ -149,8 +461,19 @@ export default function Timeline() {
     };
 
     const handleUnlock = (postId: string) => {
+        // Integration with Paystack/Ledger will be handled here
         setFlowPosts(prev => prev.map(p => p.id === postId ? { ...p, locked: false } : p));
         setVisions(prev => prev.map(p => p.id === postId ? { ...p, locked: false } : p));
+        showToast("Vision Unlocked. Establishing Resonance...");
+    };
+
+    const handlePulse = (momentId: string, creatorId: string) => {
+        const formData = new FormData();
+        formData.append("intent", "pulse");
+        formData.append("momentId", momentId);
+        formData.append("creatorId", creatorId);
+        fetcher.submit(formData, { method: "POST" });
+        showToast("Resonance Distributed");
     };
 
     return (
@@ -314,10 +637,10 @@ export default function Timeline() {
                                                 />
                                                 {attachedMedia && (
                                                     <div className="relative rounded-[2.5rem] overflow-hidden aspect-[4/3] group shadow-2xl">
-                                                        {attachedMedia.startsWith('blob:') || attachedMedia.includes('.mp4') ? (
-                                                            <video src={attachedMedia} className="w-full h-full object-cover" controls />
+                                                        {attachedMedia.file.type.includes('video') ? (
+                                                            <video src={attachedMedia.url} className="w-full h-full object-cover" controls />
                                                         ) : (
-                                                            <img src={attachedMedia} className="w-full h-full object-cover" alt="" />
+                                                            <img src={attachedMedia.url} className="w-full h-full object-cover" alt="" />
                                                         )}
                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                                         <button
@@ -346,21 +669,50 @@ export default function Timeline() {
                                                 >
                                                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
                                                 </button>
-                                                <button className="w-14 h-14 rounded-[1.8rem] bg-zinc-800 text-zinc-400 flex items-center justify-center hover:bg-white hover:text-black transition-all hover:-translate-y-1 group relative">
+                                                <button
+                                                    onClick={() => showToast("Calibrating Whisper Altar...")}
+                                                    className="w-14 h-14 rounded-[1.8rem] bg-zinc-800 text-zinc-400 flex items-center justify-center hover:bg-white hover:text-black transition-all hover:-translate-y-1 group relative">
                                                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" x2="9.01" y1="9" y2="9" /><line x1="15" x2="15.01" y1="9" y2="9" /></svg>
                                                 </button>
                                                 <div className="h-10 w-[1px] bg-zinc-800 mx-2"></div>
                                                 <div className="flex p-1.5 bg-zinc-950 rounded-2xl border border-zinc-800">
-                                                    <button className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-white text-black shadow-sm">Public</button>
-                                                    <button className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-zinc-600 hover:text-white transition-all">Locked</button>
+                                                    <button
+                                                        onClick={() => setIsLocked(false)}
+                                                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${!isLocked ? 'bg-white text-black shadow-sm' : 'text-zinc-600 hover:text-white'}`}>Public</button>
+                                                    <button
+                                                        onClick={() => setIsLocked(true)}
+                                                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${isLocked ? 'bg-white text-black shadow-sm' : 'text-zinc-600 hover:text-white'}`}>Locked</button>
                                                 </div>
+                                                {isLocked && (
+                                                    <div className="flex items-center gap-4 animate-in slide-in-from-left-4 duration-500">
+                                                        <div className="flex items-center gap-3 px-6 py-3 bg-zinc-950 rounded-[1.5rem] border border-zinc-800">
+                                                            <span className="text-zinc-600 text-[10px] font-black italic">₦</span>
+                                                            <input
+                                                                type="number"
+                                                                value={unlockPrice}
+                                                                onChange={(e) => setUnlockPrice(e.target.value)}
+                                                                placeholder="500"
+                                                                className="w-16 bg-transparent border-none focus:ring-0 text-[11px] font-black text-white p-0"
+                                                            />
+                                                        </div>
+                                                        <select
+                                                            value={requiredTier}
+                                                            onChange={(e) => setRequiredTier(e.target.value as LoyaltyTier)}
+                                                            className="px-6 py-3 bg-zinc-950 rounded-[1.5rem] border border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white transition-colors"
+                                                        >
+                                                            {LOYALTY_TIERS.map(t => (
+                                                                <option key={t.label} value={t.label} className="bg-black">{t.icon} {t.label}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                )}
                                             </div>
                                             <button
                                                 onClick={handlePostSubmit}
-                                                disabled={!newPostContent.trim() && !attachedMedia}
+                                                disabled={(!newPostContent.trim() && !attachedMedia) || fetcher.state === "submitting"}
                                                 className="bg-white text-black pl-12 pr-6 py-5 rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-none active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center gap-6 group"
                                             >
-                                                <span>Distribute</span>
+                                                <span>{fetcher.state === "submitting" ? "Transmitting..." : "Distribute"}</span>
                                                 <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white group-hover:translate-x-2 transition-transform">
                                                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
                                                 </div>
@@ -371,14 +723,14 @@ export default function Timeline() {
 
                                 {/* Flow Feed */}
                                 <div className="space-y-12 pb-32">
-                                    {isLoading ? (
+                                    {isLoading || navigation.state === "loading" ? (
                                         <>
                                             <MomentCardSkeleton />
                                             <MomentCardSkeleton />
                                         </>
                                     ) : (
-                                        flowPosts.map((post) => (
-                                            <MomentCard key={post.id} moment={post} addReaction={addReaction} reactions={reactions} isFlow onAddComment={handleAddComment} onRelay={handleRelay} onUnlock={handleUnlock} onMediaClick={setExpandedMedia} />
+                                        flowPosts.map((post: Post) => (
+                                            <MomentCard key={post.id} moment={post} addReaction={addReaction} reactions={reactions} isFlow onAddComment={handleAddComment} onRelay={handleRelay} onUnlock={handleUnlock} onMediaClick={setExpandedMedia} onPulse={handlePulse} />
                                         ))
                                     )}
                                 </div>
@@ -389,12 +741,13 @@ export default function Timeline() {
                             <div className="space-y-12 animate-in fade-in duration-700">
                                 <h1 className="text-5xl font-black italic text-center text-white">Divine <span className="text-gradient">Muse.</span></h1>
                                 <div ref={carouselRef} className="flex overflow-x-auto gap-8 pb-12 snap-x scrollbar-hide px-4">
-                                    {FEATURED_CREATORS.map((creator, i) => (
+                                    {(featured as any[]).map((creator: any, i: number) => (
                                         <div key={i} className="flex-none w-[320px] h-[480px] snap-center rounded-[3rem] overflow-hidden bg-zinc-900 border border-zinc-800 relative group/card cursor-pointer shadow-none" onClick={() => setExpandedMedia({ url: creator.img, type: 'image', name: creator.name })}>
                                             <img src={creator.img} loading="lazy" className="absolute inset-0 w-full h-full object-cover grayscale group-hover/card:grayscale-0 transition-all duration-1000 animated-sensual" alt="" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                                             <div className="absolute inset-0 p-8 flex flex-col justify-end">
                                                 <h3 className="text-3xl font-black text-white italic tracking-tighter">{creator.name}</h3>
+                                                <p className="text-[10px] font-black uppercase text-zinc-400 tracking-widest mt-2">{creator.handle}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -424,8 +777,8 @@ export default function Timeline() {
 
                         {(activeTab === "all" || activeTab === "unlocked") && (
                             <div className="space-y-20 pb-32">
-                                {visions.map((moment) => (
-                                    <MomentCard key={moment.id} moment={moment} addReaction={addReaction} reactions={reactions} onRelay={handleRelay} onUnlock={handleUnlock} onMediaClick={setExpandedMedia} />
+                                {visions.map((moment: Post) => (
+                                    <MomentCard key={moment.id} moment={moment} addReaction={addReaction} reactions={reactions} onRelay={handleRelay} onUnlock={handleUnlock} onMediaClick={setExpandedMedia} onPulse={handlePulse} />
                                 ))}
                             </div>
                         )}
@@ -439,7 +792,7 @@ export default function Timeline() {
                         </div>
 
                         <div className="flex-grow space-y-6 overflow-y-auto scrollbar-hide pb-32 relative" style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
-                            {[...MOCK_REELS, ...MOCK_REELS].map((reel, idx) => (
+                            {[...MOCK_REELS, ...MOCK_REELS].map((reel: any, idx: number) => (
                                 <div key={`${reel.id}-${idx}`} className="relative aspect-[9/16] w-full rounded-[2.5rem] overflow-hidden border border-zinc-800 group/reel cursor-pointer shadow-none transition-all duration-500 hover:scale-[1.02]" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
                                     <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
                                     <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-black/90 to-transparent">
@@ -476,7 +829,7 @@ export default function Timeline() {
                                     <div className="w-full aspect-[3/4.5] rounded-[4.5rem] bg-zinc-900 animate-pulse border border-zinc-800 opacity-50" />
                                 </>
                             ) : (
-                                trending.map((creator, i) => (
+                                trending.map((creator: any, i: number) => (
                                     <TrendingAltarItem key={creator.id} creator={creator} rank={i + 1} onBoost={handleBoost} onMediaClick={setExpandedMedia} />
                                 ))
                             )}

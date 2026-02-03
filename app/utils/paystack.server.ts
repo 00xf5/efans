@@ -3,7 +3,15 @@
  * Handles the 80/20 split and referral protocol logic.
  */
 
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
+// Safe access to environment variables
+const getEnv = (key: string) => {
+    if (typeof process !== "undefined" && process.env) {
+        return process.env[key];
+    }
+    return undefined;
+};
+
+const PAYSTACK_SECRET = getEnv("PAYSTACK_SECRET_KEY");
 
 export async function initiatePayment(email: string, amount: number, metadata: any) {
     const response = await fetch("https://api.paystack.co/transaction/initialize", {
@@ -16,7 +24,7 @@ export async function initiatePayment(email: string, amount: number, metadata: a
             email,
             amount: amount * 100, // Paystack uses kobo/cents
             metadata,
-            callback_url: `${process.env.APP_URL || 'http://localhost:5173'}/payment/verify`,
+            callback_url: `${getEnv("APP_URL") || 'http://localhost:5173'}/payment/verify`,
         }),
     });
 

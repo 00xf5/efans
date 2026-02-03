@@ -4,11 +4,26 @@ import { db } from "../db/index.server";
 import { profiles } from "../db/schema";
 import { eq } from "drizzle-orm";
 
+interface DiscoveryCreator {
+    id: string;
+    name: string;
+    tag: string;
+    category: string;
+    resonance: number;
+    transmission_rate: string;
+    payout_velocity: string;
+    status: string;
+    avatar: string;
+    bio: string;
+    badges: string[];
+}
+
 export async function loader() {
-    const creators = await db.query.profiles.findMany({
-        where: eq(profiles.persona, 'creator')
+    const creatorsRaw = await db.query.profiles.findMany({
+        where: eq(profiles.persona, 'creator'),
+        limit: 50
     });
-    return { creators };
+    return { creatorsRaw };
 }
 
 // --- Sovereign Design Language: Discovery Altar Data ---
@@ -22,7 +37,7 @@ const DISCOVERY_CATEGORIES = [
     "Cultural Altars"
 ];
 
-const DISCOVERY_CREATORS = [
+const MOCK_DISCOVERY_CREATORS: DiscoveryCreator[] = [
     {
         id: "v1",
         name: "Valentina Noir",
@@ -61,75 +76,36 @@ const DISCOVERY_CREATORS = [
         avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sofia",
         bio: "The space between notes. Finding luxury in the silence of the city.",
         badges: ["Rising"]
-    },
-    {
-        id: "v4",
-        name: "Adrien Thorne",
-        tag: "@thorne_apex",
-        category: "Sovereign Souls",
-        resonance: 96,
-        transmission_rate: "2.1/day",
-        payout_velocity: "₦18.4M",
-        status: "Online",
-        avatar: "https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?auto=format&fit=crop&q=80&w=400",
-        bio: "Peak human physicality. Calibrating the elite experience.",
-        badges: ["Grandmaster"]
-    },
-    {
-        id: "v5",
-        name: "Sienna Ray",
-        tag: "@sienna_velvet",
-        category: "Visual Visions",
-        resonance: 91,
-        transmission_rate: "0.8/day",
-        payout_velocity: "₦5.6M",
-        status: "Away",
-        avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=400",
-        bio: "Capturing the velvet hour. Where light meets the soul.",
-        badges: ["Aesthetic"]
-    },
-    {
-        id: "v6",
-        name: "Elena Mour",
-        tag: "@mour_essence",
-        category: "Atmospheric Echoes",
-        resonance: 87,
-        transmission_rate: "5.4/day",
-        payout_velocity: "₦1.8M",
-        status: "Online",
-        avatar: "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?auto=format&fit=crop&q=80&w=400",
-        bio: "Industrial ambient melodies and the resonance of forgotten spaces.",
-        badges: ["Sonics"]
     }
 ];
 
 export default function DiscoveryAltar() {
-    const { creators: dbCreators } = useLoaderData() as { creators: any[] };
+    const { creatorsRaw } = useLoaderData<typeof loader>();
     const [activeTab, setActiveTab] = useState("All Resonance");
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
 
     // Merge DB creators with mock data for aesthetic variety during dev
     const allCreators = useMemo(() => {
-        const mappedDb = dbCreators.map(c => ({
+        const mappedDb: DiscoveryCreator[] = (creatorsRaw as any[]).map((c: { id: string; name: string | null; tag: string | null; resonanceScore: any; balance: any; avatarUrl: string | null; bio: string | null }) => ({
             id: c.id,
             name: c.name || "Anonymous Soul",
             tag: `@${c.tag || 'essence'}`,
             category: "Sovereign Souls",
-            resonance: parseFloat(c.resonanceScore) || 50,
+            resonance: parseFloat(c.resonanceScore?.toString() || "50"),
             transmission_rate: "New Resonance",
-            payout_velocity: `₦${parseFloat(c.balance).toLocaleString()}`,
+            payout_velocity: `₦${parseFloat(c.balance?.toString() || "0").toLocaleString()}`,
             status: "Online",
-            avatar: c.avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + c.tag,
+            avatar: c.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.tag}`,
             bio: c.bio || "No description of their digital sanctuary yet.",
-            badges: ["New"]
+            badges: ["New Member"]
         }));
 
-        return [...mappedDb, ...DISCOVERY_CREATORS];
-    }, [dbCreators]);
+        return [...mappedDb, ...MOCK_DISCOVERY_CREATORS];
+    }, [creatorsRaw]);
 
     const filteredCreators = useMemo(() => {
-        return allCreators.filter(c => {
+        return allCreators.filter((c: DiscoveryCreator) => {
             const matchesTab = activeTab === "All Resonance" || c.category === activeTab;
             const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.tag.toLowerCase().includes(searchQuery.toLowerCase());
             return matchesTab && matchesSearch;
@@ -156,8 +132,8 @@ export default function DiscoveryAltar() {
                 <header className="flex flex-col md:flex-row items-end justify-between gap-8">
                     <div className="space-y-4">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full shadow-sm">
-                            <span className="w-2 h-2 rounded-full bg-primary"></span>
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Scan In Progress • 24,042 Souls Active</span>
+                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Scan In Progress • {24042 + allCreators.length} Souls Active</span>
                         </div>
                         <h1 className="text-4xl md:text-7xl font-black italic text-white leading-none tracking-tighter">
                             Discovery <span className="text-gradient">Altar.</span>
@@ -192,7 +168,7 @@ export default function DiscoveryAltar() {
                         <button
                             key={cat}
                             onClick={() => setActiveTab(cat)}
-                            className={`px-8 py-3 rounded-[2rem] text-[9px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === cat ? 'bg-white text-black shadow-xl shadow-zinc-200' : 'text-zinc-500 hover:text-white hover:bg-zinc-800'}`}
+                            className={`px-8 py-3 rounded-[2rem] text-[9px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap ${activeTab === cat ? 'bg-white text-black shadow-xl shadow-zinc-200' : 'text-zinc-500 hover:text-white hover:bg-zinc-800'}`}
                         >
                             {cat}
                         </button>
@@ -202,7 +178,7 @@ export default function DiscoveryAltar() {
                 {/* 3. The High-Density Altar Grid */}
                 <main className="flex-grow pb-32">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredCreators.map((creator) => (
+                        {filteredCreators.map((creator: DiscoveryCreator) => (
                             <Link
                                 key={creator.id}
                                 to={`/creator/${creator.tag.replace('@', '')}`}
@@ -230,7 +206,7 @@ export default function DiscoveryAltar() {
                                         <h3 className="text-2xl font-black italic text-white tracking-tighter leading-none group-hover:text-primary transition-colors">{creator.name}</h3>
                                         <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{creator.tag}</p>
                                         <div className="flex gap-2 pt-2">
-                                            {creator.badges.map(b => (
+                                            {creator.badges.map((b: string) => (
                                                 <span key={b} className="text-[8px] font-black uppercase tracking-widest text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded-full">{b}</span>
                                             ))}
                                         </div>

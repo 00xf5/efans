@@ -1,44 +1,90 @@
-import { useState, useRef, memo } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate, useLoaderData, useFetcher } from "react-router";
+import { db } from "../db/index.server";
+import { echoes, profiles } from "../db/schema";
+import { eq, desc, and } from "drizzle-orm";
+import { requireUserId } from "../utils/session.server";
 
-const MOCK_ECHOES = [
-    {
-        id: "e1",
-        type: "PULSE",
-        user: {
-            name: "Valentina Noir",
-            avatar: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=200",
-        },
-        content: "adored your latest response",
-        time: "5m ago",
-        unread: true,
-        link: "/creator/v_noir"
-    },
-    {
-        id: "e2",
-        type: "VISION",
-        user: {
-            name: "Sienna Ray",
-            avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=200",
-        },
-        content: "revealed a new Midnight Glimpse",
-        time: "1h ago",
-        unread: true,
-        link: "/timeline"
-    },
-    {
-        id: "e3",
-        type: "WHISPER",
-        user: {
-            name: "Elena Mour",
-            avatar: "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?auto=format&fit=crop&q=80&w=200",
-        },
-        content: "sent you a private whisper",
-        time: "2h ago",
-        unread: false,
-        link: "/messages"
+interface DbEcho {
+    id: string;
+    recipientId: string;
+    senderId: string | null;
+    type: string;
+    content: string | null;
+    link: string | null;
+    isRead: boolean;
+    createdAt: Date;
+}
+
+export async function loader({ request }: { request: Request }) {
+    const userId = await requireUserId(request);
+
+    const dbEchoes = await db.query.echoes.findMany({
+        where: eq(echoes.recipientId, userId),
+        orderBy: [desc(echoes.createdAt)],
+        limit: 50
+    });
+
+    const enrichedEchoes = await Promise.all(dbEchoes.map(async (echo: DbEcho) => {
+        let senderProfile = null;
+        if (echo.senderId) {
+            senderProfile = await db.query.profiles.findFirst({
+                where: eq(profiles.id, echo.senderId)
+            });
+        }
+
+        return {
+            id: echo.id,
+            type: echo.type.toUpperCase(),
+            user: {
+                name: senderProfile?.name || "System",
+                avatar: senderProfile?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${senderProfile?.tag || 'system'}`,
+            },
+            content: echo.content || "Interaction received",
+            time: formatTimeAgo(new Date(echo.createdAt)),
+            unread: !echo.isRead,
+            link: echo.link || "#"
+        };
+    }));
+
+    return { echoes: enrichedEchoes };
+}
+
+export async function action({ request }: { request: Request }) {
+    const userId = await requireUserId(request);
+    const formData = await request.formData();
+    const intent = formData.get("intent");
+
+    if (intent === "mark_read") {
+        const id = formData.get("id") as string;
+        await db.update(echoes)
+            .set({ isRead: true })
+            .where(and(eq(echoes.id, id), eq(echoes.recipientId, userId)));
+        return { success: true };
     }
-];
+
+    if (intent === "mark_all_read") {
+        await db.update(echoes)
+            .set({ isRead: true })
+            .where(eq(echoes.recipientId, userId));
+        return { success: true };
+    }
+
+    return { success: false };
+}
+
+function formatTimeAgo(date: Date) {
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (seconds < 60) return "Just now";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+}
 
 const MOCK_REELS = [
     {
@@ -58,13 +104,31 @@ const MOCK_REELS = [
 ];
 
 export default function Notifications() {
-    const [activeFilter, setActiveFilter] = useState("all");
-    const [echoes, setEchoes] = useState(MOCK_ECHOES);
+    const { echoes: initialEchoes } = useLoaderData<typeof loader>();
+    const [echoesList, setEchoesList] = useState(initialEchoes);
+    const fetcher = useFetcher();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setEchoesList(initialEchoes);
+    }, [initialEchoes]);
+
     const handleEchoClick = (id: string, link: string) => {
-        setEchoes(prev => prev.map(e => e.id === id ? { ...e, unread: false } : e));
+        const formData = new FormData();
+        formData.append("intent", "mark_read");
+        formData.append("id", id);
+        fetcher.submit(formData, { method: "POST" });
+
+        // Optimistic UI update
+        setEchoesList(prev => prev.map(e => e.id === id ? { ...e, unread: false } : e));
         navigate(link);
+    };
+
+    const markAllRead = () => {
+        const formData = new FormData();
+        formData.append("intent", "mark_all_read");
+        fetcher.submit(formData, { method: "POST" });
+        setEchoesList(prev => prev.map(e => ({ ...e, unread: false })));
     };
 
     return (
@@ -95,14 +159,6 @@ export default function Notifications() {
                                 </div>
                             </Link>
                         </nav>
-
-                        <div className="mt-12 p-5 bg-zinc-900/40 rounded-[2rem] border border-zinc-800 flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center font-black text-sm text-black shadow-lg shadow-white/5">U2</div>
-                            <div className="space-y-0.5">
-                                <p className="text-[10px] font-black uppercase text-white leading-none">Account</p>
-                                <p className="text-[10px] text-zinc-500 font-bold italic">Authenticated</p>
-                            </div>
-                        </div>
                     </aside>
 
                     {/* Echoes Interface */}
@@ -110,24 +166,34 @@ export default function Notifications() {
                         <div className="space-y-8 px-2 pb-20">
 
                             <div className="sticky top-0 z-20 bg-black/90 backdrop-blur-3xl py-6 border-b border-zinc-800 flex items-center justify-between gap-4 -mx-2 px-6 shadow-2xl rounded-t-[3rem]">
-                                <h1 className="text-3xl font-black italic text-white tracking-tighter leading-none">Recent <span className="text-gradient">Echoes.</span></h1>
-                                <div className="flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                                    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Realtime</span>
+                                <div className="flex items-center gap-4">
+                                    <h1 className="text-3xl font-black italic text-white tracking-tighter leading-none">Recent <span className="text-gradient">Echoes.</span></h1>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                        <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Realtime</span>
+                                    </div>
                                 </div>
+                                {echoesList.some(e => e.unread) && (
+                                    <button
+                                        onClick={markAllRead}
+                                        className="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors"
+                                    >
+                                        Mute All
+                                    </button>
+                                )}
                             </div>
 
                             <div className="space-y-4 pt-4">
-                                {echoes.map((echo) => (
+                                {echoesList.length > 0 ? echoesList.map((echo: { id: string; type: string; user: { name: string; avatar: string }; content: string; time: string; unread: boolean; link: string }) => (
                                     <button
                                         key={echo.id}
                                         onClick={() => handleEchoClick(echo.id, echo.link)}
-                                        className={`w-full text-left glass-card p-6 rounded-[2.5rem] border transition-all duration-500 shadow-none ${echo.unread ? 'bg-white text-black border-white' : 'bg-black/40 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/60'}`}
+                                        className={`w-full text-left glass-card p-6 rounded-[2.5rem] border transition-all duration-500 shadow-none flex items-center gap-6 ${echo.unread ? 'bg-white text-black border-white' : 'bg-black/40 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/60'}`}
                                     >
                                         <div className="relative flex-shrink-0">
                                             <img src={echo.user.avatar} className="w-14 h-14 rounded-2xl object-cover ring-2 ring-zinc-800 shadow-xl" alt="" />
                                             <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-full shadow-lg flex items-center justify-center text-[10px] ${echo.unread ? 'bg-black text-white' : 'bg-white text-black border border-zinc-200'}`}>
-                                                {echo.type === 'PULSE' ? '❤️' : echo.type === 'VISION' ? '✨' : '💌'}
+                                                {echo.type === 'PULSE' ? '❤️' : echo.type === 'VISION' ? '✨' : echo.type === 'WHISPER' ? '💌' : '💠'}
                                             </div>
                                         </div>
 
@@ -148,7 +214,12 @@ export default function Notifications() {
                                         </div>
                                         <div className={`text-xl font-light ${echo.unread ? 'text-black/20' : 'text-zinc-800'}`}>→</div>
                                     </button>
-                                ))}
+                                )) : (
+                                    <div className="h-64 flex flex-col items-center justify-center text-zinc-700 gap-4">
+                                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="12" cy="12" r="10" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.4em] italic">No Echoes in the Void</p>
+                                    </div>
+                                )}
                             </div>
 
                         </div>

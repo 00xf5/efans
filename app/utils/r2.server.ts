@@ -6,16 +6,24 @@
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
+// Safe access to environment variables
+const getEnv = (key: string) => {
+    if (typeof process !== "undefined" && process.env) {
+        return process.env[key];
+    }
+    return undefined;
+};
+
 const S3 = new S3Client({
     region: "auto",
-    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    endpoint: `https://${getEnv("R2_ACCOUNT_ID") || "placeholder"}.r2.cloudflarestorage.com`,
     credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
+        accessKeyId: getEnv("R2_ACCESS_KEY_ID") || "placeholder",
+        secretAccessKey: getEnv("R2_SECRET_ACCESS_KEY") || "placeholder",
     },
 });
 
-const BUCKET = process.env.R2_BUCKET_NAME || "efans-visions";
+const BUCKET = getEnv("R2_BUCKET_NAME") || "efans-visions";
 
 /**
  * GENERATE UPLOAD URL

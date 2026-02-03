@@ -1,11 +1,19 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 
-const sessionSecret = process.env.SESSION_SECRET || "sovereign_session_secret_2026";
+// Safe access to environment variables
+const getEnv = (key: string) => {
+    if (typeof process !== "undefined" && process.env) {
+        return process.env[key];
+    }
+    return undefined;
+};
+
+const sessionSecret = getEnv("SESSION_SECRET") || "sovereign_session_secret_2026";
 
 export const storage = createCookieSessionStorage({
     cookie: {
         name: "efans_session",
-        secure: process.env.NODE_ENV === "production",
+        secure: getEnv("NODE_ENV") === "production",
         secrets: [sessionSecret],
         sameSite: "lax",
         path: "/",
