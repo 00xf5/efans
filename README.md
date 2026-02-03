@@ -1,87 +1,92 @@
-# CREATORPLATFORM (Project FNS)
+# eFans (Project FNS) — Sovereign Creator Ecosystem
 
-A high-fidelity, multi-tenant digital ecosystem for creators, built with a cinematic visual language and real-time social dynamics. Designed for extreme data density, luxury aesthetics, and mobile-first discovery.
-
----
-
-## 🏗️ Technical Stack (Pro-Grade Infrastructure)
-
-*   **Logic**: React Router v7 (Framework Mode)
-*   **Hosting**: Vercel (Optimized), Cloudflare Pages (Edge SSR)
-*   **Built-in Presets**: vercel.json (Remix Framework Preset)
-*   **API/Compute**: Cloudflare Workers / Vercel Edge Functions
-*   **Database**: Supabase (PostgreSQL + RLS)
-*   **Storage**: Cloudflare R2 (S3-compatible)
-*   **Styling**: Tailwind CSS v4 (Custom Design Tokens)
-*   **Animations**: Framer Motion inspired transitions + Native CSS Keyframes
+A high-fidelity, multi-tenant digital sanctuary for independent creators. eFans combines cinematic aesthetics with a robust economic engine, built for extreme data density and mobile-first discovery.
 
 ---
 
-## 💎 The "Divine" Experience (Massive 4-Column HUD)
+## 🏗️ Core Architecture & Technical Stack
 
-Our desktop interface features a revolutionary 4-column architecture designed for massive displays (optimized for up to 2200px):
-
-1.  **Column 1: Professional Command Center**:
-    *   Full SVG-based professional HUD navigation.
-    *   Real-time counters for "Whispers" (Messages) and "Echoes" (Notifications).
-    *   Quick-access identity and financial hub (Experience Hub).
-
-2.  **Column 2: The Independent Center Feed**:
-    *   **Studio Composer**: A professional-grade toolkit for creators to "Distribute" their essence. Features horizontal media previews, "Visions" (locked) vs. "Flow" (public) toggles, and multi-file support.
-    *   **Moment Cards**: High-fidelity feed items with interactive author HUDs, real-time reactions/hearts, and blurred content paywalls.
-    *   **Elastic Header**: Sticky tab navigation (Flow, Visions, Reels, Featured) with glassmorphic blur effects.
-
-3.  **Column 3: Active Desires (Recon Sidebar)**:
-    *   Compact, high-density feed for real-time community actions.
-    *   Mobile-friendly but desktop-optimized data visualization.
-
-4.  **Column 4: The Apex Discovery Gallery (Bigger x2)**:
-    *   **Colossal Visual Footprint**: A staggering 480px wide pillar dedicated to global discovery.
-    *   **Digital Shrine Cards**: Life-sized vertical portraiture (`aspect-[3/4.5]`) with sub-surface "Heat Aurora" lighting.
-    *   **Live Resonance HUD**: Real-time temperature gauges (in eFans degrees), live popularity pulse, and ranking altars (#1, #2, etc.).
+*   **Framework**: [React Router v7](https://reactrouter.com/) (Framework Mode)
+*   **Infrastructure**: [Vercel](https://vercel.com/) (Production Hosting) & [Cloudflare Pages](https://pages.cloudflare.com/) (Edge SSR)
+*   **Edge Compute**: Cloudflare Workers (High-performance API layer)
+*   **Database**: Supabase (PostgreSQL with Row Level Security)
+*   **Storage**: Cloudflare R2 (S3-compatible visual asset vault)
+*   **Design Engine**: Tailwind CSS v4 (Custom dark-mode design tokens)
+*   **Security Protocol**: Aegis Guard (Advanced chargeback protection & fraud mitigation)
 
 ---
 
-## 📱 Mobile-First "Pro" Architecture
+## 🏦 Economic Engine (Backend Logic Specs)
 
-The platform adapts into a high-end mobile application on smaller screens:
+To facilitate a robust backend implementation, the following economic models and logic flows must be adhered to:
 
-*   **Horizon Glimpses Carousel**: Replaces the discovery rail with a horizontal, cinematic Reels carousel at the top of the feed.
-*   **Professional Bottom HUD**: A floating glassmorphic navigation bar with professional SVG icons and identity previews.
-*   **Touch-Optimized Tabs**: Elastic scrolling tab bars for effortless swiping through content categories.
-*   **Adaptive Padding**: Custom logic to ensure content never clashes with the floating navigation elements.
+### 1. The 80/20 Commission Model
+*   **Creator Share**: 80% of all gross revenue (Subscriptions, Vision Unlocks, Tips).
+*   **Platform Take**: 20% flat commission for infrastructure, security, and hosting.
+*   **Settlement**: Real-time balance updates in the "Experience Hub" (Dashboard).
 
----
+### 2. Referral Engine (Growth Logic)
+*   **The 10% Protocol**: Referrers earn **10% of the platform's cut** (2% of the total transaction) for every creator they bring to the hub.
+*   **Duration**: Lifetime resonance (continuous payouts for the life of the referred account).
 
-## 🎨 Design Philosophy & UX
+### 3. Calibration Tiers (Pricing)
+*   **The Daily Boost**: A $3 USD/day (or equivalent in Naira) promotion system that injects the creator into the "Global Altar" (High-priority discovery position).
+*   **Subscription Slider**: Creators set their own "Monthly Fuel" prices from ₦5,000 to ₦50,000.
 
-*   **Professional Aesthetic**: Moved away from generic emojis to customized, professional SVG iconography for the entire interface.
-*   **Interactive Authority**: Every creator name and avatar is a portal, linking directly to their `/creator/[name]` identity with smooth transition animations.
-*   **Cinematic Motion**: "Light-sweep" effects, "Ken Burns" breathing on cards, and thermal pulsing on heat metrics.
-*   **Typography**: Tabular numerals for data accuracy, wide-track uppercase for command headers, and elegant italics for "Premium" flair.
-
----
-
-## 🗺️ Progress & Roadmap (Updated)
-
-### PHASE 1: The Marketplace (Complete)
-*   [x] Premium Landing Page with hypnotic creator carousel.
-*   [x] Discovery Garden (`/creators`) for global tenant listing.
-*   [x] Professional Sign-In/Sign-Up architecture.
-*   [x] Global Search (Foundation).
-
-### PHASE 2: The Tenant Space & Studio (Active)
-*   [x] **Studio Composer**: Professional content distribution toolkit.
-*   [x] **Creator Identity**: Linkable profile pages for every author.
-*   [x] **Privacy Architecture**: "Flow" (Public) vs "Visions" (Locked) differentiation.
-*   [wip] **Experience Hub (Dashboard)**: Real-time earnings and engagement charts.
-
-### PHASE 3: Social & Interaction
-*   [x] **Massive Discovery Wall**: Global trending creators with live pulse.
-*   [x] **Mobile Professional HUD**: Bottom-nav and top-carousel adaptation.
-*   [ ] **DMs/Whispers**: Private encrypted chat interface.
-*   [ ] **Tip/Engagement**: Advanced unlocked reactions.
+### 4. Privacy & Content Visibility (Sovereign Mode)
+*   **The Flow (Public)**: Open-access content for engagement.
+*   **Visions (Locked)**: Paywalled high-fidelity content requiring individual unlock or subscription.
+*   **Whisper Room (Encrypted Chat)**: Direct messaging with tip-to-unlock and pay-per-view vision support.
 
 ---
 
+## 💎 The "Divine" Experience (4-Column HUD)
+
+Designed for massive displays (up to 2200px), the interface optimizes real estate across four specialized pillars:
+
+1.  **Management HUD**: Financial metrics, Whisper/Echo counters, and Identity Calibration.
+2.  **The Independent Center Feed**: Multi-file distribution toolkit ("Studio Composer") and Moment Cards.
+3.  **Active Desires (Recon)**: Real-time community activity and interaction feed.
+4.  **The Apex Discovery Gallery**: 480px wide pillar for global discovery with live thermal heat gauges.
+
+---
+
+## 🗺️ Implementation Roadmap
+
+### PHASE 1: Visual Sanctuary (Complete)
+*   [x] Cinematic Hero Engine & Creator Carousel
+*   [x] Discovery Garden (`/creators`) global search & listing
+*   [x] Premium Authentication (Sign-in/Sign-out/Forgot Password)
+*   [x] Global Layout (Navbar, MobileHUD, Multi-tenant Footer)
+
+### PHASE 2: Economic Core (Active/WIP)
+*   [x] **Experience Hub (Dashboard)**: Revenue tracking & bank linking UI.
+*   [x] **Identity Sanctuary**: Profile customization (Avatar, Banner, Bio).
+*   [x] **Notification Engine (Echoes)**: Real-time UI for platform interactions.
+*   [ ] **Payment Rails**: Integration with Paystack/Flutterwave for local settlement.
+*   [ ] **R2 Implementation**: Dynamic asset uploading & Resizing (4K optimization).
+
+### PHASE 3: Social & Sovereignty
+*   [x] **Encrypted Whispers (Messages)**: Contextual messaging interface.
+*   [ ] **Chargeback Shield**: Aegis Guard logic for fraud protection.
+*   [ ] **Live Analytics**: Heat-map visualization for creator growth.
+
+---
+
+## 🛠️ Developer Protocols
+
+### Local Development
+```bash
+npm run dev
+```
+
+### Type Checking
+```bash
+npm run typecheck
+```
+
+### Security Compliance
+All API endpoints must utilize **Supabase RLS** and **Aegis Guard** profiles to prevent unauthorized state mutation. Identity is sacred.
+
+---
 *Built for the digital elite. Precision. Aesthetics. Power.*
