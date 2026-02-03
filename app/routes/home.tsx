@@ -10,69 +10,65 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center bg-black text-white selection:bg-primary/20 font-display">
       {/* Hero Section */}
       <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-center px-6 overflow-hidden">
         {/* Background Mesh Gradient */}
-        <div className="absolute inset-0 z-0 opacity-40 dark:opacity-60">
-          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-violet-600/30 rounded-full blur-[120px] animate-pulse"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px]"></div>
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-zinc-800/20 rounded-full blur-[140px]"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-zinc-900/40 rounded-full blur-[140px]"></div>
         </div>
 
-        <div className="relative z-10 max-w-5xl text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wider uppercase">
+        <div className="relative z-10 max-w-5xl text-center space-y-8 animate-entrance">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black tracking-widest uppercase">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary animate-pulse"></span>
             </span>
-            Next Generation Platform
+            Direct Discovery Platform
           </div>
 
-          <h1 className="text-5xl md:text-8xl font-display font-black tracking-tight leading-[1.1] text-zinc-900 dark:text-white">
+          <h1 className="text-5xl md:text-9xl font-black tracking-tighter leading-[0.9] text-white italic">
             Unleash Your <br />
             <span className="text-gradient">Digital Legacy.</span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
-            The platform designed for maximum discoverability. Scale your audience with SEO-first architecture and a premium experience your fans deserve.
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-zinc-400 font-bold italic leading-relaxed">
+            The first SEO-native sanctuary for top-tier creators. Built for speed, sovereignty, and the premium experience your fans deserve.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
             <Link
               to="/signup"
-              className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-full text-lg font-bold transition-all shadow-xl shadow-violet-600/30 active:scale-95"
+              className="w-full sm:w-auto bg-white text-black px-12 py-5 rounded-full text-[11px] font-black uppercase tracking-[0.3em] transition-all hover:scale-105 active:scale-95 shadow-none"
             >
               Start Creating Now
             </Link>
             <Link
               to="/creators"
-              className="w-full sm:w-auto glass hover:bg-white/10 px-8 py-4 rounded-full text-lg font-bold transition-all active:scale-95 border border-zinc-200 dark:border-zinc-800"
+              className="w-full sm:w-auto bg-zinc-900/50 border border-zinc-800 text-white px-12 py-5 rounded-full text-[11px] font-black uppercase tracking-[0.3em] transition-all hover:bg-zinc-800 active:scale-95"
             >
-              Explore Creators
+              Explore Sanctuary
             </Link>
           </div>
 
-          <div className="pt-12 flex flex-col items-center gap-4">
-            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Trusted by leading creators</p>
-            <div className="flex gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
-              <span className="text-xl font-display font-black tracking-tighter">CREATOR.CO</span>
-              <span className="text-xl font-display font-black tracking-tighter">DIGITAL.X</span>
-              <span className="text-xl font-display font-black tracking-tighter">ELITE.FN</span>
+          <div className="pt-20 flex flex-col items-center gap-6 opacity-40">
+            <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic">Validated by Industry Leaders</p>
+            <div className="flex flex-wrap justify-center gap-12 grayscale brightness-200">
+              <span className="text-xl font-black tracking-tighter italic">CREATOR.CO</span>
+              <span className="text-xl font-black tracking-tighter italic">DIGITAL.X</span>
+              <span className="text-xl font-black tracking-tighter italic">ELITE.FN</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Creators Section - Sensual/Animated */}
-      <section className="w-full py-32 space-y-16 overflow-hidden bg-black text-white relative">
-        {/* Subtle Ambient Light */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 blur-[150px] pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto px-6 space-y-4 relative z-10 text-center">
-          <h2 className="text-5xl md:text-7xl font-display font-black tracking-tight leading-tight uppercase italic">
-            Featured <span className="text-primary italic">Creators.</span>
+      {/* Featured Creators Section */}
+      <section className="w-full py-40 space-y-24 overflow-hidden bg-black text-white relative border-y border-zinc-900/50">
+        <div className="max-w-7xl mx-auto px-6 space-y-6 relative z-10 text-center animate-entrance">
+          <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-tight uppercase italic text-white">
+            Apex <span className="text-gradient">Creators.</span>
           </h2>
-          <p className="text-zinc-500 font-medium max-w-lg mx-auto">Discover the most innovative digital identities. Experience the art of premium creation.</p>
+          <p className="text-zinc-500 font-bold italic max-w-lg mx-auto text-sm">Discover the most innovative digital identities. Experience the art of premium resonance.</p>
         </div>
 
         {/* Infinite Moving Carousel */}
@@ -94,214 +90,195 @@ export default function Home() {
               <Link
                 key={i}
                 to={`/creator/${creator.handle.replace('@', '')}`}
-                className="relative flex-none w-[320px] md:w-[500px] aspect-[4/5] rounded-[3rem] overflow-hidden group shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5 active:scale-95 transition-transform"
+                className="relative flex-none w-[320px] md:w-[600px] aspect-[4/5] rounded-[3rem] overflow-hidden group border border-zinc-800 active:scale-95 transition-all duration-700 shadow-none"
               >
                 {/* Image Container with Ken Burns */}
                 <div className="absolute inset-0 overflow-hidden">
                   <img
                     src={creator.img}
                     alt={creator.name}
-                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-1000 animated-sensual"
+                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.8] group-hover:grayscale-0 transition-all duration-1000 animated-sensual scale-110"
                   />
-                  {/* Subtle Vignette Overlay */}
-                  <div className="absolute inset-0 vignette mix-blend-multiply opacity-60"></div>
-                  {/* Soft Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-700"></div>
+                  {/* Cinematic Overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-700"></div>
                 </div>
 
                 {/* Content Overlay */}
-                <div className="absolute inset-0 p-10 flex flex-col justify-end space-y-3">
-                  <div className="translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-out">
-                    <span className="inline-block px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-[10px] uppercase tracking-[0.3em] text-primary backdrop-blur-md mb-2">
+                <div className="absolute inset-0 p-12 flex flex-col justify-end space-y-4">
+                  <div className="translate-y-8 group-hover:translate-y-0 transition-all duration-1000 ease-out-back">
+                    <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 border border-primary/30 text-[9px] font-black uppercase tracking-[0.4em] text-primary backdrop-blur-md mb-4 shadow-none">
                       {creator.tag}
                     </span>
-                    <h3 className="text-3xl md:text-4xl font-display font-black text-white italic tracking-tighter leading-none">{creator.name}</h3>
-                    <p className="text-zinc-400 font-medium tracking-wide text-sm pt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200">
-                      View Exclusive Content
+                    <h3 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter leading-none mb-2">{creator.name}</h3>
+                    <p className="text-zinc-500 font-bold italic tracking-wide text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-300">
+                      Synchronize Resonance →
                     </p>
                   </div>
                 </div>
 
                 {/* Decorative Elements */}
-                <div className="absolute top-6 right-6 w-12 h-12 rounded-full glass border-white/10 flex items-center justify-center text-white scale-0 group-hover:scale-100 transition-transform duration-500 delay-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                <div className="absolute top-10 right-10 w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center scale-0 group-hover:scale-100 transition-all duration-500 delay-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                 </div>
               </Link>
             ))}
           </div>
 
-          {/* Fade edges to imply continuity */}
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none z-10"></div>
-          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black to-transparent pointer-events-none z-10"></div>
+          <div className="absolute inset-y-0 left-0 w-64 bg-gradient-to-r from-black to-transparent pointer-events-none z-10"></div>
+          <div className="absolute inset-y-0 right-0 w-64 bg-gradient-to-l from-black to-transparent pointer-events-none z-10"></div>
         </div>
       </section>
 
       {/* Stats/Feature Highlights */}
-      <section className="w-full max-w-7xl px-6 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="glass-card p-8 rounded-2xl space-y-4 group hover:-translate-y-2 transition-transform duration-300">
-          <div className="w-12 h-12 bg-violet-500/10 rounded-xl flex items-center justify-center text-primary text-2xl group-hover:bg-primary group-hover:text-white transition-colors">
-            📈
+      <section className="w-full max-w-7xl px-6 py-40 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[
+          { icon: "📈", title: "Global Discovery", text: "Built for SEO-first architecture. Your identity indexable by the world, not hidden behind walls." },
+          { icon: "⚡", title: "Instant Resonance", text: "Global edge deployment. Content delivered in less than 50ms to any part of the sanctuary." },
+          { icon: "🔒", title: "Sovereign Shield", text: "Proactive fraud protection. We guard your hard-earned fuel with advanced spend limits." }
+        ].map((feat, i) => (
+          <div key={i} className="bg-zinc-900/40 p-10 rounded-[3rem] border border-zinc-800 space-y-6 group hover:bg-zinc-800 transition-all duration-500">
+            <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center text-3xl group-hover:bg-primary group-hover:scale-110 transition-all shadow-xl shadow-black/40">
+              {feat.icon}
+            </div>
+            <h3 className="text-2xl font-black text-white italic italic uppercase tracking-tight">{feat.title}</h3>
+            <p className="text-zinc-500 font-bold italic leading-relaxed text-sm">{feat.text}</p>
           </div>
-          <h3 className="text-xl font-display font-bold">10x SEO Reach</h3>
-          <p className="text-zinc-500 dark:text-zinc-400">Unlike other platforms, we prioritize Google Search visibility to help you grow organically.</p>
-        </div>
-
-        <div className="glass-card p-8 rounded-2xl space-y-4 group hover:-translate-y-2 transition-transform duration-300">
-          <div className="w-12 h-12 bg-violet-500/10 rounded-xl flex items-center justify-center text-primary text-2xl group-hover:bg-primary group-hover:text-white transition-colors">
-            ⚡
-          </div>
-          <h3 className="text-xl font-display font-bold">Latency &lt; 50ms</h3>
-          <p className="text-zinc-500 dark:text-zinc-400">Global edge deployment ensures your fans never wait for content to load.</p>
-        </div>
-
-        <div className="glass-card p-8 rounded-2xl space-y-4 group hover:-translate-y-2 transition-transform duration-300">
-          <div className="w-12 h-12 bg-violet-500/10 rounded-xl flex items-center justify-center text-primary text-2xl group-hover:bg-primary group-hover:text-white transition-colors">
-            🔒
-          </div>
-          <h3 className="text-xl font-display font-bold">Zero-Fraud Policy</h3>
-          <p className="text-zinc-500 dark:text-zinc-400">Advanced spend velocity limits and device detection to protect your hard-earned revenue.</p>
-        </div>
+        ))}
       </section>
 
       {/* How it Works */}
-      <section className="w-full max-w-7xl px-6 py-32 space-y-24">
-        <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-6xl font-display font-black tracking-tight">How it <span className="text-gradient">Works.</span></h2>
-          <p className="text-zinc-500 font-medium max-w-xl mx-auto">Three simple steps to start your digital empire.</p>
+      <section className="w-full max-w-7xl px-6 py-40 space-y-32">
+        <div className="text-center space-y-6">
+          <h2 className="text-5xl md:text-8xl font-black tracking-tighter italic text-white uppercase italic leading-none">The <span className="text-gradient">Process.</span></h2>
+          <p className="text-zinc-500 font-bold italic max-w-xl mx-auto uppercase tracking-widest text-[10px]">Three stages to digital sovereignty.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-          <div className="space-y-6 relative">
-            <div className="text-8xl font-black text-primary/5 absolute -top-12 -left-4 select-none">01</div>
-            <div className="space-y-2">
-              <h4 className="text-2xl font-bold">Build Your Profile</h4>
-              <p className="text-zinc-500 dark:text-zinc-400">Customize your space with premium design tools. Make it yours, exactly how you envisioned.</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-24 relative">
+          {[
+            { step: "01", title: "Forge Your Space", text: "Customize your sanctuary with premium tools. Manifest your vision exactly how you imagined it." },
+            { step: "02", title: "Cast Your Vision", text: "Distribute your essence behind a seamless paywall. Our edge CDN handles the cosmic weight." },
+            { step: "03", title: "Harvest Fuel", text: "Withdraw your earnings with the lowest fees. Scale your legacy across the open web." }
+          ].map((item, i) => (
+            <div key={i} className="space-y-8 relative group">
+              <div className="text-[140px] font-black text-zinc-900/40 absolute -top-24 -left-8 select-none group-hover:text-primary/10 transition-colors duration-700">{item.step}</div>
+              <div className="space-y-4 relative z-10 pt-12">
+                <h4 className="text-2xl font-black text-white italic uppercase tracking-tight">{item.title}</h4>
+                <p className="text-zinc-500 font-bold italic leading-relaxed text-sm">{item.text}</p>
+              </div>
             </div>
-          </div>
-          <div className="space-y-6 relative">
-            <div className="text-8xl font-black text-primary/5 absolute -top-12 -left-4 select-none">02</div>
-            <div className="space-y-2">
-              <h4 className="text-2xl font-bold">Upload Content</h4>
-              <p className="text-zinc-500 dark:text-zinc-400">Post photos, videos, or text behind a seamless paywall. Our edge CDN handles the heavy lifting.</p>
-            </div>
-          </div>
-          <div className="space-y-6 relative">
-            <div className="text-8xl font-black text-primary/5 absolute -top-12 -left-4 select-none">03</div>
-            <div className="space-y-2">
-              <h4 className="text-2xl font-bold">Earn & Scale</h4>
-              <p className="text-zinc-500 dark:text-zinc-400">Withdraw your earnings with low fees. Use our SEO tools to attract fans from across the web.</p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Earnings Calculator */}
-      <section className="w-full bg-zinc-950 dark:bg-zinc-900/50 py-32 text-white">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-          <div className="space-y-8">
-            <h2 className="text-4xl md:text-6xl font-display font-black tracking-tight leading-tight">
-              Stop Leaving <br />
-              <span className="text-primary">Money on the Table.</span>
+      <section className="w-full bg-zinc-900/20 py-40 relative">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-800 to-transparent"></div>
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+          <div className="space-y-10">
+            <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] italic text-white uppercase italic">
+              Stop <br />
+              <span className="text-gradient">Wasting Power.</span>
             </h2>
-            <p className="text-zinc-400 text-lg font-medium leading-relaxed">
-              Most platforms take 20% or more. We offer the lowest fees in the industry with the highest discoverability. Calculate your potential growth with our SEO-first architecture.
+            <p className="text-zinc-400 text-lg font-bold italic leading-relaxed max-w-lg">
+              Legacy platforms siphon your resonance. We offer the highest share and the clearest path to global discovery.
             </p>
-            <div className="flex gap-4">
-              <div className="p-1 rounded-full bg-primary/20 border border-primary/30 px-4 py-2 text-sm font-bold text-primary">
-                Low 10% Platform Fee
+            <div className="flex flex-wrap gap-4">
+              <div className="px-6 py-2 rounded-full bg-white text-black text-[9px] font-black uppercase tracking-[0.2em] shadow-none">
+                Elite 90/10 Split
               </div>
-              <div className="p-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 px-4 py-2 text-sm font-bold text-emerald-500">
-                Instant Payouts Ready
+              <div className="px-6 py-2 rounded-full border border-emerald-500/20 text-emerald-500 text-[9px] font-black uppercase tracking-[0.2em]">
+                Instant Extraction Ready
               </div>
             </div>
           </div>
 
-          <div className="glass-card bg-white/5 border-white/10 p-10 rounded-3xl space-y-8">
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm font-bold uppercase tracking-widest text-zinc-500">
-                  <span>Subscribers</span>
+          <div className="bg-zinc-900 p-12 rounded-[4rem] border border-zinc-800 space-y-12 relative overflow-hidden group/calc shadow-none">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px]"></div>
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">
+                  <span>Hub Connections</span>
                   <span className="text-white">1,250</span>
                 </div>
-                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary w-[65%]"></div>
+                <div className="h-1.5 bg-zinc-950 rounded-full overflow-hidden">
+                  <div className="h-full bg-primary w-[65%] shadow-none"></div>
                 </div>
               </div>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm font-bold uppercase tracking-widest text-zinc-500">
-                  <span>Monthly Price</span>
-                  <span className="text-white">$14.99</span>
+              <div className="space-y-4">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">
+                  <span>Resonance Fee</span>
+                  <span className="text-white">₦15,000</span>
                 </div>
-                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary w-[40%]"></div>
+                <div className="h-1.5 bg-zinc-950 rounded-full overflow-hidden">
+                  <div className="h-full bg-white w-[40%] shadow-none"></div>
                 </div>
               </div>
             </div>
 
-            <div className="pt-8 border-t border-white/10 space-y-1">
-              <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest">Estimated Monthly Revenue</p>
-              <p className="text-5xl md:text-6xl font-display font-black text-emerald-400">$16,863.75</p>
+            <div className="pt-12 border-t border-zinc-800 space-y-4">
+              <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] italic">Projected Extraction / month</p>
+              <p className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-none tabular-nums">₦16,875,000</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="w-full max-w-4xl px-6 py-32 space-y-16">
-        <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-display font-black tracking-tight">FAQ.</h2>
-          <p className="text-zinc-500 font-medium">Everything you need to know about the platform.</p>
+      <section className="w-full max-w-5xl px-6 py-40 space-y-24">
+        <div className="text-center space-y-6">
+          <h2 className="text-5xl md:text-8xl font-black tracking-tighter italic text-white uppercase italic leading-none">Whispers.</h2>
+          <p className="text-zinc-500 font-bold italic uppercase tracking-widest text-[10px]">Essential protocols and calibrations.</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {[
-            { q: "How is this different from OnlyFans?", a: "SEO. We build your profile as an indexable, searchable brand. While others hide your content, we make sure it can be discovered by new fans on Google." },
-            { q: "What are the platform fees?", a: "We charge a competitive 10% platform fee, which includes global content delivery, fraud protection, and SEO optimization." },
-            { q: "Is payouts instant?", a: "Initial payouts have a short holding period to prevent fraud. After your first 30 days, you can move to our accelerated payout schedule." },
-            { q: "Do you support video content?", a: "Yes, our high-speed edge network supports 4K video streaming and pay-per-view video unlocks for premium fans." }
+            { q: "How is this different from generic hubs?", a: "Sovereignty. We build your profile as an indexable, searchable brand. While others cage your content, we ensure it's discovered by new fans on the open architecture." },
+            { q: "What is the resonance share?", a: "We operate on a competitive split, covering global content delivery, shield protection, and discovery optimization." },
+            { q: "Is fuel extraction instant?", a: "Initial top-ups have a calibration period to prevent anomalies. After 30 days, you move to our accelerated extraction schedule." },
+            { q: "Do you support high-fidelity visions?", a: "Yes, our high-speed edge network supports 4K silk streaming and pay-per-view vision unlocks for elite fans." }
           ].map((item, i) => (
-            <div key={i} className="glass-card p-8 rounded-2xl space-y-3">
-              <h4 className="text-xl font-bold">{item.q}</h4>
-              <p className="text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed">{item.a}</p>
+            <div key={i} className="bg-zinc-900/40 p-10 rounded-[3rem] border border-zinc-800 space-y-4 hover:border-zinc-700 transition-colors duration-500">
+              <h4 className="text-xl font-black text-white italic uppercase tracking-tight">{item.q}</h4>
+              <p className="text-zinc-500 font-bold italic leading-relaxed text-sm">{item.a}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="w-full border-t border-zinc-200 dark:border-zinc-800 py-16 px-6 bg-zinc-50 dark:bg-zinc-950/50">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12">
-          <div className="col-span-2 space-y-6">
-            <Link to="/" className="text-2xl font-display font-black tracking-tighter text-gradient">
+      <footer className="w-full border-t border-zinc-900 py-32 px-6 bg-black">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-24">
+          <div className="col-span-2 space-y-10 text-center md:text-left">
+            <Link to="/" className="text-3xl font-black tracking-tighter text-gradient italic">
               eFans
             </Link>
-            <p className="text-zinc-500 font-medium max-w-xs">
-              The premium destination for digital creators. Scale your legacy with SEO-first architecture.
+            <p className="text-zinc-600 font-bold italic max-w-xs leading-relaxed text-sm">
+              The premium destination for the elite digital creator. Manifest your legacy with SEO-first architecture.
             </p>
           </div>
-          <div className="space-y-4">
-            <h5 className="font-bold uppercase tracking-widest text-xs text-zinc-400">Platform</h5>
-            <ul className="space-y-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">
-              <li><Link to="/creators">Discover</Link></li>
-              <li><Link to="/pricing">Pricing</Link></li>
-              <li><Link to="/features">Features</Link></li>
+          <div className="space-y-6">
+            <h5 className="font-black uppercase tracking-[0.4em] text-[10px] text-zinc-500 italic">Sanctuary</h5>
+            <ul className="space-y-3 text-xs font-black uppercase tracking-widest text-zinc-700">
+              <li><Link to="/creators" className="hover:text-white transition-colors">Discover</Link></li>
+              <li><Link to="/pricing" className="hover:text-white transition-colors">Calibration</Link></li>
+              <li><Link to="/features" className="hover:text-white transition-colors">Essence</Link></li>
             </ul>
           </div>
-          <div className="space-y-4">
-            <h5 className="font-bold uppercase tracking-widest text-xs text-zinc-400">Legal</h5>
-            <ul className="space-y-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">
-              <li><Link to="/terms">Terms of Service</Link></li>
-              <li><Link to="/privacy">Privacy Policy</Link></li>
-              <li><Link to="/compliance">Compliance</Link></li>
+          <div className="space-y-6">
+            <h5 className="font-black uppercase tracking-[0.4em] text-[10px] text-zinc-500 italic">Protocols</h5>
+            <ul className="space-y-3 text-xs font-black uppercase tracking-widest text-zinc-700">
+              <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Union</Link></li>
+              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Shield</Link></li>
+              <li><Link to="/compliance" className="hover:text-white transition-colors">Vigilance</Link></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto pt-16 mt-16 border-t border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">
-          <p>© 2026 eFans. All rights reserved.</p>
-          <div className="flex gap-8">
-            <a href="#" className="hover:text-primary transition-colors">Twitter</a>
-            <a href="#" className="hover:text-primary transition-colors">Instagram</a>
-            <a href="#" className="hover:text-primary transition-colors">LinkedIn</a>
+        <div className="max-w-7xl mx-auto pt-24 mt-24 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-black text-zinc-800 uppercase tracking-[0.5em] italic">
+          <p>© 2026 EFANS. THE SOVEREIGN SANCTUARY.</p>
+          <div className="flex gap-12 grayscale opacity-40 hover:opacity-100 transition-opacity">
+            <a href="#" className="hover:text-white transition-colors">TW</a>
+            <a href="#" className="hover:text-white transition-colors">IG</a>
+            <a href="#" className="hover:text-white transition-colors">LI</a>
           </div>
         </div>
       </footer>

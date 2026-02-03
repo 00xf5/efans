@@ -28,10 +28,10 @@ import MobileHUD from "./components/MobileHUD";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="overflow-x-hidden">
+    <html lang="en" className="dark overflow-x-hidden">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <Meta />
         <Links />
         <script

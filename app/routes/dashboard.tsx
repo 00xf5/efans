@@ -1,13 +1,13 @@
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router";
 
 // --- ROI-Focused Design Tokens ---
 
 const MOCK_ROI_STATS = [
-    { label: "Active Fuel", val: "₦12.8M", sub: "+14% this week", color: "from-emerald-500 to-teal-400", type: "currency" },
-    { label: "Conversion Heat", val: "8.2%", sub: "Top 1% of Hub", color: "from-pink-500 to-rose-400", type: "percent" },
-    { label: "Aegis Guard", val: "1,240", sub: "Bad actors neutralized", color: "from-blue-600 to-indigo-500", type: "count" },
-    { label: "Growth Engine", val: "₦842k", sub: "Referral Income", color: "from-amber-500 to-orange-400", type: "rank" },
+    { label: "Active Fuel", val: "₦12.8M", sub: "+14% this week", color: "from-emerald-500/20", type: "currency" },
+    { label: "Conversion Heat", val: "8.2%", sub: "Top 1% of Hub", color: "from-pink-500/20", type: "percent" },
+    { label: "Aegis Guard", val: "1,240", sub: "Bad actors neutralized", color: "from-blue-600/20", type: "count" },
+    { label: "Growth Engine", val: "₦842k", sub: "Referral Income", color: "from-amber-500/20", type: "rank" },
 ];
 
 const RECENT_CONVERSIONS = [
@@ -19,7 +19,6 @@ const RECENT_CONVERSIONS = [
 
 export default function ExperienceHub() {
     const [subPrice, setSubPrice] = useState(15000);
-    const [activeView, setActiveView] = useState("overview");
     const [persona, setPersona] = useState<"creator" | "fan">("creator");
     const [activeModal, setActiveModal] = useState<string | null>(null);
     const [sovereignty, setSovereignty] = useState({ ghostComments: true, stealthMode: false, aggressiveSanitization: true });
@@ -87,18 +86,18 @@ export default function ExperienceHub() {
     };
 
     return (
-        <div className="relative w-full h-full bg-[var(--color-bg-app)] text-zinc-900 dark:text-zinc-100 flex justify-center selection:bg-pink-100 overflow-hidden font-display transition-colors duration-500">
+        <div className="relative w-full h-full bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden font-display transition-colors duration-500">
             {/* Resonance Feedback Altar */}
             {toast && (
-                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 border border-zinc-800 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     {toast}
                 </div>
             )}
             {/* Economic Aurora */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-pink-50/40 rounded-full blur-[160px]"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-50/30 rounded-full blur-[160px]"></div>
+            <div className="fixed inset-0 pointer-events-none opacity-20">
+                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-zinc-800/20 rounded-full blur-[160px]"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-zinc-900/40 rounded-full blur-[160px]"></div>
             </div>
 
             <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-x-hidden">
@@ -109,31 +108,30 @@ export default function ExperienceHub() {
                         <div className="space-y-12">
                             {/* Persona Switcher */}
                             <div className="px-5">
-                                <div className="p-1 bg-zinc-100 dark:bg-zinc-900/40 rounded-[2rem] flex items-center relative gap-1 shadow-inner border dark:border-zinc-800">
+                                <div className="p-1 bg-zinc-900/40 rounded-[2rem] flex items-center relative gap-1 border border-zinc-800">
                                     <button
                                         onClick={() => setPersona('creator')}
-                                        className={`flex-1 py-3.5 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all z-10 ${persona === 'creator' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                        className={`flex-1 py-3.5 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all z-10 ${persona === 'creator' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
                                     >
                                         Creator Hub
                                     </button>
                                     <button
                                         onClick={() => setPersona('fan')}
-                                        className={`flex-1 py-3.5 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all z-10 ${persona === 'fan' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                        className={`flex-1 py-3.5 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all z-10 ${persona === 'fan' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
                                     >
                                         Fan Nexus
                                     </button>
-                                    <div className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-zinc-800 rounded-[1.8rem] transition-all duration-500 ease-out-back ${persona === 'fan' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'}`}></div>
                                 </div>
                             </div>
 
                             <div className="px-5">
-                                <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] italic mb-6">{persona === 'creator' ? 'Management' : 'Nexus Control'}</h4>
+                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">{persona === 'creator' ? 'Management' : 'Nexus Control'}</h4>
                                 <nav className="space-y-2">
-                                    <Link to="/dashboard" className="flex items-center gap-4 px-5 py-3.5 bg-zinc-900 text-white rounded-3xl shadow-xl shadow-zinc-200 transition-all group">
+                                    <Link to="/dashboard" className="flex items-center gap-4 px-5 py-3.5 bg-white text-black rounded-3xl transition-all group">
                                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" /></svg>
                                         <span className="text-[11px] font-black uppercase tracking-widest">Performance Hub</span>
                                     </Link>
-                                    <Link to="/timeline" className="flex items-center gap-4 px-5 py-3.5 hover:bg-white border border-transparent hover:border-zinc-100 rounded-3xl text-zinc-400 hover:text-zinc-900 transition-all font-bold">
+                                    <Link to="/timeline" className="flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-900 rounded-3xl text-zinc-500 hover:text-white transition-all font-bold">
                                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
                                         <span className="text-[11px] font-black uppercase tracking-widest">Visions Control</span>
                                     </Link>
@@ -141,43 +139,30 @@ export default function ExperienceHub() {
                             </div>
 
                             <div className="px-5">
-                                <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] italic mb-6">Economy</h4>
+                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Economy</h4>
                                 <nav className="space-y-2">
-                                    <button
-                                        onClick={() => setActiveModal('withdraw')}
-                                        className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-white border border-transparent hover:border-zinc-100 rounded-3xl text-zinc-400 hover:text-zinc-900 transition-all font-bold text-left group"
-                                    >
+                                    <button onClick={() => setActiveModal('withdraw')} className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-900 rounded-3xl text-zinc-500 hover:text-white transition-all font-bold text-left group">
                                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="20" height="14" x="2" y="5" rx="2" /><path d="M2 10h20" /></svg>
-                                        <span className="text-[11px] font-black uppercase tracking-widest group-hover:text-zinc-900 transition-colors">Withdraw Fuel</span>
+                                        <span className="text-[11px] font-black uppercase tracking-widest">Withdraw Fuel</span>
                                     </button>
-                                    <button
-                                        onClick={() => setActiveModal('link_bank')}
-                                        className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-white border border-transparent hover:border-zinc-100 rounded-3xl text-zinc-400 hover:text-zinc-900 transition-all font-bold text-left group"
-                                    >
+                                    <button onClick={() => setActiveModal('link_bank')} className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-900 rounded-3xl text-zinc-500 hover:text-white transition-all font-bold text-left group">
                                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                                        <span className="text-[11px] font-black uppercase tracking-widest group-hover:text-zinc-900 transition-colors">Vault Settings</span>
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveModal('split')}
-                                        className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-white border border-transparent hover:border-zinc-100 rounded-3xl text-zinc-400 hover:text-zinc-900 transition-all font-bold text-left group"
-                                    >
-                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
-                                        <span className="text-[11px] font-black uppercase tracking-widest group-hover:text-zinc-900 transition-colors">80/20 Revenue Split</span>
+                                        <span className="text-[11px] font-black uppercase tracking-widest">Vault Settings</span>
                                     </button>
                                 </nav>
                             </div>
 
-                            <div className="px-5 bg-pink-500/5 py-8 rounded-[2.5rem] mt-6 border border-pink-500/10">
-                                <h4 className="text-[9px] font-black text-pink-500 uppercase tracking-[0.3em] italic mb-4">Referral Engine</h4>
+                            <div className="px-5 bg-primary/5 py-8 rounded-[2.5rem] mt-6 border border-primary/10">
+                                <h4 className="text-[9px] font-black text-primary uppercase tracking-[0.3em] italic mb-4">Referral Engine</h4>
                                 <p className="text-[10px] text-zinc-500 font-bold mb-4 leading-relaxed">Earn 10% of every creator you bring to the hub. Lifetime resonance.</p>
                                 <button
                                     onClick={() => {
                                         navigator.clipboard.writeText("https://fns.fan/ref/creator_apex");
                                         showToast("Referral Engine Vector Copied");
                                     }}
-                                    className="w-full bg-pink-500 text-white py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-pink-200"
+                                    className="w-full bg-white text-black py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-none"
                                 >
-                                    Copy Referral Link
+                                    Copy Link
                                 </button>
                             </div>
                         </div>
@@ -189,21 +174,21 @@ export default function ExperienceHub() {
                             <>
                                 <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 md:gap-0 animate-entrance">
                                     <div className="space-y-3">
-                                        <div className={`inline-flex items-center gap-2 px-4 py-1 bg-white border border-zinc-100 rounded-full shadow-lg ${statusTier.shadow} transition-all`}>
+                                        <div className={`inline-flex items-center gap-2 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full shadow-none transition-all`}>
                                             <span className={`${statusTier.color}`}>{statusTier.icon}</span>
                                             <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${statusTier.color}`}>{statusTier.label}</span>
                                         </div>
-                                        <h1 className="text-3xl md:text-6xl text-premium italic text-zinc-900 leading-tight">Sovereign <span className="text-gradient">Control.</span></h1>
-                                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-zinc-400">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.4em]">This is YOUR Space</span>
-                                            <div className="hidden md:block h-0.5 w-12 bg-blue-100 rounded-full"></div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-500 leading-none">Aegis Guard Active</span>
+                                        <h1 className="text-4xl md:text-7xl font-black italic text-white tracking-tighter leading-tight">Sovereign <span className="text-gradient">Control.</span></h1>
+                                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-zinc-500">
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">Management Altar Ready</span>
+                                            <div className="hidden md:block h-[1px] w-12 bg-zinc-800 rounded-full"></div>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 leading-none">Aegis Guard Active</span>
                                         </div>
                                     </div>
                                     <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-end gap-2 w-full md:w-auto">
-                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Net Revenue Share</span>
-                                        <div className="px-6 py-3 bg-white border border-zinc-100 rounded-2xl shadow-sm">
-                                            <span className="text-xl md:text-3xl font-black text-zinc-900">80<span className="text-pink-500">%</span></span>
+                                        <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Net Revenue Share</span>
+                                        <div className="px-8 py-4 bg-white rounded-3xl shadow-none">
+                                            <span className="text-2xl md:text-4xl font-black text-black">80<span className="text-primary">%</span></span>
                                         </div>
                                     </div>
                                 </header>
@@ -212,565 +197,260 @@ export default function ExperienceHub() {
                             <>
                                 <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 md:gap-0 animate-entrance px-4 md:px-0">
                                     <div className="space-y-3">
-                                        <div className="inline-flex items-center gap-2 px-4 py-1 bg-white border border-zinc-100 rounded-full shadow-lg shadow-violet-500/10 transition-all">
-                                            <span className="text-violet-500">
-                                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /><path d="M2 12h20" /></svg>
-                                            </span>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-500">Nexus Elite</span>
+                                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full shadow-none">
+                                            <span className="text-primary">✨</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Nexus Elite</span>
                                         </div>
-                                        <h1 className="text-3xl md:text-6xl text-premium italic text-zinc-900 leading-tight">Nexus <span className="text-gradient-fan">Collection.</span></h1>
-                                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-zinc-400">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.4em]">Your Exclusive Access</span>
-                                            <div className="hidden md:block h-0.5 w-12 bg-violet-100 rounded-full"></div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-violet-500 leading-none">24 Unlocked Visions</span>
+                                        <h1 className="text-4xl md:text-7xl font-black italic text-white tracking-tighter leading-tight">Nexus <span className="text-gradient-fan">Collection.</span></h1>
+                                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-zinc-500">
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">Member Since Cycle 01</span>
+                                            <div className="hidden md:block h-[1px] w-12 bg-zinc-800 rounded-full"></div>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary leading-none">24 Unlocked Visions</span>
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => setActiveModal('add_funds')}
                                         className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-end gap-2 w-full md:w-auto group"
                                     >
-                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">Spending Power</span>
-                                        <div className="px-6 py-3 bg-white border border-zinc-100 rounded-2xl shadow-sm group-hover:border-violet-200 transition-all">
-                                            <span className="text-xl md:text-3xl font-black text-zinc-900 tabular-nums">₦{walletBalance.toLocaleString()}</span>
+                                        <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-primary transition-colors italic">Spending Power</span>
+                                        <div className="px-8 py-4 bg-white rounded-3xl shadow-none group-hover:bg-primary transition-all">
+                                            <span className="text-2xl md:text-4xl font-black text-black group-hover:text-white tabular-nums">₦{walletBalance.toLocaleString()}</span>
                                         </div>
                                     </button>
                                 </header>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-entrance [animation-delay:100ms] opacity-0 [animation-fill-mode:forwards] px-4 md:px-0">
-                                    <div className="col-span-1 md:col-span-2 bg-white rounded-[3rem] md:rounded-[4rem] border border-zinc-100 p-8 md:p-12 shadow-sm hover:shadow-xl transition-all shadow-zinc-100/50 group/nexus">
-                                        <div className="flex justify-between items-center mb-8">
-                                            <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Active Connections</h4>
-                                            <span className="text-[9px] font-black text-violet-500 uppercase tracking-widest bg-violet-50 px-3 py-1 rounded-full">Pro Status</span>
-                                        </div>
-                                        <div className="space-y-4">
-                                            {[
-                                                { name: "Valentina Noir", sub: "₦15,000/mo", status: "Active", heat: 92, avatar: "VN" },
-                                                { name: "Adrien Thorne", sub: "₦5,000/mo", status: "Expiring in 2d", statusColor: "text-amber-500", heat: 84, avatar: "AT" }
-                                            ].map((sub) => (
-                                                <div key={sub.name} className="flex items-center justify-between p-6 bg-zinc-50 rounded-3xl border border-zinc-100 hover:border-violet-200 hover:bg-white transition-all group/sub cursor-pointer">
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="w-14 h-14 bg-white rounded-[1.8rem] border border-zinc-100 flex items-center justify-center text-sm font-black italic shadow-sm group-hover/sub:scale-110 transition-transform">{sub.avatar}</div>
-                                                        <div>
-                                                            <p className="text-[11px] font-black uppercase text-zinc-900 tracking-wider leading-none">{sub.name}</p>
-                                                            <p className="text-[10px] text-zinc-400 font-bold italic mt-2">{sub.sub}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <span className={`text-[10px] font-black uppercase tracking-widest ${sub.statusColor || 'text-emerald-500'}`}>{sub.status}</span>
-                                                        <div className="w-32 h-1 bg-zinc-200 rounded-full mt-3 overflow-hidden">
-                                                            <div className="h-full bg-violet-500 rounded-full group-hover/sub:bg-pink-500 transition-colors" style={{ width: `${sub.heat}%` }}></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-gradient-to-br from-violet-600 to-indigo-700 rounded-[4rem] p-12 text-white flex flex-col justify-between relative overflow-hidden group/perk">
-                                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-1000"></div>
-                                        <div className="space-y-4 relative z-10">
-                                            <h4 className="text-[10px] font-black text-violet-200 uppercase tracking-[0.4em] italic leading-none">Nexus Perk</h4>
-                                            <h3 className="text-3xl text-premium italic leading-tight">Priority <br />Sanctuary.</h3>
-                                            <p className="text-violet-100/60 text-[11px] font-bold leading-relaxed italic">Your membership ensures ultra-low latency vision unlocks and priority DM resonance.</p>
-                                        </div>
-                                        <button
-                                            onClick={() => showToast("Whisper Received: New Glimpse Protocol Initiated")}
-                                            className="w-full py-5 bg-white text-violet-900 rounded-full text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-xl shadow-indigo-900/40 relative z-10"
-                                        >
-                                            Claim Daily Whisper
-                                        </button>
-                                    </div>
-                                </div>
                             </>
                         )}
 
                         {/* Apex Stats Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards] px-4 md:px-0">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards] px-4 md:px-0">
                             {(persona === 'creator' ? MOCK_ROI_STATS : [
-                                { label: "Total Contributed", val: "₦85.4k", sub: "+₦12k this month", color: "from-violet-500/20" },
-                                { label: "Unlocked Visions", val: "142", sub: "24 new in Nexus", color: "from-emerald-500/20" },
-                                { label: "Resonance Level", val: "92", sub: "Top 5% Hub Member", color: "from-pink-500/20" },
-                                { label: "Sovereign Tier", val: "Gold", sub: "Priority Resonance", color: "from-amber-500/20" }
+                                { label: "Total Contributed", val: "₦85.4k", sub: "+₦12k this month", color: "from-primary/20", type: "currency" },
+                                { label: "Unlocked Visions", val: "142", sub: "24 new in Nexus", color: "from-zinc-100/10", type: "count" },
+                                { label: "Resonance Level", val: "92", sub: "Top 5% Hub Member", color: "from-primary/20", type: "rank" },
+                                { label: "Sovereign Tier", val: "Gold", sub: "Priority Resonance", color: "from-amber-500/10", type: "rank" }
                             ]).map((stat) => (
-                                <div key={stat.label} className="bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-zinc-100 hover:shadow-2xl hover:shadow-zinc-100 transition-all duration-700 relative overflow-hidden group">
-                                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 blur-3xl transition-opacity duration-1000`}></div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-6 italic">{stat.label}</p>
+                                <div key={stat.label} className="bg-zinc-900/40 p-8 rounded-[3rem] border border-zinc-800 hover:bg-zinc-900 transition-all duration-700 relative overflow-hidden group">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-8 italic">{stat.label}</p>
                                     <div className="flex flex-col gap-1 md:gap-2">
-                                        <h3 className="text-2xl md:text-5xl font-black text-zinc-950 tabular-nums tracking-tighter leading-none">{stat.val}</h3>
-                                        <p className={`text-[9px] md:text-[11px] font-black uppercase tracking-widest ${stat.sub.includes('+') || stat.sub.includes('Referral') ? 'text-emerald-500' : 'text-zinc-400'} italic truncate`}>{stat.sub}</p>
+                                        <h3 className="text-2xl md:text-5xl font-black text-white tabular-nums tracking-tighter leading-none">{stat.val}</h3>
+                                        <p className={`text-[9px] md:text-[11px] font-black uppercase tracking-widest ${stat.sub.includes('+') ? 'text-emerald-500' : 'text-zinc-600'} italic truncate`}>{stat.sub}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Subscription Callibrator & Payouts */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-entrance [animation-delay:200ms] opacity-0 [animation-fill-mode:forwards] px-4 md:px-0">
-                            {/* Vault Calibration (Price Setting) */}
-                            <div className="col-span-1 md:col-span-2 bg-white rounded-[3rem] md:rounded-[4rem] border border-zinc-100 p-8 md:p-12 relative overflow-hidden shadow-sm hover:shadow-xl transition-all shadow-zinc-100/50 group/calib">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 to-rose-600 scale-x-0 group-hover/calib:scale-x-100 transition-transform duration-700 origin-left"></div>
-                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0 mb-12">
-                                    <div className="space-y-1">
-                                        <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Loyalty Calibration</h4>
-                                        <h3 className="text-2xl md:text-3xl text-premium italic text-zinc-900 leading-tight">Set your Monthly Fuel.</h3>
+                        {/* Subscription Calibrator */}
+                        {persona === 'creator' && (
+                            <div className="bg-zinc-900/40 rounded-[4rem] border border-zinc-800 p-12 relative overflow-hidden animate-entrance [animation-delay:300ms] mx-4 md:mx-0">
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 mb-16">
+                                    <div className="space-y-2">
+                                        <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic">Loyalty Calibration</h4>
+                                        <h3 className="text-3xl font-black text-white italic tracking-tighter leading-tight">Set your Monthly Fuel.</h3>
                                     </div>
-                                    <div className="w-full md:w-auto text-left md:text-right flex flex-col md:items-end gap-3">
-                                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic leading-none">Optimized for Conversion</span>
-                                        <button
-                                            onClick={() => showToast(`Pricing Strategy Updated to ₦${subPrice.toLocaleString()}`)}
-                                            className="w-full md:w-auto px-6 py-3 bg-zinc-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-zinc-200"
-                                        >
-                                            Apply Pricing
-                                        </button>
-                                    </div>
+                                    <button
+                                        onClick={() => showToast(`Pricing Strategy Updated to ₦${subPrice.toLocaleString()}`)}
+                                        className="w-full md:w-auto px-10 py-4 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-none"
+                                    >
+                                        Apply Pricing
+                                    </button>
                                 </div>
 
-                                <div className="space-y-12">
-                                    <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-12">
-                                        <div className="flex-grow space-y-6">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">Monthly Sub Fee</span>
-                                                <span className="text-2xl md:text-4xl font-black text-zinc-950 italic tabular-nums">₦{subPrice.toLocaleString()}</span>
-                                            </div>
-                                            <input
-                                                type="range"
-                                                min="5000"
-                                                max="50000"
-                                                step="500"
-                                                value={subPrice}
-                                                onChange={(e) => setSubPrice(parseInt(e.target.value))}
-                                                className="w-full h-2 bg-zinc-100 rounded-full appearance-none cursor-pointer accent-pink-500"
-                                            />
-                                            <div className="flex justify-between text-[9px] font-black text-zinc-300 uppercase tracking-widest italic">
-                                                <span>₦5,000</span>
-                                                <span className="hidden md:block">Optimal Reach</span>
-                                                <span>₦50,000</span>
-                                            </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                                    <div className="space-y-10">
+                                        <div className="flex justify-between items-end">
+                                            <span className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">Monthly Sub Fee</span>
+                                            <span className="text-4xl font-black text-white italic tabular-nums leading-none">₦{subPrice.toLocaleString()}</span>
                                         </div>
-                                        <div className="hidden md:block w-[1px] h-24 bg-zinc-100"></div>
-                                        <div className="w-full md:w-56 flex md:flex-col justify-between md:justify-start gap-4 p-6 md:p-0 bg-zinc-50 md:bg-transparent rounded-3xl md:rounded-none">
-                                            <div>
-                                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Your Take (80%)</p>
-                                                <p className="text-xl md:text-2xl font-black text-emerald-500 italic leading-none">₦{Math.floor(subPrice * 0.80).toLocaleString()}</p>
-                                            </div>
-                                            <div className="text-right md:text-left">
-                                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Platform (20%)</p>
-                                                <p className="text-sm font-black text-zinc-300 italic leading-none">₦{Math.floor(subPrice * 0.20).toLocaleString()}</p>
-                                            </div>
+                                        <input
+                                            type="range"
+                                            min="5000"
+                                            max="50000"
+                                            step="500"
+                                            value={subPrice}
+                                            onChange={(e) => setSubPrice(parseInt(e.target.value))}
+                                            className="w-full h-1.5 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-primary"
+                                        />
+                                        <div className="flex justify-between text-[9px] font-black text-zinc-700 uppercase tracking-widest italic">
+                                            <span>₦5k</span>
+                                            <span>₦50k</span>
                                         </div>
                                     </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-zinc-50">
-                                        <div className="p-6 bg-emerald-50/30 rounded-3xl border border-emerald-100">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <span className="animate-pulse-live w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                                <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest italic leading-none">Fast Payout Protocol</h4>
-                                            </div>
-                                            <p className="text-[11px] text-zinc-600 font-bold leading-relaxed">Direct Naira transfer within 24 hours. No lag.</p>
+                                    <div className="p-10 bg-black rounded-[3rem] border border-zinc-800 flex justify-between items-center">
+                                        <div>
+                                            <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">Your Take (80%)</p>
+                                            <p className="text-3xl font-black text-emerald-500 italic leading-none">₦{Math.floor(subPrice * 0.80).toLocaleString()}</p>
                                         </div>
-                                        <div className="p-6 bg-pink-50/30 rounded-3xl border border-pink-100">
-                                            <h4 className="text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2 italic leading-none">Hub Growth</h4>
-                                            <p className="text-[11px] text-zinc-600 font-bold leading-relaxed">Niche engagement. ₦12k-₦18k range optimal.</p>
+                                        <div className="h-12 w-[1px] bg-zinc-800"></div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">Platform</p>
+                                            <p className="text-xl font-black text-zinc-700 italic leading-none">₦{Math.floor(subPrice * 0.20).toLocaleString()}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        {/* Live Extraction Stream & Vault Hub */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
-                            {/* Live Extraction: Primary on Desktop, Second on Mobile */}
-                            <div className="md:col-span-2 order-2 md:order-1 space-y-8">
-                                <div className="flex justify-between items-center px-4">
-                                    <div className="flex items-center gap-2">
-                                        <span className="animate-pulse-live w-2 h-2 rounded-full bg-emerald-500"></span>
-                                        <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Live Extraction</h4>
-                                    </div>
-                                    <button
-                                        onClick={() => showToast("Under Calibration: Resonance Mapping Active Soon")}
-                                        className="text-[8px] font-black text-zinc-300 uppercase tracking-widest hover:text-zinc-900 transition-colors"
-                                    >
-                                        Resonance Map
-                                    </button>
-                                </div>
+                        {/* Recent Activity */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 px-4 md:px-0">
+                            <div className="md:col-span-2 space-y-8">
+                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic">Live Extraction Stream</h4>
                                 <div className="space-y-4">
                                     {RECENT_CONVERSIONS.map((log) => (
-                                        <div key={log.id} className="bg-white p-6 rounded-[2.5rem] border border-zinc-100 flex items-center justify-between hover:shadow-xl hover:shadow-zinc-100 transition-all cursor-pointer group hover:-translate-y-1">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 bg-zinc-50 rounded-[1.8rem] flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform font-black italic text-zinc-900">
-                                                    {log.fan[0]}
-                                                </div>
+                                        <div key={log.id} className="bg-zinc-900/40 p-8 rounded-[3rem] border border-zinc-800 flex items-center justify-between hover:bg-zinc-900 transition-all cursor-pointer group">
+                                            <div className="flex items-center gap-8">
+                                                <div className="w-16 h-16 bg-black rounded-[2rem] border border-zinc-800 flex items-center justify-center text-xl font-black italic text-white">{log.fan[0]}</div>
                                                 <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-900 leading-none">{log.type}</p>
-                                                    <p className="text-zinc-400 text-[11px] font-bold mt-2 italic">Hub Participant {log.fan}</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-white leading-none mb-2">{log.type}</p>
+                                                    <p className="text-zinc-600 text-[11px] font-bold italic">Hub Participant {log.fan}</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-black text-emerald-500 tabular-nums leading-none tracking-tighter">{log.amount}</p>
-                                                <p className="text-[8px] font-black text-zinc-300 uppercase tracking-widest mt-2">{log.time}</p>
+                                                <p className="text-xl font-black text-emerald-500 tabular-nums leading-none tracking-tighter">{log.amount}</p>
+                                                <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mt-3 italic">{log.time}</p>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Vault Hub: First on Mobile, Third on Desktop */}
-                            <div className="col-span-1 order-1 md:order-2 space-y-8">
-                                <div className="flex justify-between items-center px-4">
-                                    <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Vault Hub</h4>
-                                </div>
-                                <div className="bg-white p-8 rounded-[3rem] border border-pink-100 shadow-xl shadow-pink-500/5 relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 blur-3xl"></div>
-                                    <div className="flex justify-between items-start mb-8">
-                                        <span className="text-[9px] font-black text-pink-500 uppercase tracking-[0.25em] italic leading-none">Destination Hub</span>
-                                        <button onClick={triggerEditBank} className="text-[9px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-900 transition-colors leading-none">Edit</button>
+                            <div className="space-y-8">
+                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic">Vault Hub</h4>
+                                <div className="bg-white p-10 rounded-[4rem] text-black relative overflow-hidden group">
+                                    <div className="flex justify-between items-start mb-12">
+                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest italic leading-none">Active Bank</span>
+                                        <button onClick={triggerEditBank} className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline leading-none">Edit</button>
                                     </div>
-                                    <div className="flex items-center gap-5">
-                                        <div className="w-16 h-16 bg-zinc-900 rounded-[1.5rem] flex items-center justify-center text-white text-[12px] font-black group-hover:rotate-12 transition-transform shadow-xl shadow-zinc-200">
-                                            {bankAccount.bank.substring(0, 3).toUpperCase()}
-                                        </div>
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-16 h-16 bg-black rounded-[1.5rem] flex items-center justify-center text-white text-[12px] font-black">{bankAccount.bank.substring(0, 3).toUpperCase()}</div>
                                         <div>
-                                            <p className="text-[12px] font-black uppercase text-zinc-900 tracking-wider font-display leading-none">{bankAccount.bank}</p>
-                                            <p className="text-[11px] text-zinc-400 font-bold italic mt-2 tracking-wide font-display">**** {bankAccount.number.slice(-4)}</p>
+                                            <p className="text-[12px] font-black uppercase tracking-wider leading-none mb-2">{bankAccount.bank}</p>
+                                            <p className="text-[11px] text-zinc-500 font-bold italic mt-2 tracking-wide">**** {bankAccount.number.slice(-4)}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Aegis Sovereignty Panel */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-0">
-                            <div className="col-span-1 md:col-span-2 bg-zinc-950 rounded-[3rem] md:rounded-[4rem] p-8 md:p-12 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px]"></div>
-                                <div className="flex flex-col md:flex-row justify-between items-start gap-6 md:gap-0 mb-12">
-                                    <div className="space-y-1">
-                                        <h4 className="text-[11px] font-black text-blue-400 uppercase tracking-[0.5em] italic">Aegis Sovereignty</h4>
-                                        <h3 className="text-2xl md:text-3xl text-premium italic text-white leading-tight">Your rules, your sanctuary.</h3>
+                        {/* Aegis Sovereignty */}
+                        {persona === 'creator' && (
+                            <div className="bg-black rounded-[4rem] p-12 border border-zinc-800 relative overflow-hidden mx-4 md:mx-0">
+                                <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-16">
+                                    <div className="space-y-2">
+                                        <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.5em] italic">Aegis Sovereignty</h4>
+                                        <h3 className="text-3xl font-black text-white italic tracking-tighter leading-tight">Your rules, your sanctuary.</h3>
                                     </div>
-                                    <div className="px-5 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full">
-                                        <span className="text-[9px] font-black text-blue-300 uppercase tracking-widest">Self-HEALING MODE: ACTIVE</span>
+                                    <div className="px-6 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                                        <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Aegis Guard Active</span>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {[
-                                        { id: 'ghostComments', label: 'Ghost Commenting', sub: 'Non-patrons see themselves posting, but no one else does.', icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /><path d="M10 21V19M14 21V19" /></svg> },
-                                        { id: 'stealthMode', label: 'Stealth Discovery', sub: 'Remove yourself from the Global Altar temporarily.', icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.12 13.12 0 0 1-1.5 2.5" /><path d="M8.47 5.76C3.41 7.21 2 12 2 12s3 7 10 7c1.44 0 2.63-.31 3.65-.85" /><path d="m2 2 20 20" /></svg> },
-                                        { id: 'aggressiveSanitization', label: 'Proactive Sanitization', sub: 'AI automatically bans bad actors before they interact.', icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg> },
+                                        { id: 'ghostComments', label: 'Ghost Commenting', sub: 'Non-patrons see themselves posting, but no one else does.' },
+                                        { id: 'stealthMode', label: 'Stealth Discovery', sub: 'Remove yourself from the Global Altar temporarily.' },
+                                        { id: 'aggressiveSanitization', label: 'AI Sanitization', sub: 'Proactive neutralization of anomalous interactions.' },
                                     ].map((trait) => (
-                                        <div key={trait.id} className={`p-8 rounded-[2.5rem] border transition-all cursor-pointer ${(sovereignty as any)[trait.id] ? 'bg-blue-500/10 border-blue-500/40 shadow-xl shadow-blue-500/5' : 'bg-white/5 border-white/10 hover:border-white/20'}`} onClick={() => setSovereignty(prev => ({ ...prev, [trait.id]: !(prev as any)[trait.id] }))}>
-                                            <div className="flex justify-between items-start mb-6">
-                                                <span className={`${(sovereignty as any)[trait.id] ? 'text-blue-400' : 'text-zinc-500'}`}>{trait.icon}</span>
-                                                <div className={`w-12 h-6 rounded-full p-1 transition-all ${(sovereignty as any)[trait.id] ? 'bg-blue-500' : 'bg-white/10'}`}>
-                                                    <div className={`w-4 h-4 bg-white rounded-full transition-all ${(sovereignty as any)[trait.id] ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                                        <div key={trait.id} className={`p-10 rounded-[3rem] border transition-all cursor-pointer ${(sovereignty as any)[trait.id] ? 'bg-zinc-900 border-white/20' : 'bg-transparent border-zinc-900 hover:border-zinc-800'}`} onClick={() => setSovereignty(prev => ({ ...prev, [trait.id]: !(prev as any)[trait.id] }))}>
+                                            <div className="flex justify-between items-center mb-8">
+                                                <h5 className="text-[11px] font-black text-white uppercase tracking-widest">{trait.label}</h5>
+                                                <div className={`w-12 h-6 rounded-full p-1 transition-all ${(sovereignty as any)[trait.id] ? 'bg-white' : 'bg-zinc-800'}`}>
+                                                    <div className={`w-4 h-4 bg-black rounded-full transition-all ${(sovereignty as any)[trait.id] ? 'translate-x-6' : 'translate-x-0'}`}></div>
                                                 </div>
                                             </div>
-                                            <h5 className="text-[11px] font-black text-white uppercase tracking-widest mb-1">{trait.label}</h5>
-                                            <p className="text-[10px] text-zinc-500 font-bold italic leading-relaxed">{trait.sub}</p>
+                                            <p className="text-[11px] text-zinc-600 font-bold italic leading-relaxed">{trait.sub}</p>
                                         </div>
                                     ))}
-                                    <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-pink-500/10 to-rose-500/10 border border-pink-500/20 flex flex-col justify-center">
-                                        <h5 className="text-[11px] font-black text-pink-400 uppercase tracking-widest mb-2">Psychological Guard</h5>
-                                        <p className="text-[10px] text-zinc-400 font-bold italic leading-relaxed">System identifies & shadow-bans copycats and bad actors attempting to siphon your resonance handle.</p>
-                                    </div>
                                 </div>
                             </div>
-
-                            <div className="bg-white rounded-[4rem] border border-zinc-100 p-12 flex flex-col justify-between shadow-sm">
-                                <div className="space-y-6">
-                                    <h4 className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.5em] italic">Moderation Pulse</h4>
-                                    <div className="space-y-8">
-                                        <div className="flex justify-between items-end border-b border-zinc-50 pb-6">
-                                            <div>
-                                                <p className="text-3xl font-black text-zinc-900 italic leading-none">842</p>
-                                                <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-2">Bad Actors Neutralized</p>
-                                            </div>
-                                            <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest italic">Live Feed</span>
-                                        </div>
-                                        <div className="flex justify-between items-end border-b border-zinc-50 pb-6">
-                                            <div>
-                                                <p className="text-3xl font-black text-zinc-900 italic leading-none">12,402</p>
-                                                <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-2">Whispers Filtered</p>
-                                            </div>
-                                            <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">+12 Today</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => showToast("Aegis Registry Syncing... 842 Anomalies Categorized")}
-                                    className="w-full py-5 bg-zinc-900 text-white rounded-full text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-xl shadow-zinc-200"
-                                >
-                                    View Ban Registry
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Retention & Growth Altar */}
-                        <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-[3rem] md:rounded-[4rem] p-8 md:p-16 relative overflow-hidden px-4 md:px-16 mx-4 md:mx-0">
-                            <div className="absolute top-0 right-0 w-[50%] h-full bg-white opacity-[0.03] -skew-x-12 translate-x-1/2"></div>
-                            <div className="w-full max-w-[100vw] md:max-w-[1600px] h-full flex flex-col md:flex-row relative z-10 items-center justify-between gap-12">
-                                <div className="space-y-4 text-center md:text-left">
-                                    <div className="inline-flex px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 rounded-full">
-                                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">growth protocol • 10% referral</span>
-                                    </div>
-                                    <h3 className="text-3xl md:text-5xl text-premium italic text-white leading-tight">Scale your <br /><span className="text-gradient">Engine.</span></h3>
-                                    <p className="text-zinc-400 text-xs md:text-sm max-w-md leading-relaxed italic">Turn connections into fuel. Every creator you bring onboard expands your passive resonance by 10% of their net split.</p>
-                                </div>
-                                <div className="flex gap-4 w-full md:w-auto">
-                                    <div className="relative w-full">
-                                        <input readOnly value="https://fns.fan/ref/creator_apex" className="bg-white/5 border border-white/10 text-white px-6 md:px-8 py-5 md:py-6 rounded-full font-bold text-[10px] md:text-[11px] w-full md:w-80 outline-none" />
-                                        <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText("https://fns.fan/ref/creator_apex");
-                                                showToast("Growth Vector Vector Copied to Altar");
-                                            }}
-                                            className="absolute right-2 top-2 bottom-2 bg-white text-zinc-900 px-4 md:px-6 rounded-2xl md:rounded-3xl font-black text-[9px] uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all"
-                                        >
-                                            Copy
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        )}
                     </main>
                 </div>
             </div>
 
             {/* --- Economic Portals (Modals) --- */}
             {activeModal === 'withdraw' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
-                        <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
-                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-3xl animate-in fade-in duration-500">
+                    <div className="bg-zinc-900 w-full max-w-xl rounded-[4rem] p-12 border border-zinc-800 relative">
+                        <button onClick={closeModals} className="absolute top-12 right-12 text-zinc-600 hover:text-white transition-colors">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6 6 18M6 6l12 12" /></svg>
                         </button>
                         <div className="space-y-12">
                             <div className="space-y-4 text-center">
-                                <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] italic leading-none">Extraction Protocol</h4>
-                                <h3 className="text-4xl text-premium italic text-zinc-900">Withdrawal Vault.</h3>
+                                <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] italic">Extraction Protocol</h4>
+                                <h3 className="text-4xl font-black text-white italic tracking-tighter">Withdrawal Vault.</h3>
                             </div>
-
-                            <div className="p-6 md:p-10 bg-zinc-50 rounded-[2rem] md:rounded-[3rem] space-y-6 md:space-y-8">
+                            <div className="space-y-8">
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-end px-2">
-                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Amount</span>
+                                        <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Amount</span>
                                         <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic">Max: ₦{vaultBalance.toLocaleString()}</span>
                                     </div>
                                     <div className="relative">
-                                        <span className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 text-xl md:text-3xl font-black text-zinc-300">₦</span>
+                                        <span className="absolute left-8 top-1/2 -translate-y-1/2 text-4xl font-black text-zinc-800">₦</span>
                                         <input
                                             type="number"
                                             value={withdrawAmount}
                                             onChange={(e) => setWithdrawAmount(e.target.value)}
                                             placeholder="0.00"
-                                            className="w-full bg-white border border-zinc-100 pl-12 md:pl-16 pr-6 md:pr-8 py-6 md:py-8 rounded-[1.5rem] md:rounded-[2rem] text-2xl md:text-4xl font-black text-zinc-950 outline-none focus:border-emerald-200 transition-all placeholder:text-zinc-100"
+                                            className="w-full bg-black border border-zinc-800 pl-20 pr-8 py-10 rounded-[2.5rem] text-4xl font-black text-white outline-none focus:border-emerald-500/40 transition-all placeholder:text-zinc-900"
                                         />
                                     </div>
                                 </div>
-                                <div className="space-y-2 pt-6 border-t border-zinc-200">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Destination Vault</span>
-                                        <button onClick={triggerEditBank} className="text-[9px] font-black text-pink-500 uppercase tracking-widest hover:underline italic">Edit Details</button>
-                                    </div>
-                                    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-emerald-100 shadow-sm">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-zinc-950 rounded-xl flex items-center justify-center text-white text-[10px] font-black">{bankAccount.bank.substring(0, 3).toUpperCase()}</div>
-                                            <div>
-                                                <p className="text-[11px] font-black uppercase text-zinc-900">{bankAccount.bank}</p>
-                                                <p className="text-[10px] text-zinc-400 font-bold italic mt-0.5">**** {bankAccount.number.slice(-4)} • {bankAccount.name}</p>
-                                            </div>
-                                        </div>
-                                        <span className="text-emerald-500"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-6">
                                 <button
                                     onClick={handleWithdraw}
-                                    disabled={!withdrawAmount || parseInt(withdrawAmount) <= 0 || parseInt(withdrawAmount) > vaultBalance || isExtracting}
-                                    className="w-full bg-zinc-900 text-white py-6 rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-xl hover:scale-105 active:scale-95 disabled:opacity-30 transition-all flex items-center justify-center gap-4"
+                                    disabled={!withdrawAmount || isExtracting}
+                                    className="w-full bg-white text-black py-8 rounded-full font-black text-[11px] uppercase tracking-[0.4em] hover:scale-105 active:scale-95 disabled:opacity-20 transition-all"
                                 >
-                                    {isExtracting ? (
-                                        <>
-                                            <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
-                                            Extracting Fuel...
-                                        </>
-                                    ) : (
-                                        `Extract ₦${parseInt(withdrawAmount || "0").toLocaleString()} to Bank`
-                                    )}
+                                    {isExtracting ? "Authenticating..." : "Initialize Extraction"}
                                 </button>
-                                <div className="flex items-center justify-center gap-3">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest italic">Guaranteed Arrival within 24 Hours</p>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {activeModal === 'split' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
-                        <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
-                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
-                        </button>
-                        <div className="space-y-12">
-                            <div className="space-y-4 text-center">
-                                <h4 className="text-[10px] font-black text-pink-500 uppercase tracking-[0.4em] italic leading-none">Transparency Protocol</h4>
-                                <h3 className="text-4xl text-premium italic text-zinc-900">Revenue Anatomy.</h3>
-                            </div>
-
-                            <div className="space-y-8">
-                                {[
-                                    { label: "Creator Essence (You)", val: 80, color: "bg-pink-500", detail: "Direct share of all Loyality Fees & Vision Unlocks" },
-                                    { label: "Growth Engine (Referrals)", val: 10, color: "bg-emerald-400", detail: "Fueling the expansion of our digital hub" },
-                                    { label: "System Maintenance", val: 10, color: "bg-zinc-200", detail: "Optimizing the discovery altar and security" },
-                                ].map((row) => (
-                                    <div key={row.label} className="space-y-3">
-                                        <div className="flex justify-between items-end">
-                                            <div>
-                                                <p className="text-[11px] font-black text-zinc-900 uppercase tracking-widest">{row.label}</p>
-                                                <p className="text-[10px] text-zinc-400 font-bold italic mt-1 leading-none">{row.detail}</p>
-                                            </div>
-                                            <span className="text-3xl font-black text-zinc-950 italic tabular-nums">{row.val}%</span>
-                                        </div>
-                                        <div className="h-4 w-full bg-zinc-50 rounded-full overflow-hidden p-[2px] border border-zinc-100">
-                                            <div className={`h-full ${row.color} rounded-full transition-all duration-1000 delay-300`} style={{ width: `${row.val}%` }}></div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100">
-                                <p className="text-[11px] text-zinc-500 font-bold text-center leading-relaxed italic">
-                                    "Our 80/20 resonance model is engineered to prioritize your independence. We grow only when your influence expands."
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
             {activeModal === 'link_bank' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
-                        <button onClick={() => setActiveModal('withdraw')} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
-                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-3xl animate-in fade-in duration-500">
+                    <div className="bg-zinc-900 w-full max-w-xl rounded-[4rem] p-12 border border-zinc-800 relative">
+                        <button onClick={closeModals} className="absolute top-12 right-12 text-zinc-600 hover:text-white transition-colors">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="3"><path d="M18 6 6 18M6 6l12 12" /></svg>
                         </button>
-
                         <div className="space-y-12">
                             <div className="space-y-4 text-center">
-                                <h4 className="text-[10px] font-black text-pink-500 uppercase tracking-[0.4em] italic leading-none">Vault Configuration</h4>
-                                <h3 className="text-4xl text-premium italic text-zinc-900">Link Naira Hub.</h3>
+                                <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic">Vault Configuration</h4>
+                                <h3 className="text-4xl font-black text-white italic tracking-tighter">Link Naira Hub.</h3>
                             </div>
-
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest block ml-4">Financial Institution</label>
+                                    <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block ml-6">Institution</label>
                                     <select
                                         value={linkForm.bank}
                                         onChange={(e) => setLinkForm({ ...linkForm, bank: e.target.value })}
-                                        className="w-full bg-zinc-50 border border-zinc-100 px-8 py-5 rounded-3xl font-bold text-zinc-900 outline-none focus:border-pink-200 transition-all appearance-none"
+                                        className="w-full bg-black border border-zinc-800 px-8 py-6 rounded-3xl font-black text-white outline-none uppercase tracking-widest appearance-none"
                                     >
-                                        <option value="">Select your bank</option>
-                                        <option value="Access Bank">Access Bank</option>
                                         <option value="GTBank">Guaranty Trust Bank</option>
+                                        <option value="Access Bank">Access Bank</option>
                                         <option value="Zenith Bank">Zenith Bank</option>
-                                        <option value="Standard Chartered">Standard Chartered</option>
                                         <option value="Kuda Bank">Kuda Bank</option>
                                     </select>
                                 </div>
-
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest block ml-4">Account Holder Name</label>
-                                    <input
-                                        placeholder="Full Name on Account"
-                                        value={linkForm.name}
-                                        onChange={(e) => setLinkForm({ ...linkForm, name: e.target.value })}
-                                        className="w-full bg-zinc-50 border border-zinc-100 px-8 py-5 rounded-3xl font-bold text-zinc-900 outline-none focus:border-pink-200 transition-all font-display"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest block ml-4">Account Number</label>
+                                    <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block ml-6">Account Number</label>
                                     <input
                                         placeholder="0000000000"
                                         maxLength={10}
                                         value={linkForm.number}
                                         onChange={(e) => setLinkForm({ ...linkForm, number: e.target.value })}
-                                        className="w-full bg-zinc-50 border border-zinc-100 px-8 py-5 rounded-3xl font-bold text-zinc-900 outline-none focus:border-pink-200 transition-all"
+                                        className="w-full bg-black border border-zinc-800 px-8 py-6 rounded-3xl font-black text-white outline-none"
                                     />
                                 </div>
-
-                                {isVerifying && (
-                                    <div className="flex items-center justify-center gap-3 py-4 animate-pulse">
-                                        <div className="w-2 h-2 rounded-full bg-pink-500 animate-bounce"></div>
-                                        <div className="w-2 h-2 rounded-full bg-pink-500 animate-bounce delay-150"></div>
-                                        <p className="text-[10px] font-black text-pink-500 uppercase tracking-widest italic">Authenticating Hub Details...</p>
-                                    </div>
-                                )}
-
                                 <button
                                     onClick={handleLinkBank}
-                                    disabled={!linkForm.bank || linkForm.number.length < 10 || !linkForm.name || isVerifying}
-                                    className="w-full bg-zinc-900 text-white py-6 rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-xl hover:scale-105 active:scale-95 disabled:opacity-30 disabled:hover:scale-100 transition-all"
+                                    disabled={linkForm.number.length < 10 || isVerifying}
+                                    className="w-full bg-white text-black py-8 rounded-full font-black text-[11px] uppercase tracking-[0.4em] hover:scale-105 active:scale-95 disabled:opacity-20 transition-all font-display"
                                 >
-                                    Verify & Save Configuration
+                                    {isVerifying ? "Verifying..." : "Secure Configuration"}
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-            {activeModal === 'add_funds' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-zinc-100 max-h-[90vh] overflow-y-auto scrollbar-hide">
-                        <button onClick={closeModals} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
-                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
-                        </button>
-                        <div className="space-y-12">
-                            <div className="space-y-4 text-center">
-                                <h4 className="text-[10px] font-black text-violet-500 uppercase tracking-[0.4em] italic leading-none">Wallet Protocol</h4>
-                                <h3 className="text-4xl text-premium italic text-zinc-900">Fuel the Nexus.</h3>
-                            </div>
-
-                            <div className="space-y-8">
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-end">
-                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Deposit Amount</span>
-                                        <span className="text-[10px] font-black text-violet-500 uppercase tracking-widest italic leading-none">Instant Naira Top-up</span>
-                                    </div>
-                                    <div className="relative">
-                                        <span className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 text-xl md:text-3xl font-black text-zinc-300">₦</span>
-                                        <input
-                                            type="number"
-                                            value={addAmount}
-                                            onChange={(e) => setAddAmount(e.target.value)}
-                                            placeholder="5,000"
-                                            className="w-full bg-zinc-50 border border-zinc-100 pl-12 md:pl-16 pr-6 md:pr-8 py-6 md:py-8 rounded-[1.5rem] md:rounded-[2rem] text-2xl md:text-4xl font-black text-zinc-950 outline-none focus:border-violet-200 transition-all placeholder:text-zinc-100"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-3 gap-4">
-                                    {["5,000", "15,000", "50,000"].map(v => (
-                                        <button key={v} onClick={() => setAddAmount(v.replace(',', ''))} className="py-4 bg-zinc-50 border border-zinc-100 rounded-2xl text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:bg-violet-500 hover:text-white transition-all">
-                                            ₦{v}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="space-y-6">
-                                <button
-                                    onClick={() => showToast("Paystack Gateway Initiating... Syncing Hub")}
-                                    className="w-full bg-zinc-900 text-white py-6 rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-xl hover:scale-105 active:scale-95 transition-all"
-                                >
-                                    Initialize Paystack Portal
-                                </button>
-                                <div className="flex items-center justify-center gap-3">
-                                    <svg viewBox="0 0 24 24" width="16" height="16" className="text-zinc-300"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" /></svg>
-                                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest italic">Fast Hub Clearing • Real-time Sync</p>
-                                </div>
                             </div>
                         </div>
                     </div>

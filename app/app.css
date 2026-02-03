@@ -8,14 +8,14 @@
   --color-primary-dark: #be185d;
   --color-accent: #f472b6;
 
-  --color-bg-app: #FAFAFA;
-  --color-bg-app-dark: #09090B;
-  --color-text-main: #18181b;
-  --color-text-main-dark: #f4f4f5;
-  --color-card-bg: #ffffff;
-  --color-card-bg-dark: #121214;
-  --color-border-subtle: #f4f4f5;
-  --color-border-subtle-dark: #27272a;
+  --color-bg-app: #000000;
+  --color-bg-app-dark: #000000;
+  --color-text-main: #FFFFFF;
+  --color-text-main-dark: #F4F4F5;
+  --color-card-bg: #0A0A0A;
+  --color-card-bg-dark: #0A0A0A;
+  --color-border-subtle: #18181B;
+  --color-border-subtle-dark: #1F1F23;
 
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
@@ -45,7 +45,7 @@
 
 @layer utilities {
   .glass {
-    @apply backdrop-blur-md bg-white/80 border border-[var(--color-border-subtle)];
+    @apply backdrop-blur-md bg-black/60 border border-[var(--color-border-subtle)];
     will-change: backdrop-filter;
   }
 
@@ -54,8 +54,8 @@
   }
 
   .glass-card {
-    @apply bg-white/90 border border-[var(--color-border-subtle)] shadow-sm backdrop-blur-md transition-all duration-500;
-    @apply shadow-zinc-100/50;
+    @apply bg-zinc-900/40 border border-[var(--color-border-subtle)] shadow-sm backdrop-blur-md transition-all duration-500;
+    @apply shadow-none;
     transform: translateZ(0);
   }
 
@@ -64,7 +64,7 @@
   }
 
   .glass-card:hover {
-    @apply border-pink-300/50 bg-white/95 shadow-lg shadow-pink-200/50;
+    @apply border-zinc-700/50 bg-zinc-900/60 shadow-none;
   }
 
   .dark .glass-card:hover {
@@ -82,7 +82,7 @@
   }
 
   .text-premium {
-    @apply font-display font-black tracking-tight leading-none text-pink-900 uppercase italic;
+    @apply font-display font-black tracking-tight leading-none text-white uppercase italic;
   }
 
   .premium-blur {
