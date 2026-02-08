@@ -3,6 +3,7 @@ import type { Post, TrendingCreator } from "../types/timeline";
 export const MOCK_MOMENTS: Post[] = [
     {
         id: "m1",
+        creatorId: "v_noir_id",
         source: {
             name: "Valentina Noir",
             username: "v_noir",
@@ -19,6 +20,7 @@ export const MOCK_MOMENTS: Post[] = [
     },
     {
         id: "m2",
+        creatorId: "adrien_id",
         source: {
             name: "Adrien Thorne",
             username: "adrien",
@@ -34,6 +36,7 @@ export const MOCK_MOMENTS: Post[] = [
     },
     {
         id: "m3",
+        creatorId: "siennaray_id",
         source: {
             name: "Sienna Ray",
             username: "siennaray",
@@ -50,6 +53,7 @@ export const MOCK_MOMENTS: Post[] = [
     },
     {
         id: "m4",
+        creatorId: "lvance_id",
         source: {
             name: "Lucas Vance",
             username: "lvance",
@@ -127,6 +131,7 @@ export const MOCK_REELS = [
 export const INITIAL_FLOW_POSTS: Post[] = [
     {
         id: "fp1",
+        creatorId: "fan_02_id",
         source: {
             name: "Premium Fan",
             username: "fan_02",
@@ -144,6 +149,7 @@ export const INITIAL_FLOW_POSTS: Post[] = [
     },
     {
         id: "fp2",
+        creatorId: "elenamour_id",
         source: {
             name: "Elena Mour",
             username: "elenamour",
@@ -160,6 +166,7 @@ export const INITIAL_FLOW_POSTS: Post[] = [
     },
     {
         id: "fp3",
+        creatorId: "jvoss_id",
         source: {
             name: "Julian Voss",
             username: "jvoss",
@@ -175,6 +182,7 @@ export const INITIAL_FLOW_POSTS: Post[] = [
     },
     {
         id: "fp4",
+        creatorId: "sofia_s_id",
         source: {
             name: "Sofia Sterling",
             username: "sofia_s",
@@ -190,6 +198,7 @@ export const INITIAL_FLOW_POSTS: Post[] = [
     },
     {
         id: "fp5",
+        creatorId: "lunastar_id",
         source: {
             name: "Luna Star",
             username: "lunastar",
@@ -206,6 +215,7 @@ export const INITIAL_FLOW_POSTS: Post[] = [
     },
     {
         id: "fp6",
+        creatorId: "arivers_id",
         source: {
             name: "Alex Rivers",
             username: "arivers",

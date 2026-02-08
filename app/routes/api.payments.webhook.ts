@@ -1,8 +1,13 @@
-import { ActionFunctionArgs, json } from "react-router";
-import { db } from "../../db/index.server";
-import { ledger, profiles } from "../../db/schema";
+import { ActionFunctionArgs } from "react-router";
+import { db } from "../db/index.server";
+import { ledger, profiles } from "../db/schema";
 import { eq, sql } from "drizzle-orm";
-import { calculateSplit } from "../../utils/paystack.server";
+import { calculateSplit } from "../utils/paystack.server";
+
+const json = (data: any, options?: ResponseInit) => new Response(JSON.stringify(data), {
+    ...options,
+    headers: { "Content-Type": "application/json", ...options?.headers }
+});
 
 /**
  * PAYSTACK WEBHOOK HANDLER
@@ -20,7 +25,7 @@ export async function action({ request }: ActionFunctionArgs) {
         const nairaAmount = amount / 100;
         const { userId, creatorId, type } = metadata;
 
-        return await db.transaction(async (tx) => {
+        return await db.transaction(async (tx: any) => {
             // 1. Fetch participants
             const fan = await tx.query.profiles.findFirst({ where: eq(profiles.id, userId) });
             const creator = await tx.query.profiles.findFirst({ where: eq(profiles.id, creatorId) });
