@@ -4,9 +4,16 @@ interface SidebarProps {
     activeTab?: string;
     userName?: string;
     userTag?: string;
+    persona?: 'creator' | 'fan';
 }
 
-export function Sidebar({ activeTab, userName = "Premium Fan", userTag = "fan_02" }: SidebarProps) {
+export function Sidebar({
+    activeTab,
+    userName = "Premium Fan",
+    userTag = "fan_02",
+    persona = "fan"
+}: SidebarProps) {
+    const isCreator = persona === 'creator';
     return (
         <aside className="hidden lg:flex flex-col w-72 py-8 h-full overflow-y-auto scrollbar-hide">
             <div className="space-y-8 flex-grow pb-12">
@@ -49,31 +56,41 @@ export function Sidebar({ activeTab, userName = "Premium Fan", userTag = "fan_02
                 </nav>
 
                 <div className="space-y-1">
-                    <h4 className="px-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">Quick Access</h4>
+                    <h4 className="px-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">Identity</h4>
                     <Link
                         to="/profile"
                         className={`w-full flex items-center gap-4 px-5 py-3 rounded-2xl transition-all ${activeTab === 'profile' ? "bg-white text-black shadow-xl" : "hover:bg-zinc-900 text-zinc-400 hover:text-white"}`}
                     >
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                        <span className="text-[11px] font-black uppercase tracking-widest">My Identity</span>
+                        <span className="text-[11px] font-black uppercase tracking-widest">My Altar</span>
                     </Link>
-                    <Link
-                        to="/bookmarks"
-                        className={`w-full flex items-center gap-4 px-5 py-3 rounded-2xl transition-all ${activeTab === 'treasure' ? "bg-white text-black shadow-xl" : "hover:bg-zinc-900 text-zinc-400 hover:text-white"}`}
-                    >
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
-                        <span className="text-[11px] font-black uppercase tracking-widest">Treasure</span>
-                    </Link>
+                    {isCreator ? (
+                        <Link
+                            to="/studio"
+                            className={`w-full flex items-center gap-4 px-5 py-3 rounded-2xl transition-all ${activeTab === 'studio' ? "bg-white text-black shadow-xl" : "hover:bg-zinc-900 text-zinc-400 hover:text-white"}`}
+                        >
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.5 1.5" /><path d="M7.67 7.67L12 12" /></svg>
+                            <span className="text-[11px] font-black uppercase tracking-widest">Creator Studio</span>
+                        </Link>
+                    ) : (
+                        <Link
+                            to="/bookmarks"
+                            className={`w-full flex items-center gap-4 px-5 py-3 rounded-2xl transition-all ${activeTab === 'treasure' ? "bg-white text-black shadow-xl" : "hover:bg-zinc-900 text-zinc-400 hover:text-white"}`}
+                        >
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
+                            <span className="text-[11px] font-black uppercase tracking-widest">Saved Visions</span>
+                        </Link>
+                    )}
                 </div>
 
                 <div className="space-y-1">
-                    <h4 className="px-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">Finance</h4>
+                    <h4 className="px-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">Vault</h4>
                     <Link
                         to="/dashboard"
                         className={`w-full flex items-center gap-4 px-5 py-3 rounded-2xl transition-all ${activeTab === 'dashboard' ? "bg-white text-black shadow-xl" : "hover:bg-zinc-900 text-zinc-400 hover:text-white"}`}
                     >
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M7 10v4M12 8v6M17 12v2" /></svg>
-                        <span className="text-[11px] font-black uppercase tracking-widest">Experience Hub</span>
+                        <span className="text-[11px] font-black uppercase tracking-widest">{isCreator ? 'Earnings Ledger' : 'Access Hub'}</span>
                     </Link>
                 </div>
 

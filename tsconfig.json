@@ -25,6 +25,10 @@
     "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
+    "types": [
+      "vite/client",
+      "node"
+    ],
     "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

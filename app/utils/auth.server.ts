@@ -1,10 +1,30 @@
 import { db } from "../db/index.server";
 import { users, profiles } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { hashPassword, verifyPassword } from "./crypto.server";
 import { createUserSession } from "./session.server";
 
-export async function register({ email, password, name, persona }: { email: string, password: string, name: string, persona: 'creator' | 'fan' }) {
+export async function register({
+    email,
+    password,
+    name,
+    persona,
+    phone,
+    gender,
+    country,
+    willingNsfw,
+    referredBy
+}: {
+    email: string,
+    password: string,
+    name: string,
+    persona: 'creator' | 'fan',
+    phone?: string,
+    gender?: string,
+    country?: string,
+    willingNsfw?: boolean,
+    referredBy?: string
+}) {
     const existingUsers = await db.select().from(users).where(eq(users.email, email)).limit(1);
     const existing = existingUsers[0];
 
@@ -12,10 +32,24 @@ export async function register({ email, password, name, persona }: { email: stri
         throw new Error("Resonance already established with this identity.");
     }
 
-
     const passwordHash = await hashPassword(password);
 
-    // Use a transaction to ensure both user and profile are created
+    // Referral Validation Loop
+    let referrerId: string | null = null;
+    if (referredBy) {
+        // Try finding by tag (clean @ if present)
+        const cleanTag = referredBy.startsWith('@') ? referredBy.slice(1) : referredBy;
+        const referrer = await db.query.profiles.findFirst({
+            where: or(
+                eq(profiles.tag, cleanTag),
+                eq(profiles.referralCode, referredBy)
+            )
+        });
+        if (referrer) {
+            referrerId = referrer.id;
+        }
+    }
+
     return await db.transaction(async (tx: any) => {
         const [newUser] = await tx.insert(users).values({
             email,
@@ -26,7 +60,12 @@ export async function register({ email, password, name, persona }: { email: stri
             id: newUser.id,
             name,
             tag: email.split('@')[0] + Math.floor(Math.random() * 1000),
-            persona
+            persona,
+            phone,
+            gender,
+            country,
+            willingNsfw,
+            referredBy: referrerId
         });
 
         return newUser;

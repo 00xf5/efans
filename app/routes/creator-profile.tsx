@@ -434,7 +434,7 @@ export default function CreatorProfile() {
                 <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12 h-full">
 
                     {/* Column 1: Navigation Sidebar */}
-                    <Sidebar activeTab="creators" userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} />
+                    <Sidebar activeTab="creators" userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} persona={currentUserProfile?.persona as any} />
 
                     {/* Column 2: Independent Center Feed */}
 

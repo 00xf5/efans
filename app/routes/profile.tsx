@@ -255,7 +255,7 @@ export default function IdentitySanctuary() {
                 <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12 h-full">
 
                     {/* Column 1: Navigation Sidebar */}
-                    <Sidebar activeTab="profile" userName={profile.name || "Fan"} userTag={profile.tag || "user"} />
+                    <Sidebar activeTab="profile" userName={profile.name || "Fan"} userTag={profile.tag || "user"} persona={profile.persona as any} />
 
                     {/* Column 2: Independent Center Feed */}
                     <main className="flex-grow w-full py-8 h-full overflow-y-auto scrollbar-hide space-y-12 px-4 scroll-smooth pb-32">

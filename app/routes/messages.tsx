@@ -276,7 +276,7 @@ export default function PrivateSanctuary() {
             )}
 
             <div className="w-full md:max-w-[1800px] h-full flex relative z-10 px-0 md:px-6 md:py-8 gap-0 md:gap-8 overflow-x-hidden">
-                <Sidebar activeTab="messages" userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} />
+                <Sidebar activeTab="messages" userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} persona={currentUserProfile?.persona as any} />
 
                 {/* 1. The Sanctuary List */}
                 <aside className={`w-full md:w-96 flex flex-col gap-6 h-full animate-entrance ${mobileView === 'chat' ? 'hidden md:flex' : 'flex'} px-6 py-8 md:px-0 md:py-0`}>

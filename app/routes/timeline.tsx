@@ -518,7 +518,7 @@ export default function Timeline() {
                 <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12 h-full">
 
                     {/* Column 1: Navigation Sidebar */}
-                    <Sidebar activeTab={activeTab === 'flow' ? 'flow' : 'visions'} userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} />
+                    <Sidebar activeTab={activeTab === 'flow' ? 'flow' : 'visions'} userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} persona={currentUserProfile?.persona as any} />
 
                     {/* Column 2: Independent Center Feed */}
                     <main className="flex-grow w-full max-w-full md:max-w-2xl py-8 h-full overflow-y-auto overflow-x-hidden scrollbar-hide space-y-12 px-4 scroll-smooth pb-32 lg:pb-8">

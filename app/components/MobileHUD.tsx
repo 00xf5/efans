@@ -1,8 +1,9 @@
 import { Link, useLocation } from "react-router";
 
-export default function MobileHUD() {
+export default function MobileHUD({ persona = 'fan', avatarUrl }: { persona?: 'creator' | 'fan', avatarUrl?: string }) {
     const location = useLocation();
     const pathname = location.pathname;
+    const isCreator = persona === 'creator';
 
     const excludedPaths = ["/login", "/signup", "/about", "/forgot", "/pricing", "/messages"];
     // Hide mobile HUD on certain full-screen flows (login/signup/about/messages)
@@ -24,13 +25,23 @@ export default function MobileHUD() {
                     {isActive('/timeline') && <span className="text-[7px] font-black uppercase tracking-tighter mt-1">Flow</span>}
                 </Link>
 
-                <Link
-                    to="/bookmarks"
-                    className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center transition-all ${isActive('/bookmarks') ? "bg-white text-black shadow-xl scale-110" : "text-zinc-600 hover:text-white"}`}
-                >
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
-                    {isActive('/bookmarks') && <span className="text-[7px] font-black uppercase tracking-tighter mt-1">Vault</span>}
-                </Link>
+                {isCreator ? (
+                    <Link
+                        to="/studio"
+                        className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center transition-all ${isActive('/studio') ? "bg-white text-black shadow-xl scale-110" : "text-zinc-600 hover:text-white"}`}
+                    >
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.5 1.5" /><path d="M7.67 7.67L12 12" /></svg>
+                        {isActive('/studio') && <span className="text-[7px] font-black uppercase tracking-tighter mt-1">Studio</span>}
+                    </Link>
+                ) : (
+                    <Link
+                        to="/bookmarks"
+                        className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center transition-all ${isActive('/bookmarks') ? "bg-white text-black shadow-xl scale-110" : "text-zinc-600 hover:text-white"}`}
+                    >
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
+                        {isActive('/bookmarks') && <span className="text-[7px] font-black uppercase tracking-tighter mt-1">Vault</span>}
+                    </Link>
+                )}
 
                 <Link
                     to="/messages"
@@ -56,7 +67,7 @@ export default function MobileHUD() {
                     className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center group transition-all ${isActive('/dashboard') || isActive('/profile') ? "bg-white text-black shadow-xl scale-110" : "text-zinc-600 hover:text-white"}`}
                 >
                     <div className={`w-8 h-8 rounded-xl bg-gradient-to-br from-zinc-700 to-zinc-900 p-0.5 shadow-lg group-hover:scale-110 transition-transform ${isActive('/dashboard') || isActive('/profile') ? 'from-primary to-violet-600' : ''}`}>
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" className="w-full h-full rounded-[10px] object-cover" alt="" />
+                        <img src={avatarUrl || "https://api.dicebear.com/7.x/avataaars/svg?seed=Admin"} className="w-full h-full rounded-[10px] object-cover" alt="" />
                     </div>
                 </Link>
             </div>

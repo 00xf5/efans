@@ -9,11 +9,20 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { db } from "./db/index.server";
+import { profiles } from "./db/schema";
+import { eq } from "drizzle-orm";
 import { getUserId } from "./utils/session.server";
 
 export async function loader({ request }: { request: Request }) {
   const userId = await getUserId(request);
-  return { userId };
+  let profile = null;
+  if (userId) {
+    profile = await db.query.profiles.findFirst({
+      where: eq(profiles.id, userId)
+    });
+  }
+  return { userId, profile };
 }
 
 export const links: Route.LinksFunction = () => [
@@ -32,15 +41,16 @@ export const links: Route.LinksFunction = () => [
 import Navbar from "./components/Navbar";
 import MobileHUD from "./components/MobileHUD";
 import Footer from "./components/Footer";
-import { useLocation } from "react-router";
+import { useLocation, useLoaderData } from "react-router";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
+  const { profile } = useLoaderData<typeof loader>() || { profile: null };
 
   // Routes that should NOT have the global navbar/footer and use full-screen layout
   const sanctuaryRoutes = [
     '/timeline', '/messages', '/notifications', '/bookmarks',
-    '/dashboard', '/profile', '/creators'
+    '/dashboard', '/profile', '/creators', '/studio'
   ];
 
   const isSanctuary = sanctuaryRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/creator/');
@@ -65,7 +75,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {children}
           {!isSanctuary && !isAuth && <Footer />}
         </main>
-        <MobileHUD />
+        <MobileHUD persona={profile?.persona as any} avatarUrl={profile?.avatarUrl || undefined} />
         <ScrollRestoration />
         <Scripts />
       </body>

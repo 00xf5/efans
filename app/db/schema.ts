@@ -30,6 +30,13 @@ export const profiles = pgTable("profiles", {
     coverUrl: text("cover_url"),
     persona: varchar("persona", { length: 20 }).default("fan"), // 'creator', 'fan'
     balance: decimal("balance", { precision: 20, scale: 2 }).default("0.00").notNull(),
+
+    // Creator Onboarding Fields
+    phone: varchar("phone", { length: 20 }),
+    gender: varchar("gender", { length: 20 }),
+    country: varchar("country", { length: 100 }),
+    willingNsfw: boolean("willing_nsfw").default(false),
+
     referralCode: varchar("referral_code", { length: 50 }).unique(),
     referredBy: uuid("referred_by").references(() => users.id),
     isVerified: boolean("is_verified").default(false),
@@ -186,6 +193,18 @@ export const pulses = pgTable("pulses", {
     userId: uuid("user_id").references(() => users.id, { onDelete: 'cascade' }).notNull(),
     momentId: uuid("moment_id").references(() => moments.id, { onDelete: 'cascade' }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const otpVerifications = pgTable("otp_verifications", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    email: varchar("email", { length: 255 }).notNull(),
+    code: varchar("code", { length: 6 }).notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        emailIdx: index("otp_email_idx").on(table.email),
+    };
 });
 
 export const userRelations = relations(users, ({ one, many }) => ({
