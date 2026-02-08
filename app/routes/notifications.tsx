@@ -5,6 +5,7 @@ import { echoes, profiles } from "../db/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { requireUserId } from "../utils/session.server";
 import { formatTimeAgo } from "../utils/date";
+import { Sidebar } from "../components/Sidebar";
 
 
 interface DbEcho {
@@ -50,7 +51,11 @@ export async function loader({ request }: { request: Request }) {
             };
         }));
 
-        return { echoes: enrichedEchoes };
+        const currentUserProfile = await db.query.profiles.findFirst({
+            where: eq(profiles.id, userId)
+        });
+
+        return { echoes: enrichedEchoes, currentUserProfile };
     } catch (error: any) {
         if (error instanceof Response) throw error;
         console.error("Notifications Loader Failure:", error);
@@ -100,7 +105,7 @@ const MOCK_REELS = [
 ];
 
 export default function Notifications() {
-    const { echoes: initialEchoes } = useLoaderData<typeof loader>();
+    const { echoes: initialEchoes, currentUserProfile } = useLoaderData<typeof loader>();
     const [echoesList, setEchoesList] = useState(initialEchoes);
     const fetcher = useFetcher();
     const navigate = useNavigate();
@@ -128,39 +133,25 @@ export default function Notifications() {
     };
 
     return (
-        <div className="relative w-full min-h-screen bg-black text-white flex justify-center selection:bg-primary/20 font-display">
+        <div className="relative w-full h-screen bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden font-display transition-colors duration-500">
+            {/* Global Context Indicator */}
+            <div className="fixed top-20 left-6 z-[60] animate-in fade-in slide-in-from-left-4 duration-1000 md:block hidden">
+                <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-zinc-800/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 italic">Echo Chamber</h2>
+                </div>
+            </div>
+
+            {/* Ambient Background */}
             <div className="fixed inset-0 pointer-events-none opacity-20">
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-zinc-800/20 rounded-full blur-[140px]"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-zinc-900/40 rounded-full blur-[140px]"></div>
             </div>
 
-            <div className="w-full flex justify-center px-4 md:px-6 relative z-10">
-                <div className="flex w-full max-w-[1700px] gap-8">
-
-                    {/* Navigation Sidebar */}
-                    <aside className="hidden lg:flex flex-col w-72 py-8">
-                        <nav className="space-y-1">
-                            <Link to="/timeline" className="flex items-center gap-4 px-5 py-3 hover:bg-zinc-900/50 rounded-2xl text-zinc-400 hover:text-white transition-all font-bold">
-                                <span className="text-xl">✨</span>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Visions</span>
-                            </Link>
-                            <Link to="/messages" className="flex items-center gap-4 px-5 py-3 hover:bg-zinc-900/50 rounded-2xl text-zinc-400 hover:text-white transition-all font-bold">
-                                <span className="text-xl">💌</span>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Whispers</span>
-                            </Link>
-                            <Link to="/notifications" className="flex items-center justify-between px-5 py-3 bg-white text-black rounded-2xl font-bold transition-all shadow-none group">
-                                <div className="flex items-center gap-4">
-                                    <span className="text-xl group-hover:scale-110 transition-transform">🔔</span>
-                                    <span className="text-[11px] font-black uppercase tracking-widest">Echoes</span>
-                                </div>
-                            </Link>
-                            <Link to="/logout" className="flex items-center gap-4 px-5 py-3 hover:bg-red-500/10 rounded-2xl text-zinc-400 hover:text-red-500 transition-all font-bold group">
-                                <span className="text-xl">🚪</span>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
-                            </Link>
-                        </nav>
-
-                    </aside>
+            <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-hidden">
+                <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12 h-full">
+                    {/* Column 1: Navigation Sidebar */}
+                    <Sidebar activeTab="notifications" userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} />
 
                     {/* Echoes Interface */}
                     <main className="flex-grow max-w-2xl py-8 flex flex-col min-w-0">

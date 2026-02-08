@@ -1,6 +1,19 @@
 import { useState, useRef, memo } from "react";
-import { Link } from "react-router";
-import type { Route } from "./+types/bookmarks";
+import { Sidebar } from "../components/Sidebar";
+import { MediaModal } from "../components/timeline/MediaModal";
+import { Link, useLoaderData } from "react-router";
+import { db } from "../db/index.server";
+import { profiles } from "../db/schema";
+import { eq } from "drizzle-orm";
+import { requireUserId } from "../utils/session.server";
+
+export async function loader({ request }: { request: Request }) {
+    const userId = await requireUserId(request);
+    const currentUserProfile = await db.query.profiles.findFirst({
+        where: eq(profiles.id, userId)
+    });
+    return { currentUserProfile };
+}
 
 const MOCK_TREASURE = [
     {
@@ -63,130 +76,107 @@ const ONLINE_PRESENCE = [
     "https://api.dicebear.com/7.x/avataaars/svg?seed=3",
 ];
 
-export default function Bookmarks() {
+export default function Treasure() {
+    const { currentUserProfile } = useLoaderData<typeof loader>();
     const [activeTab, setActiveTab] = useState("all");
+    const [expandedMedia, setExpandedMedia] = useState<{ url: string, type: 'video' | 'image' | 'any', name?: string } | null>(null);
 
     return (
-        <div className="relative w-full h-full bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden">
-            {/* Background Glows */}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-pink-100/30 rounded-full blur-[140px]"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-rose-50/40 rounded-full blur-[140px]"></div>
-            </div>
+        <div className="relative w-full h-screen bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden transition-colors duration-500 font-display">
+            {expandedMedia && <MediaModal media={expandedMedia} onClose={() => setExpandedMedia(null)} />}
 
-            <div className="w-full flex justify-center px-4 md:px-6 relative z-10 h-full">
-                <div className="flex w-full max-w-[1700px] gap-8 h-full">
+            {/* Dynamic Background Light */}
+            <div className="fixed top-0 left-0 w-full h-[600px] bg-gradient-to-b from-zinc-900/40 via-transparent to-transparent pointer-events-none -z-10 transition-colors duration-1000"></div>
+            <div className="fixed top-24 left-1/4 w-96 h-96 bg-zinc-800/10 rounded-full blur-[150px] -z-10 pointer-events-none"></div>
+            <div className="fixed bottom-24 right-1/4 w-96 h-96 bg-zinc-800/10 rounded-full blur-[150px] -z-10 pointer-events-none"></div>
+
+            <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-hidden">
+                <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12 h-full">
 
                     {/* Column 1: Navigation Sidebar */}
-                    <aside className="hidden lg:flex flex-col w-72 py-8 h-full overflow-y-auto scrollbar-hide">
-                        <nav className="space-y-1">
-                            <Link to="/timeline" className="flex items-center gap-4 px-5 py-3 hover:bg-pink-50 rounded-2xl text-pink-900/60 hover:text-pink-600 transition-all font-bold">
-                                <span className="text-xl">✨</span>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Visions</span>
-                            </Link>
-                            <Link to="/messages" className="flex items-center gap-4 px-5 py-3 hover:bg-pink-50 rounded-2xl text-pink-900/60 hover:text-pink-600 transition-all font-bold">
-                                <span className="text-xl">💌</span>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Whispers</span>
-                            </Link>
-                            <Link to="/notifications" className="flex items-center gap-4 px-5 py-3 hover:bg-pink-50 rounded-2xl text-pink-900/60 hover:text-pink-600 transition-all group font-bold">
-                                <span className="text-xl">🔔</span>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Echoes</span>
-                            </Link>
-                            <Link to="/bookmarks" className="flex items-center justify-between px-5 py-3 bg-pink-500 text-white rounded-2xl font-bold transition-all shadow-lg shadow-pink-200">
-                                <div className="flex items-center gap-4">
-                                    <span className="text-xl">💎</span>
-                                    <span className="text-[11px] font-black uppercase tracking-widest">Treasure</span>
-                                </div>
-                            </Link>
-                        </nav>
+                    <Sidebar activeTab="treasure" userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} />
 
-                        <div className="mt-auto p-5 glass-card rounded-[2rem] border-pink-100 flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center font-black text-sm text-white">U2</div>
+
+                    {/* Column 2: Independent Center Feed */}
+                    <main className="flex-grow w-full max-w-full md:max-w-2xl py-8 h-full overflow-y-auto overflow-x-hidden scrollbar-hide space-y-12 px-4 scroll-smooth pb-32 lg:pb-8">
+
+                        {/* Treasure Header */}
+                        <div className="space-y-6">
+                            <h1 className="text-5xl font-black italic text-white leading-tight">Your <span className="text-gradient">Treasure.</span></h1>
+                            <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] italic">The vault of established resonances</p>
                         </div>
-                    </aside>
 
-                    {/* Column 2: Treasure Interface */}
-                    <main className="flex-grow max-w-2xl py-8 h-full flex flex-col min-w-0">
-                        <div className="flex-grow overflow-y-auto scrollbar-hide space-y-8 px-2 pb-20 scroll-smooth">
+                        <div className="flex gap-4 border-b border-zinc-900 pb-4 overflow-x-auto scrollbar-hide">
+                            {["all", "visions", "whispers"].map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap ${activeTab === tab ? "bg-white text-black shadow-xl" : "text-zinc-600 hover:text-zinc-300"}`}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
 
-                            {/* Sticky Treasure Header */}
-                            <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-3xl py-4 border-b border-pink-50 flex items-center justify-between gap-4 -mx-2 px-4 shadow-sm rounded-t-[3rem]">
-                                <h1 className="text-2xl text-premium italic text-pink-900">Your <span className="text-gradient">Treasure.</span></h1>
-                                <div className="flex gap-2 p-1 bg-pink-50 rounded-full border border-pink-100">
-                                    {["all", "visions", "whispers"].map((f) => (
-                                        <button
-                                            key={f}
-                                            onClick={() => setActiveTab(f)}
-                                            className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all ${activeTab === f ? 'bg-pink-500 text-white shadow-md shadow-pink-200' : 'text-pink-300 hover:text-pink-600'}`}
-                                        >
-                                            {f}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                        {/* Treasure Gallery */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {MOCK_TREASURE.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="glass-card rounded-[3rem] overflow-hidden group/item border-zinc-800 bg-zinc-900 transition-all duration-700 shadow-none"
+                                >
+                                    <div className="relative aspect-[3/4] cursor-pointer" onClick={() => setExpandedMedia({ url: item.image, type: 'image', name: item.creator })}>
+                                        <img
+                                            src={item.image}
+                                            className="absolute inset-0 w-full h-full object-cover grayscale opacity-60 group-hover/item:grayscale-0 group-hover/item:opacity-100 group-hover/item:scale-105 transition-all duration-[2s]"
+                                            alt=""
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
 
-                            {/* Treasure Gallery */}
-                            <div className="grid grid-cols-2 gap-6 pt-4">
-                                {MOCK_TREASURE.map((item) => (
-                                    <div
-                                        key={item.id}
-                                        className="glass-card rounded-[2.5rem] overflow-hidden group/treasure cursor-pointer border-pink-50 hover:card-glow-primary transition-all duration-700 shadow-xl shadow-pink-100/30"
-                                    >
-                                        <div className="relative aspect-[3/4]">
-                                            <img
-                                                src={item.image}
-                                                className="absolute inset-0 w-full h-full object-cover group-hover/treasure:scale-110 transition-transform duration-[3s] animated-sensual"
-                                                alt=""
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-pink-900/60 via-transparent to-transparent opacity-60 group-hover/treasure:opacity-80 transition-opacity"></div>
-
-                                            <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                                                <span className="text-[8px] font-black text-pink-200 uppercase tracking-[0.3em] mb-1">{item.type}</span>
-                                                <h3 className="text-lg text-premium italic text-white truncate">{item.creator}</h3>
-                                                <p className="text-[8px] font-bold text-pink-100/60 uppercase tracking-widest mt-2">{item.savedAt}</p>
+                                        <div className="absolute inset-0 p-8 flex flex-col justify-end translate-y-4 group-hover/item:translate-y-0 transition-transform duration-700">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                                <span className="text-[8px] font-black text-primary uppercase tracking-widest">{item.type}</span>
                                             </div>
-
-                                            <button className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 hover:bg-pink-500 hover:border-pink-500 transition-all hover:scale-110">
-                                                💎
-                                            </button>
+                                            <h3 className="text-2xl text-premium italic text-white truncate">{item.creator}</h3>
+                                            <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-2 opacity-0 group-hover/item:opacity-100 transition-opacity duration-1000">{item.savedAt}</p>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
 
-                            {/* Archive Empty State Hint */}
-                            <div className="mt-12 p-12 text-center space-y-4 border-2 border-dashed border-pink-100 rounded-[3.5rem]">
-                                <div className="text-3xl grayscale mb-2 opacity-30">📦</div>
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-pink-300">The vaults are vast</h3>
-                                <p className="text-zinc-400 text-[11px] max-w-[200px] mx-auto italic">Only your most adored memories are kept in this sanctuary.</p>
-                            </div>
-
-                        </div>
-                    </main>
-
-                    {/* Column 3: Doomscroll Sidebar */}
-                    <aside className="hidden xl:flex flex-col w-80 py-8 h-full space-y-8 bg-pink-50/20 px-4 border-x border-pink-50">
-                        <div className="flex justify-between items-center px-2">
-                            <h4 className="text-[10px] font-black text-pink-300 uppercase tracking-[0.5em] italic">Active Desires</h4>
-                        </div>
-                        <div className="flex-grow space-y-6 overflow-y-auto scrollbar-hide pb-32 relative" style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
-                            {MOCK_REELS.map((reel) => (
-                                <div key={reel.id} className="relative aspect-[9/16] w-full rounded-[2.5rem] overflow-hidden border border-pink-100 group/reel cursor-pointer shadow-xl transition-all duration-500 hover:scale-[1.02]">
-                                    <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-pink-900/20"></div>
-                                    <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-pink-900/80 to-transparent">
-                                        <h5 className="text-[11px] font-black uppercase text-white italic tracking-widest">{reel.name}</h5>
+                                        <button className="absolute top-6 right-6 w-12 h-12 glass border-zinc-800 rounded-3xl flex items-center justify-center text-white scale-90 group-hover/item:scale-110 transition-all duration-500 hover:bg-white hover:text-black">
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
+                                        </button>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </aside>
 
-                    {/* Column 4: Presence Rail */}
-                    <aside className="hidden 2xl:flex flex-col w-20 py-8 h-full items-center space-y-8 overflow-hidden border-l border-pink-50 bg-pink-50/10">
-                        <div className="flex flex-col gap-4">
-                            {ONLINE_PRESENCE.map((avatar, i) => (
-                                <img key={i} src={avatar} loading="lazy" className="w-10 h-10 rounded-full border border-pink-100 opacity-70" alt="" />
+                        {/* Achievement State */}
+                        <div className="p-16 text-center space-y-8 border-2 border-dashed border-zinc-900 rounded-[4rem] group hover:border-zinc-800 transition-colors">
+                            <div className="w-20 h-20 bg-zinc-900 rounded-[2rem] flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-700">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-700 group-hover:text-primary transition-colors"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-700">Vault Integrity Secured</h3>
+                                <p className="text-zinc-600 text-[11px] max-w-[240px] mx-auto italic leading-relaxed">Your most adored memories are cached at the edge of the sanctuary.</p>
+                            </div>
+                        </div>
+
+                    </main>
+
+                    {/* Column 3: Doomscroll Sidebar */}
+                    <aside className="hidden xl:flex flex-col w-80 py-8 h-full bg-black border-x border-zinc-900 transition-colors overflow-hidden px-4 space-y-8">
+                        <div className="flex justify-between items-center px-2">
+                            <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em] italic">Active Desires</h4>
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+                        </div>
+                        <div className="flex-grow space-y-6 overflow-y-auto scrollbar-hide pb-32 relative" style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
+                            {MOCK_REELS.map((reel) => (
+                                <div key={reel.id} className="relative aspect-[9/16] w-full rounded-[2.5rem] overflow-hidden border border-zinc-800 group/reel cursor-pointer shadow-none transition-all duration-500 hover:scale-[1.02]">
+                                    <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
+                                    <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-black/90 to-transparent">
+                                        <h5 className="text-[11px] font-black uppercase text-white italic tracking-widest">{reel.name}</h5>
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </aside>

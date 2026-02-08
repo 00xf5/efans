@@ -4,6 +4,7 @@ import { db } from "../db/index.server";
 import { profiles, conversations, messages, users } from "../db/schema";
 import { eq, or, and, desc, asc } from "drizzle-orm";
 import { requireUserId } from "../utils/session.server";
+import { Sidebar } from "../components/Sidebar";
 
 interface DbConversation {
     id: string;
@@ -81,9 +82,14 @@ export async function loader({ request }: { request: Request }) {
             };
         }));
 
+        const currentUserProfile = await db.query.profiles.findFirst({
+            where: eq(profiles.id, userId)
+        });
+
         return {
             conversations: enrichedConversations,
-            userId
+            userId,
+            currentUserProfile
         };
     } catch (error: any) {
         if (error instanceof Response) throw error;
@@ -99,6 +105,17 @@ export async function action({ request }: { request: Request }) {
 
     if (intent === "send_message") {
         const conversationId = formData.get("conversationId") as string;
+
+        // Security Check: Verify user is a participant
+        const conv = await db.query.conversations.findFirst({
+            where: and(
+                eq(conversations.id, conversationId),
+                or(eq(conversations.participantOneId, userId), eq(conversations.participantTwoId, userId))
+            )
+        });
+
+        if (!conv) return { success: false, error: "Whisper channel unauthorized" };
+
         const content = formData.get("content") as string;
         const type = formData.get("type") as string || "text";
         const metadata = JSON.parse(formData.get("metadata") as string || "{}");
@@ -123,7 +140,7 @@ export async function action({ request }: { request: Request }) {
 }
 
 export default function PrivateSanctuary() {
-    const { conversations: initialConversations, userId } = useLoaderData<typeof loader>();
+    const { conversations: initialConversations, userId, currentUserProfile } = useLoaderData<typeof loader>();
     const fetcher = useFetcher();
 
     const [conversations, setConversations] = useState(initialConversations);
@@ -259,6 +276,7 @@ export default function PrivateSanctuary() {
             )}
 
             <div className="w-full md:max-w-[1800px] h-full flex relative z-10 px-0 md:px-6 md:py-8 gap-0 md:gap-8 overflow-x-hidden">
+                <Sidebar activeTab="messages" userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} />
 
                 {/* 1. The Sanctuary List */}
                 <aside className={`w-full md:w-96 flex flex-col gap-6 h-full animate-entrance ${mobileView === 'chat' ? 'hidden md:flex' : 'flex'} px-6 py-8 md:px-0 md:py-0`}>

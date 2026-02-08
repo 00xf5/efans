@@ -44,7 +44,7 @@ export const MomentCard = memo(({ moment, addReaction, reactions, isFlow = false
                     </div>
                 )}
                 <div className="p-6 flex items-center justify-between border-b border-zinc-800">
-                    <Link to={`/creator/${moment.source.name.toLowerCase().replace(/\s+/g, '-')}`} className="flex items-center gap-4 group/author">
+                    <Link to={`/creator/${moment.source.username}`} className="flex items-center gap-4 group/author">
                         <img src={moment.source.avatar} loading="lazy" className="w-12 h-12 rounded-xl object-cover ring-2 ring-zinc-800 relative z-10 group-hover/author:scale-105 transition-all duration-500" alt="" />
                         <div>
                             <div className="flex items-center gap-2">

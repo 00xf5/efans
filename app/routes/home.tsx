@@ -1,5 +1,6 @@
 import type { Route } from "./+types/home";
 import { Link } from "react-router";
+import { SAMPLE_CREATORS } from "../utils/sample-data";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -74,28 +75,16 @@ export default function Home() {
         {/* Infinite Moving Carousel */}
         <div className="relative group">
           <div className="flex animate-marquee gap-8 w-max px-8">
-            {[
-              { name: "Valentina Noir", handle: "@v_noir", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1200", tag: "Late Night Art" },
-              { name: "Adrien Thorne", handle: "@adrien", img: "https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?auto=format&fit=crop&q=80&w=1200", tag: "Masculine Power" },
-              { name: "Sienna Ray", handle: "@siennaray", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=1200", tag: "Velvet Portraits" },
-              { name: "Lucas Vance", handle: "@lvance", img: "https://images.unsplash.com/photo-1488161628813-04466f872be2?auto=format&fit=crop&q=80&w=1200", tag: "Urban Intimacy" },
-              { name: "Elena Mour", handle: "@elenamour", img: "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?auto=format&fit=crop&q=80&w=1200", tag: "Golden Hour" },
-              // Duplicate for infinite scroll
-              { name: "Valentina Noir", handle: "@v_noir", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1200", tag: "Late Night Art" },
-              { name: "Adrien Thorne", handle: "@adrien", img: "https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?auto=format&fit=crop&q=80&w=1200", tag: "Masculine Power" },
-              { name: "Sienna Ray", handle: "@siennaray", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=1200", tag: "Velvet Portraits" },
-              { name: "Lucas Vance", handle: "@lvance", img: "https://images.unsplash.com/photo-1488161628813-04466f872be2?auto=format&fit=crop&q=80&w=1200", tag: "Urban Intimacy" },
-              { name: "Elena Mour", handle: "@elenamour", img: "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?auto=format&fit=crop&q=80&w=1200", tag: "Golden Hour" },
-            ].map((creator, i) => (
+            {[...SAMPLE_CREATORS, ...SAMPLE_CREATORS].map((creator, i) => (
               <Link
                 key={i}
-                to={`/creator/${creator.handle.replace('@', '')}`}
+                to={`/creator/${creator.tag}`}
                 className="relative flex-none w-[320px] md:w-[600px] aspect-[4/5] rounded-[3rem] overflow-hidden group border border-zinc-800 active:scale-95 transition-all duration-700 shadow-none"
               >
                 {/* Image Container with Ken Burns */}
                 <div className="absolute inset-0 overflow-hidden">
                   <img
-                    src={creator.img}
+                    src={creator.coverUrl}
                     alt={creator.name}
                     className="absolute inset-0 w-full h-full object-cover grayscale-[0.8] group-hover:grayscale-0 transition-all duration-1000 animated-sensual scale-110"
                   />
@@ -107,7 +96,7 @@ export default function Home() {
                 <div className="absolute inset-0 p-12 flex flex-col justify-end space-y-4">
                   <div className="translate-y-8 group-hover:translate-y-0 transition-all duration-1000 ease-out-back">
                     <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 border border-primary/30 text-[9px] font-black uppercase tracking-[0.4em] text-primary backdrop-blur-md mb-4 shadow-none">
-                      {creator.tag}
+                      {creator.persona}
                     </span>
                     <h3 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter leading-none mb-2">{creator.name}</h3>
                     <p className="text-zinc-500 font-bold italic tracking-wide text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-300">

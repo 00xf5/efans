@@ -5,6 +5,7 @@ import { db } from "../db/index.server";
 import { profiles, ledger } from "../db/schema";
 import { eq, desc, sum, sql } from "drizzle-orm";
 import { formatTimeAgo } from "../utils/date";
+import { Sidebar } from "../components/Sidebar";
 
 
 interface DbProfile {
@@ -175,7 +176,7 @@ export default function ExperienceHub() {
     };
 
     return (
-        <div className="relative w-full min-h-screen bg-black text-white flex justify-center selection:bg-primary/20 font-display transition-colors duration-500 pb-32">
+        <div className="relative w-full h-screen bg-black text-white flex justify-center selection:bg-primary/20 font-display transition-colors duration-500 overflow-hidden">
             {toast && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 border border-zinc-800 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -183,66 +184,11 @@ export default function ExperienceHub() {
                 </div>
             )}
 
-            <div className="w-full flex justify-center px-4 md:px-6 relative z-10">
-                <div className="flex w-full md:max-w-[1800px] gap-12">
+            <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-hidden">
+                <div className="flex w-full md:max-w-[1800px] gap-12 h-full">
 
-                    {/* Left Pillar: Navigation */}
-                    <aside className="hidden lg:flex flex-col w-72 py-10">
-                        <div className="space-y-12">
-                            <div className="px-5">
-                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Persona</h4>
-                                <div className="p-1 bg-zinc-900/40 rounded-[2rem] flex items-center relative gap-1 border border-zinc-800">
-                                    <button
-                                        onClick={() => setPersona('creator')}
-                                        className={`flex-1 py-3.5 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all z-10 ${persona === 'creator' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
-                                    >
-                                        Creator Hub
-                                    </button>
-                                    <button
-                                        onClick={() => setPersona('fan')}
-                                        className={`flex-1 py-3.5 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest transition-all z-10 ${persona === 'fan' ? 'bg-white text-black shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
-                                    >
-                                        Fan Nexus
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="px-5">
-                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Management</h4>
-                                <nav className="space-y-2">
-                                    <Link to="/dashboard" className="flex items-center gap-4 px-5 py-3.5 bg-white text-black rounded-3xl transition-all">
-                                        <span className="text-xl">📊</span>
-                                        <span className="text-[11px] font-black uppercase tracking-widest">Performance</span>
-                                    </Link>
-                                    <Link to="/timeline" className="flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-900 rounded-3xl text-zinc-500 hover:text-white transition-all font-bold">
-                                        <span className="text-xl">✨</span>
-                                        <span className="text-[11px] font-black uppercase tracking-widest">Visions</span>
-                                    </Link>
-                                </nav>
-                            </div>
-
-                            <div className="px-5">
-                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Economy</h4>
-                                <nav className="space-y-2">
-                                    <button onClick={() => setActiveModal('withdraw')} className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-900 rounded-3xl text-zinc-500 hover:text-white transition-all font-bold text-left group">
-                                        <span className="text-xl">💰</span>
-                                        <span className="text-[11px] font-black uppercase tracking-widest">Withdraw</span>
-                                    </button>
-                                </nav>
-                            </div>
-
-                            <div className="px-5">
-                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Protocol</h4>
-                                <nav className="space-y-2">
-                                    <Link to="/logout" className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-red-500/10 rounded-3xl text-zinc-500 hover:text-red-500 transition-all font-bold text-left group">
-                                        <span className="text-xl">🚪</span>
-                                        <span className="text-[11px] font-black uppercase tracking-widest">Terminate Session</span>
-                                    </Link>
-                                </nav>
-                            </div>
-                        </div>
-
-                    </aside>
+                    {/* Column 1: Navigation Sidebar */}
+                    <Sidebar activeTab="dashboard" userName={profile.name || "Fan"} userTag={profile.tag || "user"} />
 
                     {/* Main Content */}
                     <main className="flex-grow py-10 space-y-12">

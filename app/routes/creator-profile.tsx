@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useParams, useLoaderData, useFetcher, useNavigate } from "react-router";
 import { db } from "../db/index.server";
-import { profiles, moments, subscriptions, unlocks, conversations, ledger, loyaltyStats } from "../db/schema";
+import { profiles, moments, subscriptions, unlocks, conversations, ledger, loyaltyStats, whispers } from "../db/schema";
 import { eq, and, desc, or } from "drizzle-orm";
 import { requireUserId, getUserId } from "../utils/session.server";
-import { calculateLoyaltyTier, hasRequiredTier } from "../utils/loyalty";
+import { calculateLoyaltyTier, hasRequiredTier, getTierBadge } from "../utils/loyalty";
 import type { LoyaltyTier } from "../utils/loyalty";
 import { MomentCard } from "../components/timeline/MomentCard";
 import { MediaModal } from "../components/timeline/MediaModal";
+import { Sidebar } from "../components/Sidebar";
+import { SAMPLE_CREATORS, SAMPLE_MOMENTS } from "../utils/sample-data";
 
 interface Moment {
     id: string;
@@ -21,55 +23,128 @@ interface Moment {
 }
 
 export async function loader({ params, request }: { params: any, request: Request }) {
-    const { username } = params;
-    const currentUserId = await getUserId(request);
+    try {
+        const { username } = params;
+        const currentUserId = await getUserId(request);
 
-    const creator = await db.query.profiles.findFirst({
-        where: eq(profiles.tag, username)
-    });
+        const creator = await db.query.profiles.findFirst({
+            where: eq(profiles.tag, username)
+        });
 
-    if (!creator) {
-        throw new Response("Creator not found", { status: 404 });
-    }
+        if (!creator) {
+            // Check sample data fallback
+            const sampleCreator = SAMPLE_CREATORS.find(c => c.tag === username);
+            if (!sampleCreator) {
+                throw new Response("Creator not found", { status: 404 });
+            }
 
-    // Parallel High-Fidelity Data Extraction
-    const [currentUserProfile, fanLoyalty, creatorMoments, sub, userUnlocks] = await Promise.all([
-        currentUserId ? db.query.profiles.findFirst({ where: eq(profiles.id, currentUserId) }) : Promise.resolve(null),
-        currentUserId ? db.query.loyaltyStats.findFirst({ where: and(eq(loyaltyStats.fanId, currentUserId), eq(loyaltyStats.creatorId, creator.id)) }) : Promise.resolve(null),
-        db.query.moments.findMany({ where: eq(moments.creatorId, creator.id), orderBy: [desc(moments.createdAt)], limit: 50 }),
-        currentUserId ? db.query.subscriptions.findFirst({ where: and(eq(subscriptions.fanId, currentUserId), eq(subscriptions.creatorId, creator.id), eq(subscriptions.status, 'active')) }) : Promise.resolve(null),
-        currentUserId ? db.query.unlocks.findMany({ where: eq(unlocks.userId, currentUserId) }) : Promise.resolve([])
-    ]);
-
-    const currentTier = (fanLoyalty?.tier as LoyaltyTier) || "Acquaintance";
-    const isFollowing = !!sub;
-    const unlockedIds = userUnlocks.map((u: { momentId: string }) => u.momentId);
-
-    return {
-        creator,
-        currentUserProfile,
-        creatorMoments: (creatorMoments as Moment[]).map((m: Moment) => {
-            const isUnlocked = unlockedIds.includes(m.id);
-            const reqTier = (m.requiredTier as LoyaltyTier) || "Acquaintance";
-            const meetsTier = hasRequiredTier(currentTier, reqTier);
-            const isLocked = m.type === 'vision' && !isUnlocked && (parseFloat(m.price || "0") > 0 || !meetsTier);
+            // Build mock data response for sample creators
+            const currentUserId = await getUserId(request);
+            const currentUserProfile = currentUserId ? await db.query.profiles.findFirst({ where: eq(profiles.id, currentUserId) }) : null;
+            const sampleMoments = SAMPLE_MOMENTS[sampleCreator.id] || [];
 
             return {
-                ...m,
-                locked: isLocked,
-                meetsRequirement: meetsTier,
-                stats: { likes: "0", whispers: 0, shares: 0 }, // For MomentCard
-                source: {
-                    name: creator.name,
-                    username: creator.tag,
-                    avatar: creator.avatarUrl,
-                    verified: creator.isVerified
-                }
+                creator: sampleCreator,
+                currentUserProfile,
+                creatorMoments: sampleMoments.map(m => ({
+                    ...m,
+                    locked: m.type === 'vision', // Simple logic for sample data
+                    meetsRequirement: false,
+                    stats: { likes: "0", whispers: 0, shares: 0 },
+                    source: {
+                        name: sampleCreator.name,
+                        username: sampleCreator.tag,
+                        avatar: sampleCreator.avatarUrl,
+                        verified: sampleCreator.isVerified
+                    },
+                    comments: []
+                })),
+                isFollowing: false,
+                currentUserId,
+                isSelf: false
             };
-        }),
-        isFollowing,
-        currentUserId
-    };
+        }
+
+        // Parallel High-Fidelity Data Extraction
+        const [currentUserProfile, fanLoyalty, creatorMoments, sub, userUnlocks] = await Promise.all([
+            currentUserId ? db.query.profiles.findFirst({ where: eq(profiles.id, currentUserId) }) : Promise.resolve(null),
+            currentUserId ? db.query.loyaltyStats.findFirst({ where: and(eq(loyaltyStats.fanId, currentUserId), eq(loyaltyStats.creatorId, creator.id)) }) : Promise.resolve(null),
+            db.query.moments.findMany({
+                where: eq(moments.creatorId, creator.id),
+                with: {
+                    whispers: {
+                        with: {
+                            fan: { with: { loyaltyStats: true } }
+                        },
+                        orderBy: [desc(whispers.createdAt)],
+                        limit: 20
+                    }
+                },
+                orderBy: [desc(moments.createdAt)],
+                limit: 50
+            }),
+            currentUserId ? db.query.subscriptions.findFirst({ where: and(eq(subscriptions.fanId, currentUserId), eq(subscriptions.creatorId, creator.id), eq(subscriptions.status, 'active')) }) : Promise.resolve(null),
+            currentUserId ? db.query.unlocks.findMany({ where: eq(unlocks.userId, currentUserId) }) : Promise.resolve([])
+        ]);
+
+        const currentTier = (fanLoyalty?.tier as LoyaltyTier) || "Acquaintance";
+        const isFollowing = !!sub;
+        const unlockedIds = userUnlocks.map((u: { momentId: string }) => u.momentId);
+        const isSelf = currentUserId === creator.id;
+
+        return {
+            creator,
+            currentUserProfile,
+            creatorMoments: (creatorMoments as Moment[]).map((m: Moment) => {
+                const isUnlocked = unlockedIds.includes(m.id);
+                const reqTier = (m.requiredTier as LoyaltyTier) || "Acquaintance";
+                const meetsTier = hasRequiredTier(currentTier, reqTier);
+                // Self always has access to their own content
+                const isLocked = !isSelf && m.type === 'vision' && !isUnlocked && (parseFloat(m.price || "0") > 0 || !meetsTier);
+
+                return {
+                    ...m,
+                    locked: isLocked,
+                    meetsRequirement: isSelf || meetsTier,
+                    stats: { likes: "0", whispers: (m as any).whispers?.length || 0, shares: 0 },
+                    source: {
+                        name: creator.name,
+                        username: creator.tag,
+                        avatar: creator.avatarUrl,
+                        verified: creator.isVerified
+                    },
+                    comments: ((m as any).whispers || []).map((w: any) => {
+                        const badge = getTierBadge((w.fan?.loyaltyStats || []).find((ls: any) => ls.creatorId === creator.id)?.tier || "Acquaintance");
+                        return {
+                            id: w.id,
+                            user: w.fan?.name || "Fan",
+                            avatar: w.fan?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${w.fanId}`,
+                            content: w.content,
+                            loyalty: { label: badge.label, color: badge.color, icon: badge.icon }
+                        };
+                    })
+                };
+            }),
+            isFollowing,
+            currentUserId,
+            isSelf
+        };
+    } catch (error: any) {
+        if (error instanceof Response) throw error;
+        console.error("Creator Profile Loader Failure:", {
+            message: error?.message,
+            stack: error?.stack,
+            error
+        });
+        throw new Response(
+            JSON.stringify({
+                error: "Creator Sanctuary Calibration Failed",
+                details: error?.message || "Unknown resonance failure",
+                suggestion: "Check database connection or schema integrity"
+            }),
+            { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+    }
 }
 
 export async function action({ request }: { request: Request }) {
@@ -79,6 +154,7 @@ export async function action({ request }: { request: Request }) {
 
     if (intent === "message") {
         const creatorId = formData.get("creatorId") as string;
+        if (userId === creatorId) return { success: false, error: "Cannot whisper to yourself" };
 
         // Find existing conversation
         let conv = await db.query.conversations.findFirst({
@@ -101,6 +177,8 @@ export async function action({ request }: { request: Request }) {
 
     if (intent === "subscribe") {
         const creatorId = formData.get("creatorId") as string;
+        if (userId === creatorId) return { success: false, error: "Self-subscription protocol blocked" };
+
         const tier = formData.get("tier") as string;
         const priceStr = formData.get("price") as string;
         const price = parseFloat(priceStr);
@@ -191,8 +269,9 @@ export async function action({ request }: { request: Request }) {
         });
 
         if (!moment || moment.type !== 'vision') return { success: false, error: "Vision not found" };
-        const price = parseFloat(moment.price?.toString() || "0");
         const creatorId = moment.creatorId;
+        if (userId === creatorId) return { success: false, error: "Self-unlock not required. Protocol bypassed." };
+        const price = parseFloat(moment.price?.toString() || "0");
 
         // Fetch fan balance
         const fanProfile = await db.query.profiles.findFirst({ where: eq(profiles.id, userId) });
@@ -271,11 +350,12 @@ export async function action({ request }: { request: Request }) {
 
 
 export default function CreatorProfile() {
-    const { creator, currentUserProfile, creatorMoments, isFollowing } = useLoaderData() as {
+    const { creator, currentUserProfile, creatorMoments, isFollowing, isSelf } = useLoaderData() as {
         creator: any,
         currentUserProfile: any,
         creatorMoments: any[],
-        isFollowing: boolean
+        isFollowing: boolean,
+        isSelf: boolean
     };
     const fetcher = useFetcher();
     const navigate = useNavigate();
@@ -327,63 +407,45 @@ export default function CreatorProfile() {
     };
 
     return (
-        <div className="relative w-full h-full bg-white text-zinc-900 flex justify-center selection:bg-pink-100 overflow-hidden">
+        <div className="relative w-full h-screen bg-black text-white flex justify-center selection:bg-primary/20 font-display transition-colors duration-500 overflow-hidden">
             {expandedMedia && <MediaModal media={expandedMedia} onClose={() => setExpandedMedia(null)} />}
             {/* Resonance Feedback Altar */}
             {toast && (
                 <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[150] bg-zinc-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl animate-in slide-in-from-top-4">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                     {toast}
                 </div>
             )}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-pink-100/30 rounded-full blur-[140px]"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-rose-50/40 rounded-full blur-[140px]"></div>
+            <div className="fixed inset-0 pointer-events-none opacity-40">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-zinc-900/40 rounded-full blur-[140px]"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-zinc-800/30 rounded-full blur-[140px]"></div>
             </div>
 
-            <div className="w-full flex justify-center px-4 md:px-6 relative z-10 h-full">
-                <div className="flex w-full max-w-[1700px] gap-8 h-full">
+            <div className="w-full flex justify-center px-0 md:px-6 relative z-10 h-full overflow-hidden">
+                <div className="flex w-full md:max-w-[2200px] gap-0 md:gap-12 h-full">
 
-                    {/* Sidebar Nav */}
-                    <aside className="hidden lg:flex flex-col w-72 py-8 h-full overflow-y-auto scrollbar-hide">
-                        <nav className="space-y-1">
-                            <Link to="/timeline" className="flex items-center gap-4 px-5 py-3 hover:bg-pink-50 rounded-2xl text-pink-900/60 transition-all font-bold group text-decoration-none">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:text-pink-500 transition-colors"><path d="m12 3-1.912 5.813L4.275 10.725l5.813 1.912L12 18.45l1.912-5.813 5.813-1.912-5.813-1.912L12 3Z" /></svg>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Feed</span>
-                            </Link>
-                            <Link to="/creators" className="flex items-center gap-4 px-5 py-3 hover:bg-pink-50 rounded-2xl text-pink-900/60 transition-all font-bold group text-decoration-none">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:text-pink-500 transition-colors"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Discovery</span>
-                            </Link>
-                            <Link to="/messages" className="flex items-center gap-4 px-5 py-3 hover:bg-pink-50 rounded-2xl text-pink-900/60 transition-all font-bold group text-decoration-none">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:text-pink-500 transition-colors"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H17.5C20 5 22 7 22 9.5V17Z" /><path d="m2 9 8.244 4.523a4 4 0 0 0 3.512 0L22 9" /></svg>
-                                <span className="text-[11px] font-black uppercase tracking-widest">Whispers</span>
-                            </Link>
-                        </nav>
-                        <div className="mt-auto p-5 glass-card rounded-[2rem] border-pink-100 flex items-center gap-4 mb-8 shadow-pink-100/30">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-black">
-                                {creator.name ? creator.name.substring(0, 2).toUpperCase() : "VN"}
-                            </div>
-                        </div>
-                    </aside>
+                    {/* Column 1: Navigation Sidebar */}
+                    <Sidebar activeTab="creators" userName={currentUserProfile?.name || "Fan"} userTag={currentUserProfile?.tag || "user"} />
+
+                    {/* Column 2: Independent Center Feed */}
 
                     {/* Main Creator Profile */}
-                    <main className="flex-grow max-w-2xl h-full overflow-y-auto scrollbar-hide flex flex-col pt-8">
+                    <main className="flex-grow max-w-2xl w-full py-8 h-full overflow-y-auto scrollbar-hide space-y-12 px-0 md:px-4 scroll-smooth pb-32">
                         {/* Cover & Profile Identity */}
                         <div className="relative flex-shrink-0 group">
-                            <div className="h-64 rounded-[3.5rem] overflow-hidden border border-pink-100 shadow-2xl relative">
+                            <div className="h-64 rounded-[3.5rem] overflow-hidden border border-white/5 shadow-2xl relative">
                                 <img src={creator.coverUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1200"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[10s]" alt="" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-pink-900/40 via-transparent to-transparent"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
 
                                 {/* Overlay Stats */}
                                 <div className="absolute bottom-8 right-4 md:right-12 flex gap-4 md:gap-8">
                                     <div className="text-center">
                                         <p className="text-white font-black text-xl leading-none">{creator.resonanceScore || "100"}%</p>
-                                        <p className="text-pink-100 text-[8px] font-black uppercase tracking-widest mt-1 opacity-80">Resonance</p>
+                                        <p className="text-zinc-400 text-[8px] font-black uppercase tracking-widest mt-1 opacity-80">Resonance</p>
                                     </div>
                                     <div className="text-center">
                                         <p className="text-white font-black text-xl leading-none">{creatorMoments.length}</p>
-                                        <p className="text-pink-100 text-[8px] font-black uppercase tracking-widest mt-1 opacity-80">Visions</p>
+                                        <p className="text-zinc-400 text-[8px] font-black uppercase tracking-widest mt-1 opacity-80">Visions</p>
                                     </div>
                                 </div>
                             </div>
@@ -391,47 +453,59 @@ export default function CreatorProfile() {
                             {/* Avatar Float */}
                             <div className="absolute -bottom-12 left-4 md:left-12 flex items-end gap-6">
                                 <div className="relative">
-                                    <div className="absolute inset-0 bg-pink-500/20 rounded-3xl blur-xl animate-pulse"></div>
-                                    <img src={creator.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${creator.tag}`} className="w-32 h-32 rounded-[2.5rem] object-cover ring-8 ring-white relative z-10 shadow-2xl bg-white" alt="" />
+                                    <div className="absolute inset-0 bg-primary/20 rounded-3xl blur-xl animate-pulse"></div>
+                                    <img src={creator.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${creator.tag}`} className="w-32 h-32 rounded-[2.5rem] object-cover ring-8 ring-black relative z-10 shadow-2xl bg-zinc-900" alt="" />
                                 </div>
                                 <div className="pb-4">
-                                    <h1 className="text-3xl text-premium italic text-pink-900 leading-none">{creator.name || "Anonymous"}</h1>
-                                    <p className="text-pink-400 text-sm font-bold tracking-widest mt-2">@{creator.tag}</p>
+                                    <h1 className="text-3xl font-black italic text-white leading-none tracking-tighter">{creator.name || "Anonymous"}</h1>
+                                    <p className="text-primary text-sm font-bold tracking-widest mt-2">@{creator.tag}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Bio & Actions */}
                         <div className="mt-20 px-4 space-y-8 flex-shrink-0">
-                            <div className="flex justify-between items-start gap-12">
-                                <p className="text-zinc-600 font-medium leading-relaxed italic text-lg max-w-md">
+                            <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+                                <p className="text-zinc-400 font-medium leading-relaxed italic text-lg max-w-md">
                                     "{creator.bio || "No description provided."}"
                                 </p>
                                 <div className="flex gap-4">
-                                    <button
-                                        onClick={() => setShowSubModal(true)}
-                                        className="bg-pink-500 text-white px-8 py-4 rounded-3xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-pink-200 hover:bg-pink-600 transition-all active:scale-95 flex items-center gap-3 whitespace-nowrap"
-                                    >
-                                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                                        {isFollowing ? "Altar Fueled" : "Fuel the Altar"}
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            const formData = new FormData();
-                                            formData.append("intent", "message");
-                                            formData.append("creatorId", creator.id);
-                                            fetcher.submit(formData, { method: "POST" });
-                                        }}
-                                        className="w-14 h-14 bg-white border border-pink-100 rounded-3xl flex items-center justify-center hover:bg-pink-50 transition-all shadow-sm text-pink-500 text-decoration-none"
-                                    >
-                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H17.5C20 5 22 7 22 9.5V17Z" /><path d="m2 9 8.244 4.523a4 4 0 0 0 3.512 0L22 9" /></svg>
-                                    </button>
+                                    {isSelf ? (
+                                        <Link
+                                            to="/profile"
+                                            className="bg-white text-black px-8 py-4 rounded-3xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:scale-105 transition-all active:scale-95 flex items-center gap-3 whitespace-nowrap text-decoration-none"
+                                        >
+                                            <span className="w-2 h-2 rounded-full bg-primary"></span>
+                                            Calibrate Sanctuary
+                                        </Link>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => setShowSubModal(true)}
+                                                className="bg-primary text-black px-8 py-4 rounded-3xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all active:scale-95 flex items-center gap-3 whitespace-nowrap"
+                                            >
+                                                <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
+                                                {isFollowing ? "Protocol Active" : "Fuel Protocol"}
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    const formData = new FormData();
+                                                    formData.append("intent", "message");
+                                                    formData.append("creatorId", creator.id);
+                                                    fetcher.submit(formData, { method: "POST" });
+                                                }}
+                                                className="w-14 h-14 bg-zinc-900 border border-white/5 rounded-3xl flex items-center justify-center hover:bg-zinc-800 transition-all shadow-sm text-white"
+                                            >
+                                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H17.5C20 5 22 7 22 9.5V17Z" /><path d="m2 9 8.244 4.523a4 4 0 0 0 3.512 0L22 9" /></svg>
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="flex gap-3">
+                            <div className="flex gap-2 flex-wrap">
                                 {["Sovereign", "Elite", "High Fidelity"].map(t => (
-                                    <span key={t} className="px-5 py-2 rounded-full border border-pink-100 text-[9px] font-black uppercase tracking-widest text-pink-400 bg-pink-50/20">
+                                    <span key={t} className="px-5 py-2 rounded-full border border-white/5 text-[9px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-900/50">
                                         {t}
                                     </span>
                                 ))}
@@ -439,13 +513,13 @@ export default function CreatorProfile() {
                         </div>
 
                         {/* Content Feed Tabs */}
-                        <div className="mt-12 sticky top-0 z-20 bg-white/80 backdrop-blur-3xl border-b border-pink-50 py-4 px-2">
+                        <div className="mt-12 sticky top-0 z-20 bg-black/80 backdrop-blur-3xl border-b border-white/5 py-4 px-2">
                             <div className="flex gap-4">
                                 {["Visions", "Whispers"].map(tab => (
                                     <button
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
-                                        className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-zinc-900 text-white shadow-xl' : 'text-zinc-400 hover:text-pink-500'}`}
+                                        className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-white text-black shadow-xl' : 'text-zinc-500 hover:text-white'}`}
                                     >
                                         {tab}
                                     </button>
@@ -469,7 +543,7 @@ export default function CreatorProfile() {
                                         />
                                     ))}
                                     {creatorMoments.length === 0 && (
-                                        <p className="text-center text-zinc-400 italic text-sm py-24">This sanctuary has no visions yet.</p>
+                                        <p className="text-center text-zinc-500 italic text-sm py-24">This sanctuary has no visions yet.</p>
                                     )}
                                 </div>
                             )}
@@ -477,19 +551,19 @@ export default function CreatorProfile() {
                             {activeTab === "Whispers" && (
                                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {(creatorMoments as Moment[]).filter((m: Moment) => !m.mediaAssets?.length).map((whisper: Moment) => (
-                                        <div key={whisper.id} className="glass-card p-8 rounded-[2.5rem] border-pink-50 space-y-4 hover:bg-pink-50/10 transition-colors">
-                                            <p className="text-zinc-700 font-medium italic leading-relaxed text-lg">"{whisper.content}"</p>
+                                        <div key={whisper.id} className="bg-zinc-900/50 p-8 rounded-[2.5rem] border border-white/5 space-y-4 hover:bg-zinc-900 transition-colors">
+                                            <p className="text-zinc-300 font-medium italic leading-relaxed text-lg">"{whisper.content}"</p>
                                             <div className="flex items-center justify-between pt-2">
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-300">{new Date(whisper.createdAt).toLocaleDateString()}</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{new Date(whisper.createdAt).toLocaleDateString()}</span>
                                                 <div className="flex gap-6">
-                                                    <span className="text-[10px] font-black text-pink-400">❤️ 0</span>
-                                                    <span className="text-[10px] font-black text-pink-400">💬 0</span>
+                                                    <span className="text-[10px] font-black text-primary">❤️ 0</span>
+                                                    <span className="text-[10px] font-black text-primary">💬 0</span>
                                                 </div>
                                             </div>
                                         </div>
                                     ))}
                                     {(creatorMoments as Moment[]).filter((m: Moment) => !m.mediaAssets?.length).length === 0 && (
-                                        <p className="text-center text-zinc-400 italic text-sm py-12">No whispers shared yet.</p>
+                                        <p className="text-center text-zinc-500 italic text-sm py-12">No whispers shared yet.</p>
                                     )}
                                 </div>
                             )}
@@ -497,13 +571,13 @@ export default function CreatorProfile() {
                     </main>
 
                     {/* Right Rail (Mock for visual density) */}
-                    <aside className="hidden xl:flex flex-col w-80 py-8 h-full space-y-8 bg-pink-50/20 px-4 border-x border-pink-50">
+                    <aside className="hidden xl:flex flex-col w-80 py-8 h-full space-y-8 bg-zinc-950/20 px-4 border-l border-white/5 overflow-y-auto scrollbar-hide">
                         <div className="flex justify-between items-center px-2">
-                            <h4 className="text-[10px] font-black text-pink-300 uppercase tracking-[0.5em] italic">Resonating Now</h4>
-                            <div className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"></div>
+                            <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.5em] italic">Resonating Now</h4>
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
                         </div>
-                        <div className="flex-grow space-y-6 overflow-y-auto scrollbar-hide pb-32">
-                            <p className="text-[10px] font-bold text-zinc-300 italic text-center py-8">Collective resonance starting...</p>
+                        <div className="flex-grow space-y-6 pb-32">
+                            <p className="text-[10px] font-bold text-zinc-600 italic text-center py-12">Collective resonance expanding...</p>
                         </div>
                     </aside>
 
@@ -512,40 +586,40 @@ export default function CreatorProfile() {
 
             {/* Subscription Engine: Fuel the Altar Modal */}
             {showSubModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-zinc-950/40 backdrop-blur-2xl animate-in fade-in duration-500">
-                    <div className="bg-white w-full max-w-4xl rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-zinc-100 animate-entrance">
-                        <button onClick={() => setShowSubModal(false)} className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-3xl animate-in fade-in duration-500">
+                    <div className="bg-zinc-950 w-full max-w-4xl rounded-[4rem] p-12 shadow-[0_0_100px_rgba(0,0,0,1)] relative overflow-hidden border border-white/5 animate-entrance">
+                        <button onClick={() => setShowSubModal(false)} className="absolute top-10 right-10 text-zinc-600 hover:text-white transition-colors">
                             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
                         </button>
 
                         <header className="text-center space-y-4 mb-12">
-                            <h4 className="text-[10px] font-black text-pink-500 uppercase tracking-[0.4em] italic leading-none">Force of Nature</h4>
-                            <h3 className="text-4xl text-zinc-900 font-black italic tracking-tighter">Fuel the Altar.</h3>
-                            <p className="text-zinc-400 text-sm font-bold italic">Select your resonance tier to unlock exclusive visions from {creator.name}.</p>
+                            <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic leading-none">Force of Nature</h4>
+                            <h3 className="text-4xl text-white font-black italic tracking-tighter">Fuel the Altar.</h3>
+                            <p className="text-zinc-500 text-sm font-bold italic">Select your resonance tier to unlock exclusive visions from {creator.name}.</p>
                         </header>
 
-                        <div className="grid grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {[
-                                { title: "Bronze Spark", price: "1,500", color: "from-amber-100", perks: ["Exclusive Feed Access", "Adore Badge", "Basic Whispers"] },
-                                { title: "Silver Surge", price: "5,000", color: "from-zinc-100", perks: ["Priority Sanctuary DM", "Uncensored Glimpses", "Custom Greeting"], recommended: true },
-                                { title: "Sovereign Soul", price: "25,000", color: "from-pink-100", perks: ["Ultra-Low Latency VOD", "1-on-1 Resonance", "Legacy Artifact Access"] }
+                                { title: "Bronze Spark", price: "1,500", color: "from-zinc-900", perks: ["Exclusive Feed Access", "Adore Badge", "Basic Whispers"] },
+                                { title: "Silver Surge", price: "5,000", color: "from-zinc-800", perks: ["Priority Sanctuary DM", "Uncensored Glimpses", "Custom Greeting"], recommended: true },
+                                { title: "Sovereign Soul", price: "25,000", color: "from-zinc-700", perks: ["Ultra-Low Latency VOD", "1-on-1 Resonance", "Legacy Artifact Access"] }
                             ].map((tier) => (
-                                <div key={tier.title} className={`relative p-8 rounded-[3rem] border transition-all hover:scale-[1.02] group ${tier.recommended ? 'border-pink-500 shadow-2xl shadow-pink-100 bg-white' : 'border-zinc-100 bg-zinc-50/50'}`}>
+                                <div key={tier.title} className={`relative p-8 rounded-[3rem] border transition-all hover:scale-[1.02] group ${tier.recommended ? 'border-primary shadow-2xl shadow-primary/10 bg-zinc-900/40' : 'border-white/5 bg-zinc-900/20'}`}>
                                     {tier.recommended && (
-                                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-pink-500 text-white text-[8px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg">Most Adored</div>
+                                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-black text-[8px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg">Most Adored</div>
                                     )}
-                                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${tier.color} to-white mb-6 flex items-center justify-center shadow-sm border border-white text-zinc-900`}>
+                                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${tier.color} to-black mb-6 flex items-center justify-center shadow-sm border border-white/5 text-primary`}>
                                         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m13 2-2 10h8L7 22l2-10H1L13 2Z" /></svg>
                                     </div>
-                                    <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-900">{tier.title}</h5>
+                                    <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">{tier.title}</h5>
                                     <div className="mt-4 mb-8">
-                                        <span className="text-4xl font-black italic text-zinc-900 leading-none tracking-tighter">₦{tier.price}</span>
-                                        <span className="text-zinc-400 text-[10px] font-black uppercase tracking-widest ml-2">/ month</span>
+                                        <span className="text-4xl font-black italic text-white leading-none tracking-tighter">₦{tier.price}</span>
+                                        <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest ml-2">/ month</span>
                                     </div>
                                     <ul className="space-y-4 mb-10">
                                         {tier.perks.map(p => (
-                                            <li key={p} className="flex items-center gap-3 text-[10px] font-bold italic text-zinc-500">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-pink-500"></span>
+                                            <li key={p} className="flex items-center gap-3 text-[10px] font-bold italic text-zinc-400">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                                                 {p}
                                             </li>
                                         ))}
@@ -571,7 +645,7 @@ export default function CreatorProfile() {
                                             showToast(`Initializing ${tier.title} Protocol...`);
                                         }}
                                         disabled={fetcher.state === "submitting"}
-                                        className={`w-full py-5 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${tier.recommended ? 'bg-pink-500 text-white shadow-xl shadow-pink-200 hover:bg-pink-600' : 'bg-zinc-900 text-white hover:bg-black'}`}
+                                        className={`w-full py-5 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${tier.recommended ? 'bg-primary text-black shadow-xl shadow-primary/20 hover:scale-105' : 'bg-white text-black hover:scale-105'}`}
                                     >
                                         {fetcher.state === "submitting" ? "Authenticating..." : "subscribe"}
                                     </button>

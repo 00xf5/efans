@@ -32,8 +32,20 @@ export const links: Route.LinksFunction = () => [
 import Navbar from "./components/Navbar";
 import MobileHUD from "./components/MobileHUD";
 import Footer from "./components/Footer";
+import { useLocation } from "react-router";
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+
+  // Routes that should NOT have the global navbar/footer and use full-screen layout
+  const sanctuaryRoutes = [
+    '/timeline', '/messages', '/notifications', '/bookmarks',
+    '/dashboard', '/profile', '/creators'
+  ];
+
+  const isSanctuary = sanctuaryRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/creator/');
+  const isAuth = ['/login', '/signup', '/forgot'].includes(pathname);
+
   return (
     <html lang="en" className="dark overflow-x-hidden">
       <head>
@@ -47,11 +59,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           }}
         />
       </head>
-      <body className="premium-blur min-h-[calc(var(--vh,1vh)*100)] w-full">
-        <Navbar />
-        <main className="h-full pt-16 overflow-y-auto scrollbar-hide relative w-full">
+      <body className="premium-blur min-h-[calc(var(--vh,1vh)*100)] w-full bg-black text-white">
+        {!isSanctuary && !isAuth && <Navbar />}
+        <main className={`relative w-full ${isSanctuary ? 'h-screen overflow-hidden' : isAuth ? 'min-h-screen' : 'min-h-screen pt-16'}`}>
           {children}
-          <Footer />
+          {!isSanctuary && !isAuth && <Footer />}
         </main>
         <MobileHUD />
         <ScrollRestoration />
