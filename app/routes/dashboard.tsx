@@ -4,6 +4,8 @@ import { requireUserId } from "../utils/session.server";
 import { db } from "../db/index.server";
 import { profiles, ledger } from "../db/schema";
 import { eq, desc, sum, sql } from "drizzle-orm";
+import { formatTimeAgo } from "../utils/date";
+
 
 interface DbProfile {
     id: string;
@@ -25,54 +27,63 @@ interface DbLedgerEntry {
 }
 
 export async function loader({ request }: { request: Request }) {
-    const userId = await requireUserId(request);
+    try {
+        const userId = await requireUserId(request);
 
-    const profile = await db.query.profiles.findFirst({
-        where: eq(profiles.id, userId)
-    });
+        const profile = await db.query.profiles.findFirst({
+            where: eq(profiles.id, userId)
+        });
 
-    if (!profile) {
-        throw new Error("Profile resonance lost.");
+        if (!profile) {
+            throw new Error("Profile resonance lost.");
+        }
+
+        // Fetch total income (sum of ledger where receiver is User)
+        const incomeResult = await db.select({
+            total: sum(ledger.creatorCut)
+        }).from(ledger).where(eq(ledger.receiverId, userId));
+
+        const totalEarnings = parseFloat(incomeResult[0]?.total || "0");
+
+        // Fetch recent ledger events with sender info using JOIN to avoid N+1
+        const recentTransactions = await db.select({
+            id: ledger.id,
+            type: ledger.type,
+            amount: ledger.amount,
+            creatorCut: ledger.creatorCut,
+            createdAt: ledger.createdAt,
+            status: ledger.status,
+            senderName: profiles.name
+        })
+            .from(ledger)
+            .leftJoin(profiles, eq(ledger.senderId, profiles.id))
+            .where(eq(ledger.receiverId, userId))
+            .orderBy(desc(ledger.createdAt))
+            .limit(10);
+
+        const transactions = recentTransactions.map((t: any) => ({
+
+            id: t.id,
+            type: t.type === 'unlock' ? 'Vision Unlock' : t.type === 'tip' ? 'Whisper Tip' : t.type === 'subscription' ? 'Subscription' : t.type,
+            fan: t.senderName || "Anonymous",
+            amount: `+₦${parseFloat(t.creatorCut?.toString() || "0").toLocaleString()}`,
+            time: formatTimeAgo(t.createdAt ? new Date(t.createdAt) : new Date()),
+            status: t.status || "success"
+        }));
+
+        return {
+            profile,
+            totalEarnings,
+            transactions
+        };
+    } catch (error: any) {
+        if (error instanceof Response) throw error;
+        console.error("Dashboard Loader Failure:", error);
+        throw new Response(`Dashboard Calibration Failed: ${error?.message || error}`, { status: 500 });
     }
 
-    // Fetch total income (sum of ledger where receiver is User)
-    const incomeResult = await db.select({
-        total: sum(ledger.creatorCut)
-    }).from(ledger).where(eq(ledger.receiverId, userId));
-
-    const totalEarnings = parseFloat(incomeResult[0]?.total || "0");
-
-    // Fetch recent ledger events
-    const recentLedger = await db.query.ledger.findMany({
-        where: eq(ledger.receiverId, userId),
-        orderBy: [desc(ledger.createdAt)],
-        limit: 10
-    });
-
-    const enrichedTransactions = await Promise.all(recentLedger.map(async (entry: DbLedgerEntry) => {
-        let senderName = "Anonymous";
-        if (entry.senderId) {
-            const sender = await db.query.profiles.findFirst({
-                where: eq(profiles.id, entry.senderId)
-            });
-            senderName = sender?.name || "Anonymous";
-        }
-        return {
-            id: entry.id,
-            type: entry.type === 'unlock' ? 'Vision Unlock' : entry.type === 'tip' ? 'Whisper Tip' : 'Subscription',
-            fan: senderName,
-            amount: `+₦${parseFloat(entry.creatorCut?.toString() || "0").toLocaleString()}`,
-            time: formatTimeAgo(new Date(entry.createdAt)),
-            status: entry.status || "success"
-        };
-    }));
-
-    return {
-        profile,
-        totalEarnings,
-        transactions: enrichedTransactions
-    };
 }
+
 
 export async function action({ request }: { request: Request }) {
     const userId = await requireUserId(request);
@@ -116,16 +127,6 @@ export async function action({ request }: { request: Request }) {
     return { success: false };
 }
 
-function formatTimeAgo(date: Date) {
-    const now = new Date();
-    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (seconds < 60) return "Just now";
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return date.toLocaleDateString();
-}
 
 export default function ExperienceHub() {
     const { profile, totalEarnings, transactions } = useLoaderData<typeof loader>();
@@ -229,7 +230,18 @@ export default function ExperienceHub() {
                                     </button>
                                 </nav>
                             </div>
+
+                            <div className="px-5">
+                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] italic mb-6">Protocol</h4>
+                                <nav className="space-y-2">
+                                    <Link to="/logout" className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-red-500/10 rounded-3xl text-zinc-500 hover:text-red-500 transition-all font-bold text-left group">
+                                        <span className="text-xl">🚪</span>
+                                        <span className="text-[11px] font-black uppercase tracking-widest">Terminate Session</span>
+                                    </Link>
+                                </nav>
+                            </div>
                         </div>
+
                     </aside>
 
                     {/* Main Content */}

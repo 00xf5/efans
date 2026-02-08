@@ -1,25 +1,28 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 
-// Safe access to environment variables
-const getEnv = (key: string) => {
-    if (typeof process !== "undefined" && process.env) {
-        return process.env[key];
+let _storage: any = null;
+
+export const storage = new Proxy({}, {
+    get(target, prop) {
+        if (!_storage) {
+            const sessionSecret = process.env.SESSION_SECRET || "sovereign_session_secret_2026";
+            _storage = createCookieSessionStorage({
+                cookie: {
+                    name: "efans_session",
+                    secure: process.env.NODE_ENV === "production",
+                    secrets: [sessionSecret],
+                    sameSite: "lax",
+                    path: "/",
+                    httpOnly: true,
+                },
+            });
+        }
+        const value = (_storage as any)[prop];
+        return typeof value === "function" ? value.bind(_storage) : value;
     }
-    return undefined;
-};
+}) as any;
 
-const sessionSecret = getEnv("SESSION_SECRET") || "sovereign_session_secret_2026";
 
-export const storage = createCookieSessionStorage({
-    cookie: {
-        name: "efans_session",
-        secure: getEnv("NODE_ENV") === "production",
-        secrets: [sessionSecret],
-        sameSite: "lax",
-        path: "/",
-        httpOnly: true,
-    },
-});
 
 export async function createUserSession(userId: string, redirectTo: string) {
     const session = await storage.getSession();

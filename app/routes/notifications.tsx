@@ -4,6 +4,8 @@ import { db } from "../db/index.server";
 import { echoes, profiles } from "../db/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { requireUserId } from "../utils/session.server";
+import { formatTimeAgo } from "../utils/date";
+
 
 interface DbEcho {
     id: string;
@@ -17,37 +19,43 @@ interface DbEcho {
 }
 
 export async function loader({ request }: { request: Request }) {
-    const userId = await requireUserId(request);
+    try {
+        const userId = await requireUserId(request);
 
-    const dbEchoes = await db.query.echoes.findMany({
-        where: eq(echoes.recipientId, userId),
-        orderBy: [desc(echoes.createdAt)],
-        limit: 50
-    });
+        const dbEchoes = await db.query.echoes.findMany({
+            where: eq(echoes.recipientId, userId),
+            orderBy: [desc(echoes.createdAt)],
+            limit: 50
+        });
 
-    const enrichedEchoes = await Promise.all(dbEchoes.map(async (echo: DbEcho) => {
-        let senderProfile = null;
-        if (echo.senderId) {
-            senderProfile = await db.query.profiles.findFirst({
-                where: eq(profiles.id, echo.senderId)
-            });
-        }
+        const enrichedEchoes = await Promise.all(dbEchoes.map(async (echo: DbEcho) => {
+            let senderProfile = null;
+            if (echo.senderId) {
+                senderProfile = await db.query.profiles.findFirst({
+                    where: eq(profiles.id, echo.senderId)
+                });
+            }
 
-        return {
-            id: echo.id,
-            type: echo.type.toUpperCase(),
-            user: {
-                name: senderProfile?.name || "System",
-                avatar: senderProfile?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${senderProfile?.tag || 'system'}`,
-            },
-            content: echo.content || "Interaction received",
-            time: formatTimeAgo(new Date(echo.createdAt)),
-            unread: !echo.isRead,
-            link: echo.link || "#"
-        };
-    }));
+            return {
+                id: echo.id,
+                type: echo.type.toUpperCase(),
+                user: {
+                    name: senderProfile?.name || "System",
+                    avatar: senderProfile?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${senderProfile?.tag || 'system'}`,
+                },
+                content: echo.content || "Interaction received",
+                time: formatTimeAgo(new Date(echo.createdAt)),
+                unread: !echo.isRead,
+                link: echo.link || "#"
+            };
+        }));
 
-    return { echoes: enrichedEchoes };
+        return { echoes: enrichedEchoes };
+    } catch (error: any) {
+        if (error instanceof Response) throw error;
+        console.error("Notifications Loader Failure:", error);
+        throw new Response(`Echo Calibration Failed: ${error?.message || error}`, { status: 500 });
+    }
 }
 
 export async function action({ request }: { request: Request }) {
@@ -73,18 +81,6 @@ export async function action({ request }: { request: Request }) {
     return { success: false };
 }
 
-function formatTimeAgo(date: Date) {
-    const now = new Date();
-    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (seconds < 60) return "Just now";
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-}
 
 const MOCK_REELS = [
     {
@@ -158,7 +154,12 @@ export default function Notifications() {
                                     <span className="text-[11px] font-black uppercase tracking-widest">Echoes</span>
                                 </div>
                             </Link>
+                            <Link to="/logout" className="flex items-center gap-4 px-5 py-3 hover:bg-red-500/10 rounded-2xl text-zinc-400 hover:text-red-500 transition-all font-bold group">
+                                <span className="text-xl">🚪</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
+                            </Link>
                         </nav>
+
                     </aside>
 
                     {/* Echoes Interface */}

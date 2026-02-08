@@ -14,6 +14,8 @@ import { getUploadUrl } from "../utils/r2.server";
 import { sanitizeContent } from "../utils/aegis.server";
 import { getTierBadge, hasRequiredTier, calculateLoyaltyTier, LOYALTY_TIERS } from "../utils/loyalty";
 import type { LoyaltyTier } from "../utils/loyalty";
+import { formatTimeAgo } from "../utils/date";
+
 
 import {
     MOCK_MOMENTS,
@@ -24,94 +26,100 @@ import {
 } from "../data/mock-timeline";
 
 export async function loader({ request }: { request: Request }) {
-    const userId = await requireUserId(request);
+    try {
+        const userId = await requireUserId(request);
 
-    // Parallel High-Fidelity Data Extraction
-    const [userUnlocks, userLoyalty, realMomentsRaw, dbFeatured] = await Promise.all([
-        db.query.unlocks.findMany({ where: eq(unlocks.userId, userId) }),
-        db.query.loyaltyStats.findMany({ where: eq(loyaltyStats.fanId, userId) }),
-        db.query.moments.findMany({
-            with: {
-                creator: true,
-                whispers: {
-                    with: {
-                        fan: { with: { loyaltyStats: true } }
-                    },
-                    orderBy: [desc(whispers.createdAt)],
-                    limit: 10
-                }
-            },
-            orderBy: [desc(moments.createdAt)],
-            limit: 50
-        }),
-        db.query.profiles.findMany({
-            where: eq(profiles.persona, 'creator'),
-            limit: 10
-        })
-    ]);
+        // Parallel High-Fidelity Data Extraction
+        const [userUnlocks, userLoyalty, realMomentsRaw, dbFeatured] = await Promise.all([
+            db.query.unlocks.findMany({ where: eq(unlocks.userId, userId) }),
+            db.query.loyaltyStats.findMany({ where: eq(loyaltyStats.fanId, userId) }),
+            db.query.moments.findMany({
+                with: {
+                    creator: true,
+                    whispers: {
+                        with: {
+                            fan: { with: { loyaltyStats: true } }
+                        },
+                        orderBy: [desc(whispers.createdAt)],
+                        limit: 10
+                    }
+                },
+                orderBy: [desc(moments.createdAt)],
+                limit: 50
+            }),
+            db.query.profiles.findMany({
+                where: eq(profiles.persona, 'creator'),
+                limit: 10
+            })
+        ]);
 
-    const unlockedIds = userUnlocks.map((u: any) => u.momentId);
+        const unlockedIds = userUnlocks.map((u: any) => u.momentId);
 
-    // Map DB moments to Post interface
-    const realMoments: Post[] = (realMomentsRaw as any[]).map((m: any) => {
-        const isUnlocked = unlockedIds.includes(m.id);
-        const creatorId = m.creatorId;
-        const fanLoyaltyInCreatorHub = userLoyalty.find((l: any) => l.creatorId === creatorId);
-        const currentTier = (fanLoyaltyInCreatorHub?.tier as LoyaltyTier) || "Acquaintance";
-        const requiredTier = (m.requiredTier as LoyaltyTier) || "Acquaintance";
+        // Map DB moments to Post interface
+        const realMoments: Post[] = (realMomentsRaw as any[]).map((m: any) => {
+            const isUnlocked = unlockedIds.includes(m.id);
+            const creatorId = m.creatorId;
+            const fanLoyaltyInCreatorHub = userLoyalty.find((l: any) => l.creatorId === creatorId);
+            const currentTier = (fanLoyaltyInCreatorHub?.tier as LoyaltyTier) || "Acquaintance";
+            const requiredTier = (m.requiredTier as LoyaltyTier) || "Acquaintance";
 
-        const meetsTier = hasRequiredTier(currentTier, requiredTier);
+            const meetsTier = hasRequiredTier(currentTier, requiredTier);
 
-        // Locked if it's a vision AND (not unlocked AND (not meeting tier OR price > 0))
-        // Actually, if price is 0 but tier is required, meeting tier unlocks it?
-        // Let's say: if price > 0, always needs unlock. If price is 0, just needs tier.
-        const isLocked = m.type === 'vision' && !isUnlocked && (parseFloat(m.price || "0") > 0 || !meetsTier);
+            // Locked if it's a vision AND (not unlocked AND (not meeting tier OR price > 0))
+            // Actually, if price is 0 but tier is required, meeting tier unlocks it?
+            // Let's say: if price > 0, always needs unlock. If price is 0, just needs tier.
+            const isLocked = m.type === 'vision' && !isUnlocked && (parseFloat(m.price || "0") > 0 || !meetsTier);
+
+            return {
+                id: m.id,
+                creatorId: m.creatorId,
+                source: {
+                    name: m.creator?.name || "Anonymous",
+                    username: m.creator?.tag || "user",
+                    avatar: m.creator?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.creator?.id}`,
+                    verified: m.creator?.isVerified || false
+                },
+                type: m.type === 'vision' ? 'VISION' : 'FLOW_POST',
+                timestamp: new Date(m.createdAt).toLocaleDateString(),
+                content: m.content || "",
+                media: m.mediaAssets?.[0]?.url || undefined,
+                stats: { likes: "0", whispers: m.whispers?.length || 0, shares: 0 },
+                locked: isLocked,
+                price: m.price?.toString(),
+                requiredTier: m.requiredTier,
+                meetsRequirement: meetsTier,
+                isAegisGuided: m.isAegisGuided,
+                comments: (m.whispers || []).map((w: any) => {
+                    const badge = getTierBadge((w.fan?.loyaltyStats || []).find((ls: any) => ls.creatorId === m.creatorId)?.tier || "Acquaintance");
+                    return {
+                        id: w.id,
+                        user: w.fan?.name || "Fan",
+                        avatar: w.fan?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${w.fanId}`,
+                        content: w.content,
+                        loyalty: { label: badge.label, color: badge.color, icon: badge.icon }
+                    };
+                })
+            };
+        });
+
+        // Identify featured creators from profiles
+
+        const featured = dbFeatured.length > 0 ? (dbFeatured as any[]).map((c: any) => ({
+            name: c.name || "Genesis Creator",
+            img: c.avatarUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=400",
+            handle: `@${c.tag}`
+        })) : FEATURED_CREATORS;
 
         return {
-            id: m.id,
-            creatorId: m.creatorId,
-            source: {
-                name: m.creator?.name || "Anonymous",
-                username: m.creator?.tag || "user",
-                avatar: m.creator?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.creator?.id}`,
-                verified: m.creator?.isVerified || false
-            },
-            type: m.type === 'vision' ? 'VISION' : 'FLOW_POST',
-            timestamp: new Date(m.createdAt).toLocaleDateString(),
-            content: m.content || "",
-            media: m.mediaAssets?.[0]?.url || undefined,
-            stats: { likes: "0", whispers: m.whispers?.length || 0, shares: 0 },
-            locked: isLocked,
-            price: m.price?.toString(),
-            requiredTier: m.requiredTier,
-            meetsRequirement: meetsTier,
-            isAegisGuided: m.isAegisGuided,
-            comments: (m.whispers || []).map((w: any) => {
-                const badge = getTierBadge((w.fan?.loyaltyStats || []).find((ls: any) => ls.creatorId === m.creatorId)?.tier || "Acquaintance");
-                return {
-                    id: w.id,
-                    user: w.fan?.name || "Fan",
-                    avatar: w.fan?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${w.fanId}`,
-                    content: w.content,
-                    loyalty: { label: badge.label, color: badge.color, icon: badge.icon }
-                };
-            })
+            realMoments,
+            featured,
+            userId
         };
-    });
-
-    // Identify featured creators from profiles
-
-    const featured = dbFeatured.length > 0 ? (dbFeatured as any[]).map((c: any) => ({
-        name: c.name || "Genesis Creator",
-        img: c.avatarUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=400",
-        handle: `@${c.tag}`
-    })) : FEATURED_CREATORS;
-
-    return {
-        realMoments,
-        featured,
-        userId
-    };
+    } catch (error: any) {
+        if (error instanceof Response) throw error;
+        console.error("Timeline Loader Failure:", error);
+        throw new Response(`Timeline Calibration Failed: ${error?.message || error}`, { status: 500 });
+    }
 }
 
 export async function action({ request }: { request: Request }) {
@@ -554,7 +562,16 @@ export default function Timeline() {
                                     <span className="text-[11px] font-black uppercase tracking-widest text-left">Our Essence</span>
                                 </button>
                             </div>
+
+                            <div className="space-y-1">
+                                <h4 className="px-5 text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">Protocol</h4>
+                                <Link to="/logout" className="flex items-center gap-4 px-5 py-3 hover:bg-red-500/10 rounded-2xl text-zinc-400 hover:text-red-500 transition-all group">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></svg>
+                                    <span className="text-[11px] font-black uppercase tracking-widest">Terminate</span>
+                                </Link>
+                            </div>
                         </div>
+
 
                         <div className="p-5 bg-zinc-900/50 rounded-[2rem] border border-zinc-800 flex items-center gap-4 group cursor-pointer hover:scale-[1.02] mt-4 mb-8">
                             <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center font-black text-sm text-black shadow-lg shadow-white/5">U2</div>

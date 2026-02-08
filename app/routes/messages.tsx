@@ -37,53 +37,59 @@ interface ChatMessage {
 }
 
 export async function loader({ request }: { request: Request }) {
-    const userId = await requireUserId(request);
+    try {
+        const userId = await requireUserId(request);
 
-    // Fetch all conversations for the current user
-    const dbConversations = await db.query.conversations.findMany({
-        where: or(
-            eq(conversations.participantOneId, userId),
-            eq(conversations.participantTwoId, userId)
-        ),
-        orderBy: [desc(conversations.lastMessageAt)]
-    });
-
-    const enrichedConversations = await Promise.all(dbConversations.map(async (conv: DbConversation) => {
-        const otherParticipantId = conv.participantOneId === userId ? conv.participantTwoId : conv.participantOneId;
-        const otherProfile = await db.query.profiles.findFirst({
-            where: eq(profiles.id, otherParticipantId)
+        // Fetch all conversations for the current user
+        const dbConversations = await db.query.conversations.findMany({
+            where: or(
+                eq(conversations.participantOneId, userId),
+                eq(conversations.participantTwoId, userId)
+            ),
+            orderBy: [desc(conversations.lastMessageAt)]
         });
 
-        const chatMessages = await db.query.messages.findMany({
-            where: eq(messages.conversationId, conv.id),
-            orderBy: [asc(messages.createdAt)]
-        });
+        const enrichedConversations = await Promise.all(dbConversations.map(async (conv: DbConversation) => {
+            const otherParticipantId = conv.participantOneId === userId ? conv.participantTwoId : conv.participantOneId;
+            const otherProfile = await db.query.profiles.findFirst({
+                where: eq(profiles.id, otherParticipantId)
+            });
+
+            const chatMessages = await db.query.messages.findMany({
+                where: eq(messages.conversationId, conv.id),
+                orderBy: [asc(messages.createdAt)]
+            });
+
+            return {
+                id: conv.id,
+                user: {
+                    name: otherProfile?.name || "Anonymous",
+                    tag: `@${otherProfile?.tag || 'essence'}`,
+                    avatar: otherProfile?.name ? otherProfile.name.substring(0, 2).toUpperCase() : "U",
+                    status: "Online", // Mocked for now
+                    tier: otherProfile?.persona === 'creator' ? 'Sovereign' : 'Fan',
+                    resonance: parseFloat(otherProfile?.resonanceScore?.toString() || "100")
+                },
+                chat: chatMessages.map((m: DbMessage) => ({
+                    id: m.id,
+                    sender: m.senderId === userId ? "me" : "them",
+                    text: m.content || "",
+                    time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    type: m.type as "text" | "locked_vision" | "gift",
+                    ...(m.metadata as any)
+                }))
+            };
+        }));
 
         return {
-            id: conv.id,
-            user: {
-                name: otherProfile?.name || "Anonymous",
-                tag: `@${otherProfile?.tag || 'essence'}`,
-                avatar: otherProfile?.name ? otherProfile.name.substring(0, 2).toUpperCase() : "U",
-                status: "Online", // Mocked for now
-                tier: otherProfile?.persona === 'creator' ? 'Sovereign' : 'Fan',
-                resonance: parseFloat(otherProfile?.resonanceScore?.toString() || "100")
-            },
-            chat: chatMessages.map((m: DbMessage) => ({
-                id: m.id,
-                sender: m.senderId === userId ? "me" : "them",
-                text: m.content || "",
-                time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                type: m.type as "text" | "locked_vision" | "gift",
-                ...(m.metadata as any)
-            }))
+            conversations: enrichedConversations,
+            userId
         };
-    }));
-
-    return {
-        conversations: enrichedConversations,
-        userId
-    };
+    } catch (error: any) {
+        if (error instanceof Response) throw error;
+        console.error("Messages Loader Failure:", error);
+        throw new Response(`Whisper Calibration Failed: ${error?.message || error}`, { status: 500 });
+    }
 }
 
 export async function action({ request }: { request: Request }) {

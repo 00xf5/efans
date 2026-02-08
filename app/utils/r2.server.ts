@@ -1,29 +1,30 @@
-/**
- * CLOUDFLARE R2 VISION VAULT
- * High-performance media storage with presigned security.
- */
-
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-// Safe access to environment variables
-const getEnv = (key: string) => {
-    if (typeof process !== "undefined" && process.env) {
-        return process.env[key];
+let _s3: S3Client | null = null;
+let _bucket: string | null = null;
+
+function getS3() {
+    if (!_s3) {
+        _s3 = new S3Client({
+            region: "auto",
+            endpoint: `https://${process.env.R2_ACCOUNT_ID || "placeholder"}.r2.cloudflarestorage.com`,
+            credentials: {
+                accessKeyId: process.env.R2_ACCESS_KEY_ID || "placeholder",
+                secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "placeholder",
+            },
+        });
     }
-    return undefined;
-};
+    return _s3;
+}
 
-const S3 = new S3Client({
-    region: "auto",
-    endpoint: `https://${getEnv("R2_ACCOUNT_ID") || "placeholder"}.r2.cloudflarestorage.com`,
-    credentials: {
-        accessKeyId: getEnv("R2_ACCESS_KEY_ID") || "placeholder",
-        secretAccessKey: getEnv("R2_SECRET_ACCESS_KEY") || "placeholder",
-    },
-});
+function getBucket() {
+    if (!_bucket) {
+        _bucket = process.env.R2_BUCKET_NAME || "efans-visions";
+    }
+    return _bucket;
+}
 
-const BUCKET = getEnv("R2_BUCKET_NAME") || "efans-visions";
 
 /**
  * GENERATE UPLOAD URL
@@ -31,12 +32,12 @@ const BUCKET = getEnv("R2_BUCKET_NAME") || "efans-visions";
  */
 export async function getUploadUrl(key: string, contentType: string) {
     const command = new PutObjectCommand({
-        Bucket: BUCKET,
+        Bucket: getBucket(),
         Key: key,
         ContentType: contentType,
     });
 
-    return await getSignedUrl(S3, command, { expiresIn: 3600 });
+    return await getSignedUrl(getS3(), command, { expiresIn: 3600 });
 }
 
 /**
@@ -45,11 +46,11 @@ export async function getUploadUrl(key: string, contentType: string) {
  */
 export async function getViewUrl(key: string) {
     const command = new GetObjectCommand({
-        Bucket: BUCKET,
+        Bucket: getBucket(),
         Key: key,
     });
 
-    return await getSignedUrl(S3, command, { expiresIn: 3600 });
+    return await getSignedUrl(getS3(), command, { expiresIn: 3600 });
 }
 
 /**
@@ -58,11 +59,11 @@ export async function getViewUrl(key: string) {
  */
 export async function uploadToR2(key: string, body: Buffer | Uint8Array, contentType: string) {
     const command = new PutObjectCommand({
-        Bucket: BUCKET,
+        Bucket: getBucket(),
         Key: key,
         Body: body,
         ContentType: contentType,
     });
 
-    return await S3.send(command);
+    return await getS3().send(command);
 }

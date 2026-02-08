@@ -1,50 +1,30 @@
-import { neonConfig, Pool } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
-const PROD_DB_URL = "postgresql://neondb_owner:npg_PgId2Tq3QCUW@ep-lingering-firefly-ahk6ijvu-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
-
-// Safe access to environment variables
-const getEnv = (key: string) => {
-    if (typeof process !== "undefined" && process.env && process.env[key]) {
-        return process.env[key];
-    }
-    return undefined;
-};
-
-// Handle WebSocket for Neon in Node.js environments
-if (typeof WebSocket === "undefined") {
-    try {
-        // @ts-ignore
-        import("ws").then(ws => {
-            neonConfig.webSocketConstructor = ws.default || ws;
-        }).catch(() => { });
-    } catch (e) { }
-}
+const SUPABASE_DB_URL = "postgresql://postgres.bccyzexrlqorhvwoenjm:hNw6vNp0cTQoY3mE@16.16.102.12:5432/postgres?sslmode=require";
 
 let _db: any = null;
+let _sql: any = null;
 
-/**
- * INITIALIZE DB
- * This can be called manually in the worker's fetch handler to ensure
- * environment variables are correctly injected.
- */
-export function initDb(env?: any) {
-    const url = env?.DATABASE_URL || getEnv("DATABASE_URL") || PROD_DB_URL;
-    if (!_db) {
-        const pool = new Pool({ connectionString: url });
-        _db = drizzle(pool, { schema });
-    }
+export function initDb() {
+    if (_db) return _db;
+
+    const url = process.env.DATABASE_URL || SUPABASE_DB_URL;
+
+    _sql = postgres(url, {
+        max: 10, // Increased for Node.js environment
+        ssl: { rejectUnauthorized: false },
+        idle_timeout: 20
+    });
+    _db = drizzle(_sql, { schema });
     return _db;
 }
 
-/**
- * DATABASE PROXY
- * Ensures we always have a connection, even if initialization hasn't been called.
- */
 export const db = new Proxy({}, {
     get(target, prop) {
         const instance = _db || initDb();
         return (instance as any)[prop];
     }
 }) as any;
+

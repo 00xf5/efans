@@ -8,23 +8,29 @@ import { requireUserId } from "../utils/session.server";
 import { getUploadUrl } from "../utils/r2.server";
 
 export async function loader({ request }: { request: Request }) {
-    const userId = await requireUserId(request);
-    const profile = await db.query.profiles.findFirst({
-        where: eq(profiles.id, userId)
-    });
+    try {
+        const userId = await requireUserId(request);
+        const profile = await db.query.profiles.findFirst({
+            where: eq(profiles.id, userId)
+        });
 
-    if (!profile) {
-        // Create profile if it doesn't exist (failsafe)
-        const [newProfile] = await db.insert(profiles).values({
-            id: userId,
-            persona: 'fan',
-            resonanceScore: "100.00",
-            heatLevel: 50
-        }).returning();
-        return { profile: newProfile };
+        if (!profile) {
+            // Create profile if it doesn't exist (failsafe)
+            const [newProfile] = await db.insert(profiles).values({
+                id: userId,
+                persona: 'fan',
+                resonanceScore: "100.00",
+                heatLevel: 50
+            }).returning();
+            return { profile: newProfile };
+        }
+
+        return { profile };
+    } catch (error: any) {
+        if (error instanceof Response) throw error;
+        console.error("Profile Loader Failure:", error);
+        throw new Response(`Identity Calibration Failed: ${error?.message || error}`, { status: 500 });
     }
-
-    return { profile };
 }
 
 export async function action({ request }: { request: Request }) {
