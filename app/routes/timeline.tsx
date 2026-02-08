@@ -84,6 +84,7 @@ export async function loader({ request }: { request: Request }) {
                 timestamp: new Date(m.createdAt).toLocaleDateString(),
                 content: m.content || "",
                 media: m.mediaAssets?.[0]?.url || undefined,
+                mediaType: m.mediaAssets?.[0]?.type || undefined,
                 stats: { likes: "0", whispers: m.whispers?.length || 0, shares: 0 },
                 locked: isLocked,
                 price: m.price?.toString(),

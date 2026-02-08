@@ -90,13 +90,13 @@ export const MomentCard = memo(({ moment, addReaction, reactions, isFlow = false
                                     if (!moment.locked) {
                                         onMediaClick({
                                             url: optimizeMediaUrl(moment.media!, { width: 1200, quality: 90 }),
-                                            type: moment.media!.endsWith('.mp4') ? 'video' : 'image',
+                                            type: moment.mediaType || (moment.media!.endsWith('.mp4') ? 'video' : 'image'),
                                             name: moment.source.name
                                         });
                                     }
                                 }}
                             >
-                                {moment.media.endsWith('.mp4') ? (
+                                {moment.mediaType === 'video' || (moment.media && moment.media.endsWith('.mp4')) ? (
                                     <video src={mediaUrl || moment.media} autoPlay loop muted playsInline className="w-full h-full object-cover" />
                                 ) : (
                                     <img src={mediaUrl || moment.media} loading="lazy" className={`w-full h-full object-cover group-hover/media:scale-105 transition-transform duration-[3s] ease-out ${moment.locked ? 'grayscale brightness-[0.8]' : ''}`} alt="" />
@@ -204,6 +204,6 @@ export const MomentCard = memo(({ moment, addReaction, reactions, isFlow = false
                     </div>
                 )}
             </div>
-        </article>
+        </article >
     );
 });

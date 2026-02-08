@@ -11,6 +11,7 @@ export interface Post {
     timestamp: string;
     content: string;
     media?: string;
+    mediaType?: "video" | "image";
     stats: {
         likes: string;
         whispers: number;
