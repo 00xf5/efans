@@ -1,5 +1,5 @@
 .DS_Store
-.en
+.env
 /node_modules/
 *.tsbuildinfo
 
