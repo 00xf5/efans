@@ -147,18 +147,7 @@ export async function action({ request }: { request: Request }) {
         const content = formData.get("content") as string;
         const mediaType = formData.get("mediaType") as string;
         const isLocked = formData.get("isLocked") === "true";
-        const mediaFile = formData.get("mediaFile") as File;
-
-        let mediaUrl = "";
-        if (mediaFile && mediaFile.size > 0) {
-            // Secure R2 Upload Flow (Server-Side Direct)
-            const fileName = `visions/${userId}/${Date.now()}-${mediaFile.name}`;
-            const buffer = Buffer.from(await mediaFile.arrayBuffer());
-
-            await uploadToR2(fileName, buffer, mediaFile.type);
-            mediaUrl = `https://visions.efans.workers.dev/${fileName}`;
-            console.log("R2 Upload Success:", mediaUrl);
-        }
+        const mediaUrl = formData.get("mediaUrl") as string; // Pre-uploaded client-side
 
         const creatorProfile = await db.query.profiles.findFirst({
             where: eq(profiles.id, userId)
@@ -414,27 +403,60 @@ export default function Timeline() {
         }).sort((a, b) => b.heat - a.heat));
     };
 
-    const handlePostSubmit = () => {
+    const handlePostSubmit = async () => {
         if (!newPostContent.trim() && !attachedMedia) return;
 
-        const formData = new FormData();
-        formData.append("intent", "post");
-        formData.append("content", newPostContent);
-        formData.append("type", activePostType);
-        formData.append("isLocked", (activePostType === 'vision').toString());
-        formData.append("price", unlockPrice);
-        formData.append("requiredTier", requiredTier);
-        if (attachedMedia) {
-            formData.append("mediaFile", attachedMedia.file);
-            formData.append("mediaType", attachedMedia.file.type);
+        let mediaUrl = "";
+
+        try {
+            if (attachedMedia) {
+                showToast("Calibrating Media Resonance...");
+
+                // 1. Get Presigned URL
+                const urlResponse = await fetch("/api.upload-url", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        fileName: attachedMedia.file.name,
+                        contentType: attachedMedia.file.type
+                    }),
+                });
+
+                const { uploadUrl, publicUrl, error } = await urlResponse.json();
+                if (error) throw new Error(error);
+
+                // 2. Upload directly to R2
+                const uploadResult = await fetch(uploadUrl, {
+                    method: "PUT",
+                    body: attachedMedia.file,
+                    headers: { "Content-Type": attachedMedia.file.type }
+                });
+
+                if (!uploadResult.ok) throw new Error("Cloud synchronization failed");
+                mediaUrl = publicUrl;
+            }
+
+            const formData = new FormData();
+            formData.append("intent", "post");
+            formData.append("content", newPostContent);
+            formData.append("type", activePostType);
+            formData.append("isLocked", (activePostType === 'vision').toString());
+            formData.append("price", unlockPrice);
+            formData.append("requiredTier", requiredTier);
+            if (mediaUrl) {
+                formData.append("mediaUrl", mediaUrl);
+                formData.append("mediaType", attachedMedia?.file.type || "");
+            }
+
+            fetcher.submit(formData, { method: "POST" });
+
+            // Optimistic UI/Clearance
+            setNewPostContent("");
+            setAttachedMedia(null);
+            showToast("Transmission Distributed to the Flow");
+        } catch (err: any) {
+            console.error("Transmission Error:", err);
+            showToast("Distortion in Flow: " + err.message);
         }
-
-        fetcher.submit(formData, { method: "POST", encType: "multipart/form-data" });
-
-        // Optimistic UI/Clearance
-        setNewPostContent("");
-        setAttachedMedia(null);
-        showToast("Transmission Distributed to the Flow");
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
