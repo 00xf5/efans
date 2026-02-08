@@ -1,5 +1,5 @@
 import { type ActionFunctionArgs } from "react-router";
-import { getUploadUrl } from "../utils/r2.server";
+import { getUploadUrl, getPublicUrl } from "../utils/supabase.server";
 import { requireUserId } from "../utils/session.server";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -11,14 +11,16 @@ export async function action({ request }: ActionFunctionArgs) {
     }
 
     try {
-        const key = `visions/${userId}/${Date.now()}-${fileName}`;
-        const uploadUrl = await getUploadUrl(key, contentType);
+        const path = `${userId}/${Date.now()}-${fileName}`;
+        const { uploadUrl } = await getUploadUrl(path);
+        const publicUrl = getPublicUrl(path);
 
         return {
             uploadUrl,
-            publicUrl: `https://visions.efans.workers.dev/${key}`
+            publicUrl
         };
     } catch (error: any) {
+        console.error("Supabase Storage Error:", error);
         return { error: error.message };
     }
 }

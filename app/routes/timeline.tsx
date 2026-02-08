@@ -11,7 +11,6 @@ import { db } from "../db/index.server";
 import { moments, users, profiles, echoes, pulses, whispers, loyaltyStats, ledger, unlocks } from "../db/schema";
 import { desc, eq, and } from "drizzle-orm";
 import { requireUserId } from "../utils/session.server";
-import { getUploadUrl, uploadToR2 } from "../utils/r2.server";
 import { sanitizeContent } from "../utils/aegis.server";
 import { getTierBadge, hasRequiredTier, calculateLoyaltyTier, LOYALTY_TIERS } from "../utils/loyalty";
 import type { LoyaltyTier } from "../utils/loyalty";

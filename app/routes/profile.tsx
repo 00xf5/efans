@@ -6,7 +6,7 @@ import { profiles } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { Sidebar } from "../components/Sidebar";
 import { requireUserId } from "../utils/session.server";
-import { getUploadUrl } from "../utils/r2.server";
+import { uploadToSupabase, getPublicUrl } from "../utils/supabase.server";
 
 export async function loader({ request }: { request: Request }) {
     try {
@@ -53,24 +53,16 @@ export async function action({ request }: { request: Request }) {
 
         if (avatarFile && avatarFile.size > 0) {
             const fileName = `avatars/${userId}/${Date.now()}-${avatarFile.name}`;
-            const uploadUrl = await getUploadUrl(fileName, avatarFile.type);
-            await fetch(uploadUrl, {
-                method: "PUT",
-                body: avatarFile,
-                headers: { "Content-Type": avatarFile.type }
-            });
-            avatarUrl = `https://visions.efans.workers.dev/${fileName}`;
+            const buffer = Buffer.from(await avatarFile.arrayBuffer());
+            await uploadToSupabase(fileName, buffer, avatarFile.type);
+            avatarUrl = getPublicUrl(fileName);
         }
 
         if (coverFile && coverFile.size > 0) {
             const fileName = `banners/${userId}/${Date.now()}-${coverFile.name}`;
-            const uploadUrl = await getUploadUrl(fileName, coverFile.type);
-            await fetch(uploadUrl, {
-                method: "PUT",
-                body: coverFile,
-                headers: { "Content-Type": coverFile.type }
-            });
-            coverUrl = `https://visions.efans.workers.dev/${fileName}`;
+            const buffer = Buffer.from(await coverFile.arrayBuffer());
+            await uploadToSupabase(fileName, buffer, coverFile.type);
+            coverUrl = getPublicUrl(fileName);
         }
 
         await db.update(profiles).set({
