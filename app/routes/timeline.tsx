@@ -80,7 +80,7 @@ export async function loader({ request }: { request: Request }) {
                     avatar: m.creator?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.creator?.id}`,
                     verified: m.creator?.isVerified || false
                 },
-                type: m.type === 'vision' ? 'VISION' : 'FLOW_POST',
+                type: m.type === 'vision' ? 'VISION' : m.type === 'reel' ? 'REEL' : 'FLOW_POST',
                 timestamp: new Date(m.createdAt).toLocaleDateString(),
                 content: m.content || "",
                 media: m.mediaAssets?.[0]?.url || undefined,
@@ -175,13 +175,14 @@ export async function action({ request }: { request: Request }) {
 
         const price = formData.get("price") as string;
         const reqTier = formData.get("requiredTier") as string;
+        const postType = formData.get("type") as string; // 'flow', 'vision', 'reel'
 
         const filteredContent = aegisResult.purifiedContent || content;
 
         const [newMoment] = await db.insert(moments).values({
             creatorId: userId,
             content: filteredContent,
-            type: isLocked ? 'vision' : 'flow',
+            type: postType || (isLocked ? 'vision' : 'flow'),
             mediaAssets: mediaUrl ? [{ url: mediaUrl, type: (mediaType || "").includes('video') ? 'video' : 'image' }] : [],
             price: price || "0.00",
             requiredTier: reqTier || "Acquaintance",
@@ -337,27 +338,30 @@ export default function Timeline() {
     const fetcher = useFetcher();
     const navigation = useNavigation();
 
-    const [activeTab, setActiveTab] = useState("all");
-    const [isLoading, setIsLoading] = useState(true);
-    const [reactions, setReactions] = useState<{ id: number, x: number, y: number }[]>([]);
-
     // Hybrid Data Strategy: Real data prioritized, Mocks for visual density
     const [flowPosts, setFlowPosts] = useState<Post[]>([]);
     const [visions, setVisions] = useState<Post[]>([]);
+    const [dbReels, setDbReels] = useState<Post[]>([]);
 
     useEffect(() => {
         // Merge real moments into the appropriate lists
         const dbFlowOnly = realMoments.filter(m => m.type === 'FLOW_POST');
         const dbVisionsOnly = realMoments.filter(m => m.type === 'VISION');
+        const dbReelsOnly = realMoments.filter(m => m.type === 'REEL');
 
         setFlowPosts([...dbFlowOnly, ...INITIAL_FLOW_POSTS]);
         setVisions([...dbVisionsOnly, ...MOCK_MOMENTS]);
+        setDbReels(dbReelsOnly);
     }, [realMoments]);
+
+    const [activeTab, setActiveTab] = useState("all");
+    const [isLoading, setIsLoading] = useState(true);
+    const [reactions, setReactions] = useState<{ id: number, x: number, y: number }[]>([]);
 
     const [trending, setTrending] = useState(INITIAL_TRENDING);
     const [newPostContent, setNewPostContent] = useState("");
     const [attachedMedia, setAttachedMedia] = useState<{ file: File, url: string } | null>(null);
-    const [isLocked, setIsLocked] = useState(false);
+    const [activePostType, setActivePostType] = useState<'flow' | 'vision' | 'reel'>("flow");
     const [unlockPrice, setUnlockPrice] = useState("500");
     const [requiredTier, setRequiredTier] = useState<LoyaltyTier>("Acquaintance");
     const [toast, setToast] = useState<string | null>(null);
@@ -412,7 +416,8 @@ export default function Timeline() {
         const formData = new FormData();
         formData.append("intent", "post");
         formData.append("content", newPostContent);
-        formData.append("isLocked", isLocked.toString());
+        formData.append("type", activePostType);
+        formData.append("isLocked", (activePostType === 'vision').toString());
         formData.append("price", unlockPrice);
         formData.append("requiredTier", requiredTier);
         if (attachedMedia) {
@@ -632,14 +637,16 @@ export default function Timeline() {
                                                 </button>
                                                 <div className="h-10 w-[1px] bg-zinc-800 mx-2"></div>
                                                 <div className="flex p-1.5 bg-zinc-950 rounded-2xl border border-zinc-800">
-                                                    <button
-                                                        onClick={() => setIsLocked(false)}
-                                                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${!isLocked ? 'bg-white text-black shadow-sm' : 'text-zinc-600 hover:text-white'}`}>Public</button>
-                                                    <button
-                                                        onClick={() => setIsLocked(true)}
-                                                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${isLocked ? 'bg-white text-black shadow-sm' : 'text-zinc-600 hover:text-white'}`}>Locked</button>
+                                                    {(['flow', 'vision', 'reel'] as const).map((t) => (
+                                                        <button
+                                                            key={t}
+                                                            onClick={() => setActivePostType(t)}
+                                                            className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${activePostType === t ? 'bg-white text-black shadow-sm' : 'text-zinc-600 hover:text-white'}`}>
+                                                            {t}
+                                                        </button>
+                                                    ))}
                                                 </div>
-                                                {isLocked && (
+                                                {activePostType === 'vision' && (
                                                     <div className="flex items-center gap-4 animate-in slide-in-from-left-4 duration-500">
                                                         <div className="flex items-center gap-3 px-6 py-3 bg-zinc-950 rounded-[1.5rem] border border-zinc-800">
                                                             <span className="text-zinc-600 text-[10px] font-black italic">₦</span>
@@ -715,7 +722,7 @@ export default function Timeline() {
                             <div className="space-y-8 animate-in fade-in duration-1000">
                                 <h1 className="text-5xl font-black italic text-center text-white">Live <span className="text-gradient">Flow.</span></h1>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 pb-20">
-                                    {MOCK_REELS.map((reel) => (
+                                    {[...dbReels.map(r => ({ id: r.id, name: r.source.name, handle: `@${r.source.username}`, video: r.media || '', poster: r.media || '', color: 'from-pink-500/40' })), ...MOCK_REELS].map((reel) => (
                                         <div key={reel.id} className="relative aspect-[9/16] rounded-[3rem] overflow-hidden bg-zinc-900 border border-zinc-800 group/reel-tab cursor-pointer transition-all duration-700 shadow-none" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
                                             <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 grayscale group-hover:grayscale-0" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
@@ -748,7 +755,7 @@ export default function Timeline() {
                         </div>
 
                         <div className="flex-grow space-y-6 overflow-y-auto scrollbar-hide pb-32 relative" style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
-                            {[...MOCK_REELS, ...MOCK_REELS].map((reel: any, idx: number) => (
+                            {[...dbReels.map(r => ({ id: r.id, name: r.source.name, handle: `@${r.source.username}`, video: r.media || '', poster: r.media || '', color: 'from-pink-500/40' })), ...MOCK_REELS].map((reel: any, idx: number) => (
                                 <div key={`${reel.id}-${idx}`} className="relative aspect-[9/16] w-full rounded-[2.5rem] overflow-hidden border border-zinc-800 group/reel cursor-pointer shadow-none transition-all duration-500 hover:scale-[1.02]" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
                                     <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
                                     <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-black/90 to-transparent">
