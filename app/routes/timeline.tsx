@@ -11,7 +11,7 @@ import { db } from "../db/index.server";
 import { moments, users, profiles, echoes, pulses, whispers, loyaltyStats, ledger, unlocks } from "../db/schema";
 import { desc, eq, and } from "drizzle-orm";
 import { requireUserId } from "../utils/session.server";
-import { getUploadUrl } from "../utils/r2.server";
+import { getUploadUrl, uploadToR2 } from "../utils/r2.server";
 import { sanitizeContent } from "../utils/aegis.server";
 import { getTierBadge, hasRequiredTier, calculateLoyaltyTier, LOYALTY_TIERS } from "../utils/loyalty";
 import type { LoyaltyTier } from "../utils/loyalty";
@@ -56,6 +56,8 @@ export async function loader({ request }: { request: Request }) {
         ]);
 
         const unlockedIds = userUnlocks.map((u: any) => u.momentId);
+        console.log(`Timeline Loader: Extracted ${realMomentsRaw.length} moments from DB.`);
+        if (realMomentsRaw.length > 0) console.log("First Moment Raw:", realMomentsRaw[0]);
 
         // Map DB moments to Post interface
         const realMoments: Post[] = (realMomentsRaw as any[]).map((m: any) => {
@@ -149,18 +151,13 @@ export async function action({ request }: { request: Request }) {
 
         let mediaUrl = "";
         if (mediaFile && mediaFile.size > 0) {
-            // Secure R2 Upload Flow
+            // Secure R2 Upload Flow (Server-Side Direct)
             const fileName = `visions/${userId}/${Date.now()}-${mediaFile.name}`;
-            const uploadUrl = await getUploadUrl(fileName, mediaFile.type);
+            const buffer = Buffer.from(await mediaFile.arrayBuffer());
 
-            // Upload to R2 via PUT
-            await fetch(uploadUrl, {
-                method: "PUT",
-                body: mediaFile,
-                headers: { "Content-Type": mediaFile.type }
-            });
-
+            await uploadToR2(fileName, buffer, mediaFile.type);
             mediaUrl = `https://visions.efans.workers.dev/${fileName}`;
+            console.log("R2 Upload Success:", mediaUrl);
         }
 
         const creatorProfile = await db.query.profiles.findFirst({
@@ -351,7 +348,8 @@ export default function Timeline() {
         const dbReelsOnly = realMoments.filter(m => m.type === 'REEL');
 
         setFlowPosts([...dbFlowOnly, ...INITIAL_FLOW_POSTS]);
-        setVisions([...dbVisionsOnly, ...MOCK_MOMENTS]);
+        // All tab (visions state) should show everything real + mock visions
+        setVisions([...dbVisionsOnly, ...dbReelsOnly, ...dbFlowOnly, ...MOCK_MOMENTS].filter((v, i, a) => a.findIndex(t => t.id === v.id) === i));
         setDbReels(dbReelsOnly);
     }, [realMoments]);
 
