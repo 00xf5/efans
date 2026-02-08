@@ -4,9 +4,9 @@ export default function MobileHUD() {
     const location = useLocation();
     const pathname = location.pathname;
 
-    const excludedPaths = ["/login", "/signup", "/about", "/forgot", "/pricing"];
-    // Hide mobile HUD on certain full-screen flows (login/signup/about)
-    if (excludedPaths.includes(pathname)) return null;
+    const excludedPaths = ["/login", "/signup", "/about", "/forgot", "/pricing", "/messages"];
+    // Hide mobile HUD on certain full-screen flows (login/signup/about/messages)
+    if (excludedPaths.some(path => pathname.startsWith(path))) return null;
 
     const isActive = (path: string) => {
         if (path === '/timeline' && (pathname === '/timeline' || pathname === '/')) return true;
