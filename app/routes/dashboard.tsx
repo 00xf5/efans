@@ -79,10 +79,24 @@ export async function loader({ request }: { request: Request }) {
         };
     } catch (error: any) {
         if (error instanceof Response) throw error;
-        console.error("Dashboard Loader Failure:", error);
-        throw new Response(`Dashboard Calibration Failed: ${error?.message || error}`, { status: 500 });
-    }
+        console.error("Dashboard Loader Trace:", error);
 
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorStack = error instanceof Error ? error.stack : "No stack trace available";
+
+        return new Response(
+            JSON.stringify({
+                status: "Dashboard Calibration Failed",
+                message: errorMessage,
+                stack: errorStack,
+                hint: "Check database connectivity and Drizzle schema alignment. Verifying if 'sum' is used correctly with decimal fields."
+            }),
+            {
+                status: 500,
+                headers: { "Content-Type": "application/json" }
+            }
+        );
+    }
 }
 
 
