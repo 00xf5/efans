@@ -15,14 +15,19 @@ import { eq } from "drizzle-orm";
 import { getUserId } from "./utils/session.server";
 
 export async function loader({ request }: { request: Request }) {
-  const userId = await getUserId(request);
-  let profile = null;
-  if (userId) {
-    profile = await db.query.profiles.findFirst({
-      where: eq(profiles.id, userId)
-    });
+  try {
+    const userId = await getUserId(request);
+    let profile = null;
+    if (userId) {
+      profile = await db.query.profiles.findFirst({
+        where: eq(profiles.id, userId)
+      });
+    }
+    return { userId, profile };
+  } catch (error) {
+    console.error("Root Loader Calibration Failure:", error);
+    return { userId: null, profile: null };
   }
-  return { userId, profile };
 }
 
 export const links: Route.LinksFunction = () => [
@@ -98,9 +103,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       error.status === 404
         ? "The requested page could not be found."
         : error.statusText || details;
-  } else if (process.env.NODE_ENV === 'development' && error && error instanceof Error) {
+  } else if (error && error instanceof Error) {
     details = error.message;
-    stack = error.stack;
+    stack = process.env.NODE_ENV === 'development' ? error.stack : undefined;
   }
 
   return (
