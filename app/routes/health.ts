@@ -1,7 +1,7 @@
 import postgres from "postgres";
 
 export async function loader() {
-    const rawUrl = process.env.DATABASE_URL || "postgresql://postgres.bccyzexrlqorhvwoenjm:hNw6vNp0cTQoY3mE@16.16.102.12:5432/postgres?sslmode=require";
+    const rawUrl = process.env.DATABASE_URL || "postgresql://postgres.bccyzexrlqorhvwoenjm:hNw6vNp0cTQoY3mE@aws-0-eu-north-1.pooler.supabase.com:5432/postgres?sslmode=require";
     const maskedUrl = rawUrl.replace(/:[^:@]+@/, ":****@");
 
     const sql = postgres(rawUrl, { max: 1, ssl: { rejectUnauthorized: false } });

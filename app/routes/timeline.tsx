@@ -117,8 +117,19 @@ export async function loader({ request }: { request: Request }) {
         };
     } catch (error: any) {
         if (error instanceof Response) throw error;
-        console.error("Timeline Loader Failure:", error);
-        throw new Response(`Timeline Calibration Failed: ${error?.message || error}`, { status: 500 });
+        console.error("Timeline Loader Failure Details:", {
+            message: error?.message,
+            stack: error?.stack,
+            error
+        });
+        throw new Response(
+            JSON.stringify({
+                error: "Timeline Calibration Failed",
+                details: error?.message || "Unknown resonance failure",
+                suggestion: "Check database connection or schema relations"
+            }),
+            { status: 500, headers: { "Content-Type": "application/json" } }
+        );
     }
 }
 

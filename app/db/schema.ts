@@ -193,12 +193,11 @@ export const userRelations = relations(users, ({ one, many }) => ({
     moments: many(moments),
     whispers: many(whispers),
     subscriptions: many(subscriptions),
-    loyaltyStats: many(loyaltyStats),
 }));
 
 export const profileRelations = relations(profiles, ({ one, many }) => ({
     user: one(users, { fields: [profiles.id], references: [users.id] }),
-    loyaltyStats: many(loyaltyStats),
+    loyaltyStats: many(loyaltyStats, { relationName: "fanToLoyalty" }),
 }));
 
 export const momentRelations = relations(moments, ({ one, many }) => ({
@@ -212,6 +211,6 @@ export const whisperRelations = relations(whispers, ({ one }) => ({
 }));
 
 export const loyaltyStatsRelations = relations(loyaltyStats, ({ one }) => ({
-    fan: one(profiles, { fields: [loyaltyStats.fanId], references: [profiles.id] }),
-    creator: one(profiles, { fields: [loyaltyStats.creatorId], references: [profiles.id] }),
+    fan: one(profiles, { fields: [loyaltyStats.fanId], references: [profiles.id], relationName: "fanToLoyalty" }),
+    creator: one(profiles, { fields: [loyaltyStats.creatorId], references: [profiles.id], relationName: "creatorToLoyalty" }),
 }));
