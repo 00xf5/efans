@@ -7,24 +7,10 @@ export async function loader() {
     const sql = postgres(rawUrl, { max: 1, ssl: { rejectUnauthorized: false } });
 
     try {
-        // ONE-TIME MIGRATION TO FIX MISSING COLUMNS
-        await sql`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone VARCHAR(20)`;
-        await sql`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS gender VARCHAR(20)`;
-        await sql`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS country VARCHAR(100)`;
-        await sql`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS willing_nsfw BOOLEAN DEFAULT FALSE`;
-
-        const columns = await sql`
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name = 'profiles'
-        `;
-
-        const result = await sql`SELECT 1 as connected`;
+        await sql`SELECT 1 as connected`;
         return {
-            status: "Sovereign Connection Established - Migration Applied",
-            url: maskedUrl,
-            columns: columns.map((c: any) => c.column_name),
-            result
+            status: "Sovereign Connection Established",
+            url: maskedUrl
         };
     } catch (error: any) {
         return {
