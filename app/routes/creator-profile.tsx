@@ -154,6 +154,9 @@ export async function action({ request }: { request: Request }) {
 
     if (intent === "message") {
         const creatorId = formData.get("creatorId") as string;
+        if (creatorId?.startsWith("sample-")) {
+            return { success: false, error: "Sample Sanctuary: Interactions restricted to real identities. Establish connections with active creators to begin whispers." };
+        }
         if (userId === creatorId) return { success: false, error: "Cannot whisper to yourself" };
 
         // Find existing conversation
@@ -177,6 +180,9 @@ export async function action({ request }: { request: Request }) {
 
     if (intent === "subscribe") {
         const creatorId = formData.get("creatorId") as string;
+        if (creatorId?.startsWith("sample-")) {
+            return { success: false, error: "Sample Protocol: Resonance fuel cannot be allocated to demonstration altars." };
+        }
         if (userId === creatorId) return { success: false, error: "Self-subscription protocol blocked" };
 
         const tier = formData.get("tier") as string;
@@ -261,6 +267,9 @@ export async function action({ request }: { request: Request }) {
 
     if (intent === "unlock") {
         const momentId = formData.get("momentId") as string;
+        if (momentId?.startsWith("m")) {
+            return { success: false, error: "Sample Vision: Dimensional fragments from demonstration scripts cannot be unlocked." };
+        }
 
         // Fetch moment and prices
         const moment = await db.query.moments.findFirst({
