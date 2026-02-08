@@ -57,7 +57,7 @@ export const moments = pgTable("moments", {
     type: varchar("type", { length: 20 }).default("flow"), // 'flow' (public), 'vision' (locked)
     mediaAssets: jsonb("media_assets").default([]), // [{ url: string, type: 'image' | 'video' }]
     price: decimal("price", { precision: 10, scale: 2 }).default("0.00"),
-    requiredTier: varchar("required_tier", { length: 20 }).default("Acquaintance"), // 'Acquaintance', 'Acolyte', 'Zealot', 'Sovereign'
+    requiredTier: varchar("required_tier", { length: 20 }).default("Acquaintance"), // 'Acquaintance', 'Acolyte', 'Zealot', 'Sovereign Soul'
     isAegisGuided: boolean("is_aegis_guided").default(true),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => {
@@ -141,7 +141,7 @@ export const loyaltyStats = pgTable("loyalty_stats", {
     fanId: uuid("fan_id").references(() => users.id).notNull(),
     creatorId: uuid("creator_id").references(() => users.id).notNull(),
     lifetimeResonance: decimal("lifetime_resonance", { precision: 20, scale: 2 }).default("0.00").notNull(),
-    tier: varchar("tier", { length: 20 }).default("Acquaintance"), // 'Acquaintance', 'Acolyte', 'Zealot', 'Sovereign'
+    tier: varchar("tier", { length: 20 }).default("Acquaintance"), // 'Acquaintance', 'Acolyte', 'Zealot', 'Sovereign Soul'
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => {
     return {
@@ -196,8 +196,9 @@ export const userRelations = relations(users, ({ one, many }) => ({
     loyaltyStats: many(loyaltyStats),
 }));
 
-export const profileRelations = relations(profiles, ({ one }) => ({
+export const profileRelations = relations(profiles, ({ one, many }) => ({
     user: one(users, { fields: [profiles.id], references: [users.id] }),
+    loyaltyStats: many(loyaltyStats),
 }));
 
 export const momentRelations = relations(moments, ({ one, many }) => ({
