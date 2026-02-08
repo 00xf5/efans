@@ -367,7 +367,12 @@ export default function Timeline() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const carouselRef = useRef<HTMLDivElement>(null);
-    const [expandedMedia, setExpandedMedia] = useState<{ url: string, type: 'video' | 'image' | 'any', name?: string } | null>(null);
+    const [expandedMedia, setExpandedMedia] = useState<{ url: string, type: 'video' | 'image' | 'any', name?: string, handle?: string } | null>(null);
+    const [reelFlow, setReelFlow] = useState<{ items: any[], startIndex: number } | null>(null);
+
+    const handleReelClick = (index: number, collection: any[]) => {
+        setReelFlow({ items: collection, startIndex: index });
+    };
 
     const showToast = (msg: string) => {
         setToast(msg);
@@ -504,6 +509,13 @@ export default function Timeline() {
     return (
         <div className="relative w-full h-screen bg-black text-white flex justify-center selection:bg-primary/20 overflow-hidden transition-colors duration-500 font-display">
             {expandedMedia && <MediaModal media={expandedMedia} onClose={() => setExpandedMedia(null)} />}
+            {reelFlow && (
+                <MediaModal
+                    items={reelFlow.items.map(r => ({ url: r.video || r.media, type: 'video', name: r.name, handle: r.handle }))}
+                    startIndex={reelFlow.startIndex}
+                    onClose={() => setReelFlow(null)}
+                />
+            )}
 
             {/* Dynamic Background Light */}
             <div className="fixed top-0 left-0 w-full h-[600px] bg-gradient-to-b from-zinc-900/40 via-transparent to-transparent pointer-events-none -z-10 transition-colors duration-1000"></div>
@@ -535,8 +547,8 @@ export default function Timeline() {
                                 </div>
                             </div>
                             <div className="flex gap-4 overflow-x-auto scrollbar-hide px-1 pb-4">
-                                {MOCK_REELS.map((reel) => (
-                                    <div key={reel.id} className="flex-none w-28 group relative cursor-pointer" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
+                                {MOCK_REELS.map((reel, idx) => (
+                                    <div key={reel.id} className="flex-none w-28 group relative cursor-pointer" onClick={() => handleReelClick(idx, MOCK_REELS)}>
                                         <div className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
                                             <img src={reel.poster} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" alt="" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
@@ -721,18 +733,21 @@ export default function Timeline() {
                             <div className="space-y-8 animate-in fade-in duration-1000">
                                 <h1 className="text-5xl font-black italic text-center text-white">Live <span className="text-gradient">Flow.</span></h1>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 pb-20">
-                                    {[...dbReels.map(r => ({ id: r.id, name: r.source.name, handle: `@${r.source.username}`, video: r.media || '', poster: r.media || '', color: 'from-pink-500/40' })), ...MOCK_REELS].map((reel) => (
-                                        <div key={reel.id} className="relative aspect-[9/16] rounded-[3rem] overflow-hidden bg-zinc-900 border border-zinc-800 group/reel-tab cursor-pointer transition-all duration-700 shadow-none" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
-                                            <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 grayscale group-hover:grayscale-0" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                                            <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                                                <h3 className="text-2xl font-black italic text-white tracking-tighter">{reel.name}</h3>
+                                    {(() => {
+                                        const allReels = [...dbReels.map(r => ({ id: r.id, name: r.source.name, handle: `@${r.source.username}`, video: r.media || '', poster: r.media || '', color: 'from-pink-500/40' })), ...MOCK_REELS];
+                                        return allReels.map((reel, idx) => (
+                                            <div key={reel.id} className="relative aspect-[9/16] rounded-[3rem] overflow-hidden bg-zinc-900 border border-zinc-800 group/reel-tab cursor-pointer transition-all duration-700 shadow-none" onClick={() => handleReelClick(idx, allReels)}>
+                                                <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 grayscale group-hover:grayscale-0" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                                <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                                                    <h3 className="text-2xl font-black italic text-white tracking-tighter">{reel.name}</h3>
+                                                </div>
+                                                <div className="absolute top-6 right-6 px-4 py-1.5 bg-primary/20 backdrop-blur-xl rounded-full border border-primary/40">
+                                                    <span className="text-[10px] font-black text-white uppercase tracking-widest italic animate-pulse">LIVE</span>
+                                                </div>
                                             </div>
-                                            <div className="absolute top-6 right-6 px-4 py-1.5 bg-primary/20 backdrop-blur-xl rounded-full border border-primary/40">
-                                                <span className="text-[10px] font-black text-white uppercase tracking-widest italic animate-pulse">LIVE</span>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ));
+                                    })()}
                                 </div>
                             </div>
                         )}
@@ -754,14 +769,17 @@ export default function Timeline() {
                         </div>
 
                         <div className="flex-grow space-y-6 overflow-y-auto scrollbar-hide pb-32 relative" style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
-                            {[...dbReels.map(r => ({ id: r.id, name: r.source.name, handle: `@${r.source.username}`, video: r.media || '', poster: r.media || '', color: 'from-pink-500/40' })), ...MOCK_REELS].map((reel: any, idx: number) => (
-                                <div key={`${reel.id}-${idx}`} className="relative aspect-[9/16] w-full rounded-[2.5rem] overflow-hidden border border-zinc-800 group/reel cursor-pointer shadow-none transition-all duration-500 hover:scale-[1.02]" onClick={() => setExpandedMedia({ url: reel.video, type: 'video', name: reel.name })}>
-                                    <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
-                                    <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-black/90 to-transparent">
-                                        <h5 className="text-[11px] font-black uppercase text-white italic tracking-widest">{reel.name}</h5>
+                            {(() => {
+                                const allReels = [...dbReels.map(r => ({ id: r.id, name: r.source.name, handle: `@${r.source.username}`, video: r.media || '', poster: r.media || '', color: 'from-pink-500/40' })), ...MOCK_REELS];
+                                return allReels.map((reel: any, idx: number) => (
+                                    <div key={`${reel.id}-${idx}`} className="relative aspect-[9/16] w-full rounded-[2.5rem] overflow-hidden border border-zinc-800 group/reel cursor-pointer shadow-none transition-all duration-500 hover:scale-[1.02]" onClick={() => handleReelClick(idx, allReels)}>
+                                        <video src={reel.video} poster={reel.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
+                                        <div className="absolute bottom-0 left-0 right-0 p-6 z-20 bg-gradient-to-t from-black/90 to-transparent">
+                                            <h5 className="text-[11px] font-black uppercase text-white italic tracking-widest">{reel.name}</h5>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ));
+                            })()}
                         </div>
                     </aside>
 
