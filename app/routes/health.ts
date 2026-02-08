@@ -7,10 +7,17 @@ export async function loader() {
     const sql = postgres(rawUrl, { max: 1, ssl: { rejectUnauthorized: false } });
 
     try {
+        const columns = await sql`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'profiles'
+        `;
+
         const result = await sql`SELECT 1 as connected`;
         return {
             status: "Sovereign Connection Established",
             url: maskedUrl,
+            columns: columns.map((c: any) => c.column_name),
             result
         };
     } catch (error: any) {
