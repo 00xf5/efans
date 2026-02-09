@@ -410,15 +410,21 @@ export default function Timeline() {
         try {
             if (attachedMedia) {
                 showToast("Calibrating Media Resonance...");
-
                 // 1. Get Presigned URL
-                const urlResponse = await fetch("/api.upload-url", {
+                const urlResponse = await fetch("/api/upload-url", {
                     method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         fileName: attachedMedia.file.name,
                         contentType: attachedMedia.file.type
                     }),
                 });
+
+                if (!urlResponse.ok) {
+                    const text = await urlResponse.text();
+                    console.error("API Error Response:", text);
+                    throw new Error(`Cloud conduit failed: ${urlResponse.status} ${urlResponse.statusText}`);
+                }
 
                 const { uploadUrl, publicUrl, error } = await urlResponse.json();
                 if (error) throw new Error(error);
